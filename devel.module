@@ -1,0 +1,273 @@
+<?php
+// $Id$
+
+// This module is holds functions useful for Drupal development.
+// Please contribute!
+
+// suggested profiling and stacktrace library from http://www.xdebug.org/index.php
+// if you activate this extension, this module will use it.
+// you probably want these php.ini or .htaccess directives:
+// xdebug.auto_profile=1
+// xdebug.auto_profile_mode=3
+// xdebug.output_dir='/php'
+// xdebug.default_enable
+
+/**
+ * Implementation of hook_init(). Avoids custom error handling for better
+ * behavior when stepping though in a debugger.
+ */
+function devel_init() {
+  restore_error_handler();
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function devel_menu($may_cache) {
+  $items = array();
+
+  if ($may_cache) {
+    $items[] = array('path' => 'devel/cache/clear', 'title' => t('empty cache'),
+      'callback' => 'devel_cache_clear',
+      'access' => user_access('access devel information'));
+    $items[] = array('path' => 'devel/variable', 'title' => t('variable viewer'),
+      'callback' => 'devel_variable',
+      'access' => user_access('access devel information'));  
+		$items[] = array('path' => 'devel/switch', 'title' => t('switch user'),
+		 	'callback' => 'devel_switch_user',
+		  'access' => user_access('switch users'),
+		  'type' => MENU_CALLBACK);
+  }
+
+  return $items;
+}
+
+/**
+ 	* Switch from original user to another user and back.
+  *
+  * Note: taken from mailhandler.module
+  *
+  * Note: You first need to run mailhandler_switch_user without
+  * argument to store the current user. Call mailhandler_switch_user
+  * without argument to set the user back to the original user.
+  *
+  * @param $uid The user ID to switch to
+  *
+  */
+ function devel_switch_user($uid = NULL) {
+   global $user;
+   static $orig_user = array();
+ 
+   if (isset($uid)) {
+     $user = user_load(array('uid' => $uid));
+   }
+   // retrieve the initial user, can be called multiple times
+   else if (count($orig_user)) {
+     $user = array_shift($orig_user);
+     array_unshift($orig_user, $user);
+   }
+   // store the initial user
+   else {
+     $orig_user[] = $user;
+   }
+   drupal_goto();
+ }
+ 
+ /**
+  * Implementation of hook_block().
+  */
+ function devel_block($op = 'list', $delta = 0) {
+   if ($op == 'list') {
+     $blocks[0]['info'] = t('Switch user');
+     return $blocks;
+   }
+   else if ($op == 'view') {
+     $links = array();
+		 if (user_access('switch users')) {
+	     $users = db_query('SELECT uid, name FROM {users} WHERE uid > 0');
+	     while ($user = db_fetch_object($users)) {
+	       $links[] = l(check_plain($user->name), 'devel/switch/'. $user->uid , array(), drupal_get_destination());
+	     }
+	     $block['subject'] = t('Switch user');
+	     $block['content'] = theme('item_list', $links);
+ 		 }
+     return $block;
+   }
+ }
+
+function devel_variable() {                    
+  global$conf;
+  print theme('page', dprint_r($conf));
+}
+
+function devel_timer() {
+  global $timer;
+  list($usec, $sec) = explode(' ', microtime());
+  $stop = (float)$usec + (float)$sec;
+  $diff = round(($stop - $timer) * 1000, 2);
+  return t(' Page execution time was %time ms.', array('%time' => $diff));
+}
+
+/**
+ * Implementation of hook_exit(). Displays developer information in the footer.
+ *
+ * We can't move this to hook_footer() since this must run after
+ * drupal_page_footer() in order to work for cached pages.
+ */
+function devel_exit($destination = NULL) {
+  global $queries;
+
+  if (isset($destination)) {
+    // The page we are leaving is a drupal_goto(). Present a redirection page
+    // so that the developer can see the intermediate query log.
+    if (user_access('access devel information') && variable_get('devel_redirect_page', 0)) {
+      $output = t('<p>The user is being redirected to %destination.</p>', array('%destination' => "<em><a href=\"$destination\">$destination</a></em>"));
+      print theme('page', $output);
+
+      // Don't allow the automatic redirect to happen.
+      drupal_page_footer();
+      exit();
+    }
+    else {
+      // Make sure not to print anything before the automatic redirect.
+      return;
+    }
+  }
+
+  if (function_exists('drupal_get_headers') && strstr(drupal_get_headers(), 'xml')) {
+    $is_xml = TRUE;
+  };
+  if (user_access('access devel information') && !$is_xml) { // try not to break the xml pages
+    // Query log off, timer on
+    if (!variable_get('dev_query', 0) && variable_get('dev_timer', 0)) {
+      $output = '<div style="padding-top: 4em;">'. devel_timer() .'</div>';
+    }
+
+    // Query log on
+    if (variable_get('dev_query', 0)) {
+      foreach ($queries as $query) {
+        $text[] = $query[0];
+        $sum += $query[1];
+      }
+      $counts = array_count_values($text);
+
+      $output .= '<div style="padding-top: 2em;">';
+      $txt = strtr('Executed %queries queries in %time microseconds.', array('%queries' => count($queries), '%time' => round($sum * 1000, 2)));
+      if (function_exists('theme_table')) {
+        $txt .= strtr(' Queries taking longer than %threshhold ms, and queries executed more than once, are <span class="marker">highlighted</span>.', array('%threshhold' => variable_get('devel_execution', 5)));
+        if (variable_get('dev_timer', 0)) { $txt .= devel_timer(); }
+        $output .= $txt. devel_query_table($queries, $counts);
+      }
+      else {
+        $output .= $txt;
+        ob_start();
+          dprint_r($queries);
+        $output .= ob_get_clean();
+      }
+      $output .= '</div>';
+    }
+    // lots of profile info. not sure how to use it yet.
+    if (extension_loaded('xdebug') && ini_get("xdebug.auto_profile")) {
+     // commented out because generates too much output. output to log file instead. see xdebug docs
+     // dprint_r(xdebug_get_function_profile());;
+    };
+    // TODO: gzip this text if we are sending a gzip page. see drupal_page_header()
+    print $output;
+  }
+}
+
+/**
+ * Menu callback; clears all caches, then redirects to the previous page.
+ */
+function devel_cache_clear() {
+  db_query('DELETE FROM {cache}');
+  drupal_set_message('cache cleared').
+  header('Location: '. referer_uri());
+  exit();
+}
+
+function devel_query_table($queries, $counts) {
+  $header = array ('ms', '#', 'query');
+  $i = 0;
+  foreach ($queries as $query) {
+    // dprint_r($query);
+    $diff = round($query[1]*1000,2);
+    $count = $counts[$query[0]];
+    if ($diff > variable_get('devel_execution', 5)) {
+      $cell[$i][] = array ('data' => $diff, 'class' => 'marker');
+    }
+    else {
+      $cell[$i][] = $diff;
+    }
+    if ($count > 1) {
+      $cell[$i][] = array ('data' => $count, 'class' => 'marker');
+    }
+    else {
+      $cell[$i][] = $count;
+    }
+    $cell[$i][] = check_plain($query[0]);
+    $i++;
+    unset($diff, $count);
+  }
+  return theme('table', $header, $cell);
+}
+
+/**
+ * Print a message to the browser only for users with proper permissions.
+ */
+function dprint($str) {
+  if (user_access('access devel information')) {
+    print "<pre>$str</pre>";
+  }
+}
+
+/**
+ * Pretty-print a variable such as an array or object to the browser.
+ * Displays only for users with proper permissions.
+ */
+function dprint_r($arr) {
+  if (user_access('access devel information')) {
+    print '<pre>';
+    print_r($arr);
+    print '</pre>';
+  }
+}
+
+/**
+ * Print the function call stack. This works even without xdebug installed.
+ */
+function ddebug_backtrace() {
+  if (user_access('access devel information')) {
+    dprint_r(debug_backtrace());
+  }
+}
+
+/**
+ * Implementation of hook_help().
+ */
+function devel_help($section) {
+  switch ($section) {
+    case 'admin/modules#description':
+      return t('Development helper functions');
+  }
+}
+
+/**
+ * Implementation of hook_settings().
+ */
+function devel_settings() {
+  $output  = form_select(t('Display Page Timer'), 'dev_timer', variable_get('dev_timer', 0), array(t('Disabled'), t('Enabled')), t('Display page execution time in the query log box.'));
+  $output .= form_select(t('Display query log'), 'dev_query', variable_get('dev_query', 0), array(t('Disabled'), t('Enabled')), t('Display a log of the database queries needed to generate the current page, the and the execution time for each. Also, a queries which are repeated during a single page view are summed in the # column, and printed in red since they are candidates for caching.'));
+  $output .= form_textfield(t('Query execution threshhold'), 'devel_execution', variable_get('devel_execution', 5), 4, 4, t('Enter an integer in milliseconds. Any query which takes longer than this many milliseconds will be highlighted in the query log. This indicates a possibliy inefficient query, or a candidate for caching.'));
+  $output .= form_select(t('Display redirection page'), 'devel_redirect_page', variable_get('devel_redirect_page', 0), array(t('Disabled'), t('Enabled')), t('When a module executes drupal_goto(), the query log and other developer information is lost. Enabling this setting presents an intermediate page to developers so that the log can be examined before continuing to the destination page.'));
+  return $output;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function devel_perm() {
+  return array('access devel information', 'switch users');
+}
+
+?>
