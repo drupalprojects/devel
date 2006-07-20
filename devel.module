@@ -1,0 +1,771 @@
+<?php
+// $Id$
+
+// This module holds functions useful for Drupal development.
+// Please contribute!
+
+// suggested profiling and stacktrace library from http://www.xdebug.org/index.php
+// if you activate this extension, this module will use it.
+// you probably want these php.ini or .htaccess directives:
+// xdebug.auto_profile=1
+// xdebug.auto_profile_mode=3
+// xdebug.output_dir='/php'
+// xdebug.default_enable
+
+define(DEVEL_QUERY_SORT_BY_SOURCE, 0);
+define(DEVEL_QUERY_SORT_BY_DURATION, 1);
+
+/**
+ * Implementation of hook_help().
+ */
+function devel_help($section) {
+  switch ($section) {
+    case 'admin/modules#description':
+      return t('Development helper functions');
+    case 'admin/settings/devel':
+      return '<p>'. t('Helper functions to assist Drupal developers. The devel blocks can be managed via the <a href="%admin-blocks">block administration</a> page.', array('%admin-blocks' => url('admin/block'))). '</p>';
+    case 'devel/reinstall':
+      return '<p>'. t('Clicking a module\'s reinstall button will simulate installing a module. <code>hook_install()</code> will be executed and the schema version number will be set to the most recent update number. Make sure to manually clear out any existing tables first.'). '</p>';
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function devel_menu($may_cache) {
+  $items = array();
+
+  if ($may_cache) {
+    $items[] = array('path' => 'devel/cache/clear',
+      'title' => t('empty cache'),
+      'callback' => 'devel_cache_clear',
+      'access' => user_access('access devel information'),
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array('path' => 'devel/execute',
+      'title' => t('execute PHP code'),
+      'callback' => 'devel_execute',
+      'access' => user_access('execute php code'),
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array('path' => 'devel/queries',
+      'title' => t('database queries'),
+      'callback' => 'devel_queries',
+      'access' => user_access('access devel information'));
+    $items[] = array('path' => 'devel/queries/empty',
+      'title' => t('empty database queries'),
+      'callback' => 'devel_queries_empty',
+      'access' => user_access('access devel information'),
+      'type' => MENU_CALLBACK);
+    $items[] = array('path' => 'devel/phpinfo',
+      'title' => t('phpinfo()'),
+      'callback' => 'devel_phpinfo',
+      'access' => user_access('access devel information'),
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array('path' => 'devel/reinstall',
+      'title' => t('reinstall modules'),
+      'callback' => 'devel_reinstall',
+      'access' => user_access('access devel information'),
+      'type' => MENU_CALLBACK,
+    );
+    if (module_exist('menu')) {
+      $items[] = array('path' => 'devel/menu/reset',
+        'title' => t('reset menus'),
+        'callback' => 'devel_menu_reset_form',
+        'access' => user_access('access devel information'),
+        'type' => MENU_CALLBACK,
+      );
+    }
+    $items[] = array('path' => 'devel/variable',
+      'title' => t('variable viewer'),
+      'callback' => 'devel_variable',
+      'access' => user_access('access devel information'),
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array('path' => 'devel/session',
+      'title' => t('session viewer'),
+      'callback' => 'devel_session',
+      'access' => user_access('access devel information'),
+      'type' => MENU_CALLBACK,
+    );
+    $items[] = array('path' => 'devel/switch',
+      'title' => t('switch user'),
+      'callback' => 'devel_switch_user',
+      'access' => user_access('switch users'),
+      'type' => MENU_CALLBACK,
+    );
+  }
+  else {
+    if (is_numeric(arg(1))) {
+      if (arg(0) == 'node') {
+        $items[] = array('path' => 'node/'. arg(1) .'/object',
+          'title' => t('object structure'),
+          'callback' => 'devel_show_object',
+          'callback arguments' => array('node', arg(1)),
+          'access' => user_access('access devel information'),
+          'type' => MENU_LOCAL_TASK,
+        );
+      }
+      elseif (arg(0) == 'user') {
+        $items[] = array('path' => 'user/'. arg(1) .'/object',
+          'title' => t('object structure'),
+          'callback' => 'devel_show_object',
+          'callback arguments' => array('user', arg(1)),
+          'access' => user_access('access devel information'),
+          'type' => MENU_LOCAL_TASK,
+        );
+      }
+    }
+    theme_add_style(drupal_get_path('module', 'devel') .'/devel.css');
+  }
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_init(). Avoids custom error handling for better
+ * behavior when stepping though in a debugger.
+ */
+function devel_init() {
+  if (variable_get('dev_mem', 0) && function_exists('memory_get_usage')) {
+    global $memory_init;
+
+    $memory_init = memory_get_usage();
+  }
+  // update.php relies on the custom error handler
+  if (!strstr($_SERVER['PHP_SELF'], 'update.php')) {
+    restore_error_handler();
+  }
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function devel_perm() {
+  return array('access devel information', 'execute php code', 'switch users');
+}
+
+/**
+ * Implementation of hook_block().
+ */
+function devel_block($op = 'list', $delta = 0) {
+  if ($op == 'list') {
+    $blocks[0]['info'] = t('Switch user');
+    $blocks[1]['info'] = t('Devel');
+    
+    // Auto-enable the devel block for fresh installations.
+    $blocks[1]['status'] = 1;
+
+    return $blocks;
+  }
+  else if ($op == 'view') {
+    $links = array();
+    switch ($delta) {
+      case 0:
+        $block['subject'] = t('switch user');
+        if (user_access('switch users')) {
+          $users = db_query_range('SELECT uid, name FROM {users} WHERE uid > 0 ORDER BY access', 0, 10);
+          while ($user = db_fetch_object($users)) {
+            $dest = drupal_get_destination();
+            $links[] = l(check_plain($user->name), 'devel/switch/'. $user->uid, array(), $dest);
+          }
+        }
+        break;
+      case 1:
+        $block['subject'] = t('devel');
+        if (user_access('access devel information')) {
+          $links[] = l('module settings', 'admin/settings/devel');
+          $links[] = l('empty cache', 'devel/cache/clear');
+          $links[] = l('phpinfo()', 'devel/phpinfo');
+          $links[] = l('reinstall modules', 'devel/reinstall');
+          $links[] = l('reset menus', 'devel/menu/reset');
+          $links[] = l('variable viewer', 'devel/variable');
+          $links[] = l('session viewer', 'devel/session');
+        }
+        if (user_access('execute php code')) {
+          $links[] = l('execute PHP code', 'devel/execute');
+        }
+        if (function_exists('devel_node_access_perm') && user_access(DNA_ACCESS_VIEW)) {
+          // True only if devel_node_access enabled.
+          $links[] = l('node_access summary', 'devel/node_access/summary');
+        }
+    }
+    if ($links) {
+      $block['content'] = theme('item_list', $links);
+    }
+
+    return $block;
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function devel_form_alter($form_id, &$form) {
+  if (user_access('access devel information') && variable_get('devel_form_weights', 0)) {
+    $children = element_children($form);
+    if (empty($children)) {
+      if (isset($form['#type']) && !in_array($form['#type'], array('value', 'hidden'))) {
+        if (!isset($form['#title'])) {
+          $form['#title'] = '';
+        }
+        $form['#title'] .= ' (weight: '. (isset($form['#weight']) ? $form['#weight'] : 0) .')';
+      }
+    }
+    else {
+      foreach (element_children($form) as $key) {
+        // We need to add the weight to fieldsets.
+        if (element_children($form[$key])) { // Which are a container of others.
+          if (!isset($form[$key]['#title'])) {
+            $form[$key]['#title'] = '';
+          }
+          $form[$key]['#title'] .= ' (weight: '. (isset($form[$key]['#weight']) ? $form[$key]['#weight'] : 0) .')';
+        }
+        devel_form_alter($form_id, $form[$key]);
+      }
+    }
+  }
+}
+
+/**
+ * Implementation of hook_exit(). Displays developer information in the footer.
+ *
+ * Don't use t() here. It isn't available for cached pages.
+ *
+ * We can't move this to hook_footer() since this must run after
+ * drupal_page_footer() in order to work for cached pages.
+ */
+function devel_exit($destination = NULL) {
+  global $queries, $memory_init;
+
+  $is_xml = FALSE;
+  $output = '';
+  if (isset($destination)) {
+    // The page we are leaving is a drupal_goto(). Present a redirection page
+    // so that the developer can see the intermediate query log.
+    if (user_access('access devel information') && variable_get('devel_redirect_page', 0)) {
+      $output = strtr('<p>The user is being redirected to <a href="%destination">%destination</a>.</p>', array('%destination' => $destination));
+      print theme('page', $output);
+
+      // Don't allow the automatic redirect to happen.
+      drupal_page_footer();
+      exit();
+    }
+    else {
+      // Make sure not to print anything before the automatic redirect.
+      return;
+    }
+  }
+
+  if (function_exists('drupal_get_headers') && strstr(drupal_get_headers(), 'xml')) {
+    $is_xml = TRUE;
+  }
+  if (user_access('access devel information') && !$is_xml) { // Try not to break the xml pages.
+    // Query log off, timer on.
+    if (!variable_get('devel_query_display', 0) && variable_get('dev_timer', 0)) {
+      $output = '<div class="dev-timer">'. devel_timer() .'</div>';
+    }
+
+    // Query log on.
+    $sum = 0;
+    if (variable_get('devel_query_display', 0)) {
+      foreach ($queries as $query) {
+        $text[] = $query[0];
+        $sum += $query[1];
+      }
+      $counts = array_count_values($text);
+
+      $output .= '<div class="dev-query">';
+      $txt = strtr('Executed %queries queries in %time milliseconds.', array('%queries' => count($queries), '%time' => round($sum * 1000, 2)));
+      if (function_exists('theme_table')) {
+        $txt .= strtr(' Queries taking longer than %threshold ms and queries executed more than once, are <span class="marker">highlighted</span>.', array('%threshold' => variable_get('devel_execution', 5)));
+        if (variable_get('dev_timer', 0)) {
+          $txt .= devel_timer();
+        }
+        $output .= $txt. devel_query_table($queries, $counts);
+      }
+      else {
+        $output .= $txt;
+        ob_start();
+        dprint_r($queries);
+        $output .= ob_get_clean();
+      }
+      $output .= '</div>';
+    }
+    // Lots of profile info. not sure how to use it yet.
+    if (extension_loaded('xdebug') && ini_get("xdebug.auto_profile")) {
+      // Commented out because generates too much output. output to log file instead. see xdebug docs
+      // dprint_r(xdebug_get_function_profile());;
+    };
+    if (variable_get('dev_mem', 0) && function_exists('memory_get_usage')) {
+      $memory_exit = memory_get_usage();
+      $list = array();
+      foreach (array('devel_init()' => $memory_init, 'devel_exit()' => $memory_exit) as $type => $value) {
+        $list[] = strtr('Memory used at %type: %value MB', array('%type' => $type, '%value' => round($value / 1024 / 1024, 2)));
+      }
+      $output .= '<div class="dev-memory-usage"><h3>'. 'Memory usage:' .'</h3>'. theme('item_list', $list) .'</div>';
+    }
+    // TODO: gzip this text if we are sending a gzip page. see drupal_page_header().
+    print $output;
+  }
+
+  if (variable_get('devel_store_queries', 0) && rand(1, variable_get('devel_store_random', 1)) == 1) {
+    global $active_db;
+    $qids = array();
+    $values = array();
+    $fields = array();
+
+    foreach ($queries as $query) {
+      $query[0] = preg_replace(array("/'.*'/s", "/\d.*\.\d.*/", "/\d.*/"), array("S", "F", "D"), $query[0]);
+      $hash = md5($query[0]);
+      if (!isset($qids[$hash])) {
+        $qids[$hash] = db_result(devel_db_query("SELECT qid FROM {devel_queries} WHERE hash = '%s'", $hash));
+        if (!$qids[$hash]) {
+          devel_db_query("INSERT INTO {devel_queries} (query, hash) VALUES ('%s', '%s')", $query[0], $hash);
+          $qids[$hash] = mysql_insert_id();
+        }
+      }
+      $fields[] = '(%d, %f)';
+      $values[] = $qids[$hash];
+      $values[] = $query[1];
+    }
+    if (count($fields)) {
+      devel_db_query('INSERT INTO {devel_times} (qid, time) VALUES '. implode(',', $fields), $values);
+    }
+  }
+}
+
+function devel_db_query($query) {
+  global $active_db;
+  $args = func_get_args();
+  array_shift($args);
+  $query = db_prefix_tables($query);
+  if (isset($args[0]) and is_array($args[0])) { // 'All arguments in one array' syntax
+    $args = $args[0];
+  }
+  _db_query_callback($args, TRUE);
+  $query = preg_replace_callback(DB_QUERY_REGEXP, '_db_query_callback', $query);
+  return mysql_query($query, $active_db);
+}
+
+/**
+ * Implementation of hook_settings().
+ */
+function devel_settings() {
+  $form['queries'] = array('#type' => 'fieldset', '#title' => t('Query log'));
+  $form['queries']['dev_query'] = array('#type' => 'checkbox',
+    '#title' => t('Collect query info'),
+    '#default_value' => variable_get('dev_query', 0),
+    '#description' => t("Collect query info. If disabled, no query log functionality will work."));
+  $form['queries']['devel_query_display'] = array('#type' => 'checkbox',
+    '#title' => t('Display query log'),
+    '#default_value' => variable_get('devel_query_display', 0),
+    '#description' => t('Display a log of the database queries needed to generate the current page, and the execution time for each. Also, queries which are repeated during a single page view are summed in the # column, and printed in red since they are candidates for caching.'));
+  $form['queries']['devel_query_sort'] = array('#type' => 'radios',
+    '#title' => t('Sort query log'),
+    '#default_value' =>   variable_get('devel_query_sort', DEVEL_QUERY_SORT_BY_SOURCE),
+    '#options' => array(t('by source'), t('by duration')),
+    '#description' => t('The query table can be sorted in the order that the queries were executed or by descending duration.'),
+  );
+  $form['queries']['devel_execution'] = array('#type' => 'textfield',
+    '#title' => t('Slow query highlighting'),
+    '#default_value' => variable_get('devel_execution', 5),
+    '#size' => 4,
+    '#maxlength' => 4,
+    '#description' => t('Enter an integer in milliseconds. Any query which takes longer than this many milliseconds will be highlighted in the query log. This indicates a possibly inefficient query, or a candidate for caching.'),
+  );
+  $form['queries']['devel_store_queries'] = array('#type' => 'checkbox', 
+    '#title' => t('Store executed queries'), 
+    '#default_value' => variable_get('devel_store_queries', 0), 
+    '#description' => t('Store statistics about executed queries. See the devel_x tables. This feature is currently only available for the MySQL database backend.'));
+  $form['queries']['devel_store_random'] = array('#type' => 'textfield', 
+    '#title' => t('Sampling interval'), 
+    '#default_value' => variable_get('devel_store_random', 1), 
+    '#size' => 4, 
+    '#description' => t('If storing query statistics, only store every nth page view. 1 means every page view, 2 every second, and so on.'));
+  
+  $form['dev_timer'] = array('#type' => 'checkbox',
+    '#title' => t('Display page timer'),
+    '#default_value' => variable_get('dev_timer', 0),
+    '#description' => t('Display page execution time in the query log box.'),
+  );
+  $form['dev_mem'] = array('#type' => 'checkbox',
+    '#title' => t('Display memory usage'),
+    '#default_value' => variable_get('dev_mem', 0),
+    '#description' => t('Display how much memory is used to generate the current page. This will show memory usage when devel_init() is called and when devel_exit() is called. PHP must have been compiled with the <em>--enable-memory-limit</em> configuration option for this feature to work.'),
+  );
+  $form['devel_redirect_page'] = array('#type' => 'checkbox',
+    '#title' => t('Display redirection page'),
+    '#default_value' => variable_get('devel_redirect_page', 0),
+    '#description' => t('When a module executes drupal_goto(), the query log and other developer information is lost. Enabling this setting presents an intermediate page to developers so that the log can be examined before continuing to the destination page.'),
+  );
+  $form['devel_form_weights'] = array('#type' => 'checkbox',
+    '#title' => t('Display form element weights'),
+    '#default_value' => variable_get('devel_form_weights', 0),
+    '#description' => t('Form elements may have weights that determine their position in a form. Enabling this setting will show these weights.'),
+  );
+
+  // Save any old SMTP library
+  if (variable_get('smtp_library', '') != '' && variable_get('smtp_library', '') != drupal_get_filename('module', 'devel')) {
+    variable_set('devel_old_smtp_library', variable_get('smtp_library', ''));
+  }
+  $smtp_options = array(
+    '' => t('Default'),
+    drupal_get_filename('module', 'devel') => t('Log only'),
+  );
+  if (variable_get('devel_old_smtp_library', '') != '') {
+    $smtp_options[variable_get('devel_old_smtp_library', '')] = t('Other (%library)', array('%library' => variable_get('devel_old_smtp_library', '')));
+  }
+  $form['smtp_library'] = array(
+    '#type' => 'radios',
+    '#title' => t('SMTP library'),
+    '#options' => $smtp_options,
+    '#default_value' => variable_get('smtp_library', ''),
+  );
+
+  return $form;
+}
+
+/**
+ * Menu callback; clears all caches, then redirects to the previous page.
+ */
+function devel_cache_clear() {
+  global $base_url;
+  db_query('DELETE FROM {cache}');
+  drupal_set_message('cache cleared').
+  $referer = referer_uri();
+  header('Location: '. ($referer ? $referer : $base_url));
+  exit();
+}
+
+/**
+ * Menu callback; displays a form to allow execution of PHP code.
+ */
+function devel_execute() {
+  if ($edit = $_POST['edit']) {
+    ob_start();
+    print eval($edit['code']);
+    $output = ob_get_clean();
+  }
+
+  $form['code'] = array('#type' => 'textarea',
+    '#title' => t('PHP code to execute'),
+    '#description' => t('Enter some code. Do not use <code>&lt?php</code> tags.'),
+  );
+  $form['op'] = array('#type' => 'submit', '#value' => t('Execute'));
+
+  return '<code>'. $output .'</code>'. drupal_get_form('devel_execute', $form);
+}
+
+/**
+ * Process PHP execute form submissions. Its only purpose here is to prevent a page redirection.
+ */
+function devel_execute_submit() {
+  return FALSE;
+}
+
+/**
+ * Menu callback; display phpinfo() output.
+ * As phpinfo() outputs an entire HTML page, this function extracts and displays only the data between
+ * the <body> tag.
+ */
+function devel_phpinfo() {
+  ob_start();
+  phpinfo();
+  preg_match("/<body>(.*)<\/body>/s", ob_get_clean(), $matches);
+  return '<div class="phpinfo">'. $matches[0] .'</div>';
+}
+
+/**
+ * Menu callback; clear the database, resetting the menu to factory defaults.
+ */
+function devel_menu_reset_form() {
+  return confirm_form('devel_menu_reset_form', array(), t('Are you sure you want to reset all menu items to their default settings?'), 'admin/menu', t('Any custom additions or changes to the menu will be lost.'), t('Reset all'));
+}
+
+/**
+ * Process menu reset form submission.
+ */
+function devel_menu_reset_form_submit() {
+  db_query('DELETE FROM {menu}');
+  $mid = module_invoke('menu', 'edit_item_save', array('title' => t('Primary links'), 'pid' => 0, 'type' => MENU_CUSTOM_MENU));
+  variable_set('menu_primary_menu', $mid);
+  variable_set('menu_secondary_menu', $mid);
+
+  drupal_set_message(t('The menu items have been reset to their default settings.'));
+
+  return 'admin/menu';
+}
+
+/**
+ * Menu callback; Display a list of installed modules with the option to reinstall them via hook_install.
+ */
+function devel_reinstall() {
+  $output = '';
+  $modules = module_list();
+  sort($modules);
+  foreach ($modules as $module) {
+    $form = array(
+      'submit' => array(
+        '#type' => 'submit',
+        '#value' => t('Reinstall %name module', array('%name' => $module))
+      ),
+    );
+    $output .= drupal_get_form('devel_reinstall_'. $module, $form, 'devel_reinstall');
+  }
+
+  return $output;
+}
+
+/**
+ * Process reinstall menu form submissions.
+ */
+function devel_reinstall_submit($form_id, $form_values) {
+  include './includes/install.inc';
+  $module = str_replace('devel_reinstall_', '', $form_id);
+  $versions = drupal_get_schema_versions($module);
+  drupal_set_installed_schema_version($module, $versions ? max($versions) : SCHEMA_INSTALLED);
+  module_invoke($module, 'install');
+  drupal_set_message(t('Reinstalled the %name module.', array('%name' => $module)));
+}
+
+/**
+ * Menu callback; display all variables.
+ */
+function devel_variable() {
+  global $conf;
+  return dprint_r($conf);
+}
+
+/**
+ * Menu callback: display the session.
+ */
+function devel_session() {
+  return dprint_r($_SESSION, TRUE);
+}
+
+/**
+ * Switch from original user to another user and back.
+ *
+ * Note: taken from mailhandler.module.
+ *
+ * Note: You first need to run devel_switch_user without
+ * argument to store the current user. Call devel_switch_user
+ * without argument to set the user back to the original user.
+ *
+ * @param $uid The user ID to switch to.
+ *
+ */
+function devel_switch_user($uid = NULL) {
+  global $user;
+  static $orig_user = array();
+
+  if (isset($uid)) {
+    $user = user_load(array('uid' => $uid));
+  }
+  // Retrieve the initial user. Can be called multiple times.
+  else if (count($orig_user)) {
+    $user = array_shift($orig_user);
+    array_unshift($orig_user, $user);
+  }
+  // Store the initial user.
+  else {
+    $orig_user[] = $user;
+  }
+  drupal_goto();
+}
+
+/**
+ * Menu callback; prints the structure of the current node/user.
+ */
+function devel_show_object($type, $id) {
+  $output = '';
+
+  switch ($type) {
+    case 'node':
+      $object = node_load($id);
+      drupal_set_title(check_plain($object->title));
+      break;
+
+    case 'user':
+      $object = user_load(array('uid' => $id));
+      drupal_set_title(check_plain($object->name));
+      break;
+  }
+
+  foreach ($object as $field => $value) {
+    if (is_null($value)) {
+      $printed_value = 'NULL';
+    }
+    else if (is_array($value) || is_object($value)) {
+      ob_start();
+      print_r($value);
+      $printed_value = ob_get_clean();
+      $printed_value = '<pre>'. check_plain($printed_value) .'</pre>';
+    }
+    else {
+      $printed_value = check_plain($value);
+    }
+
+    $output .= theme('box', $field, $printed_value);
+  }
+
+  return $output;
+}
+
+/**
+ * Adds a table at the bottom of the page cataloguing data on all the database queries that were made to
+ * generate the page.
+ */
+function devel_query_table($queries, $counts) {
+  $header = array ('ms', '#', 'where', 'query');
+  $i = 0;
+  foreach ($queries as $query) {
+    // dprint_r($query);
+    $ar = explode("\n", $query[0]);
+    $function=array_shift($ar);
+    $query[0]=join(' ',$ar);
+
+    $diff = round($query[1] * 1000, 2);
+    $count = isset($counts[$query[0]]) ? $counts[$query[0]] : 0;
+    if ($diff > variable_get('devel_execution', 5)) {
+      $cell[$i][] = array ('data' => $diff, 'class' => 'marker');
+    }
+    else {
+      $cell[$i][] = $diff;
+    }
+    if ($count > 1) {
+      $cell[$i][] = array ('data' => $count, 'class' => 'marker');
+    }
+    else {
+      $cell[$i][] = $count;
+    }
+    $cell[$i][] = l($function, "http://api.drupal.org/api/HEAD/function/$function");
+    $cell[$i][] = check_plain($query[0]);
+    $i++;
+    unset($diff, $count);
+  }
+  if (variable_get('devel_query_sort', DEVEL_QUERY_SORT_BY_SOURCE)) {
+    usort($cell, '_devel_table_sort');
+  }
+  return theme('table', $header, $cell);
+}
+
+function _devel_table_sort($a, $b) {
+	$a = is_array($a[0]) ? $a[0]['data'] : $a[0];
+	$b = is_array($b[0]) ? $b[0]['data'] : $b[0];
+	if ($a < $b) { return 1; }
+	if ($a > $b) { return -1; }
+	return 0;	
+}
+
+/**
+ * Displays page execution time at the bottom of the page.
+ */
+function devel_timer() {
+  $time = timer_read('page');
+  return t(' Page execution time was %time ms.', array('%time' => $time));
+}
+
+/**
+ * Print a message to the browser only for users with proper permissions. If
+ * you want a string returned instead of a print, use the 2nd param. Useful
+ * for watchdog() or for throwing into a drupal_set_message() or just
+ * saving for later use.
+ */
+function dprint($str, $return = FALSE) {
+  if (user_access('access devel information')) {
+    if ($return) ob_start();
+    print "<pre>$str</pre>";
+    if ($return) {
+      return ob_get_clean();
+    }
+  }
+}
+
+/**
+ * Pretty-print a variable such as an array or object to the browser.
+ * Displays only for users with proper permissions. If
+ * you want a string returned instead of a print, use the 2nd param. Useful
+ * for watchdog() or for throwing into a drupal_set_message() or just
+ * saving for later use.
+ */
+function dprint_r($arr, $return = FALSE) {
+  if (user_access('access devel information')) {
+    if ($return) ob_start();
+    print '<pre>';
+    print_r($arr);
+    print '</pre>';
+    if ($return) {
+      return ob_get_clean();
+    }
+  }
+}
+
+/**
+ * Print the function call stack. This works even without xdebug installed.
+ */
+function ddebug_backtrace() {
+  if (user_access('access devel information')) {
+    if (function_exists('debug_print_backtrace')) {
+      debug_print_backtrace();
+    }
+    else {
+      dprint_r(debug_backtrace());
+    }
+  }
+}
+
+// Only define our mail wrapper if the devel module is the current mail
+// wrapper.
+if (variable_get('smtp_library', '') == drupal_get_filename('module', 'devel')) {
+  /**
+   * Log the mails sent out instead of mailing.
+   */
+  function user_mail_wrapper($mail, $subject, $message, $header) {
+    watchdog('devel', t('Mail sent:<br />To: %mail<br />Subject: %subject<br />Message: %message<br />Additional headers: %header', array(
+      '%mail' => $mail,
+      '%subject' => $subject,
+      '%message' => $message,
+      '%header' => $header,
+    )));
+    return TRUE;
+  }
+}
+
+function devel_queries() {
+  $header = array(
+                  array('data' => t('Total time (ms)'), 'field' => 'total_time', 'sort' => 'desc'),
+                  array('data' => t('Average (ms)'), 'field' => 'average', 'sort' => 'desc'),
+                  array('data' => t('Standard deviation (ms)')),
+                  array('data' => t('Count'), 'field' => 'count'),
+                  array('data' => t('Query'), 'field' => 'q.query'),
+                  );
+
+  $result = pager_query('SELECT q.qid, q.query, t.*, COUNT(t.qid) AS count, SUM(t.time) AS total_time, AVG(t.time) AS average, STDDEV(t.time) AS stddev FROM {devel_queries} q INNER JOIN {devel_times} t ON q.qid = t.qid GROUP BY t.qid '. tablesort_sql($header), 30, 0, 'SELECT COUNT(qid) FROM {devel_queries}');
+  while ($log = db_fetch_object($result)) {
+    $rows[] = array(
+                    round($log->total_time, 3),
+                    round($log->average, 3),
+                    round($log->stddev, 3),
+                    $log->count,
+                    check_plain($log->query)
+                    );
+  }
+
+  drupal_set_title(check_plain($node->title));
+  $output = theme('table', $header, $rows);
+  $output .= theme('pager', NULL, 30, 0, tablesort_pager());
+  $output .= l(t('Delete collected query statistics'), 'devel/queries/empty');
+
+  return $output;
+}
+
+function devel_queries_empty() {
+  db_query('DELETE FROM {devel_queries}');
+  db_query('DELETE FROM {devel_times}');
+  drupal_set_message(t('Stored query statistics deleted.'));
+  drupal_goto('devel/queries');
+}
+
