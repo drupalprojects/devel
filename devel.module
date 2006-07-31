@@ -203,7 +203,7 @@ function devel_block($op = 'list', $delta = 0) {
 /**
  * Implementation of hook_form_alter().
  */
-function devel_form_alter($form_id, &$form) {
+function devel_form_alter($form_id, &$form, $key_in = NULL) {
   if (user_access('access devel information') && variable_get('devel_form_weights', 0)) {
     $children = element_children($form);
     if (empty($children)) {
@@ -211,7 +211,7 @@ function devel_form_alter($form_id, &$form) {
         if (!isset($form['#title'])) {
           $form['#title'] = '';
         }
-        $form['#title'] .= ' (weight: '. (isset($form['#weight']) ? $form['#weight'] : 0) .')';
+        $form['#title'] .= " (key=$key_in, weight=". (isset($form['#weight']) ? $form['#weight'] : 0) .')';
       }
     }
     else {
@@ -221,9 +221,9 @@ function devel_form_alter($form_id, &$form) {
           if (!isset($form[$key]['#title'])) {
             $form[$key]['#title'] = '';
           }
-          $form[$key]['#title'] .= ' (weight: '. (isset($form[$key]['#weight']) ? $form[$key]['#weight'] : 0) .')';
+          $form[$key]['#title'] .= " (key=$key, weight=". (isset($form[$key]['#weight']) ? $form[$key]['#weight'] : 0) .')';
         }
-        devel_form_alter($form_id, $form[$key]);
+        devel_form_alter($form_id, $form[$key], $key);
       }
     }
   }
