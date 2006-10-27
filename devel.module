@@ -671,7 +671,8 @@ function _devel_table_sort($a, $b) {
  */
 function devel_timer() {
   $time = timer_read('page');
-  return t(' Page execution time was %time ms.', array('%time' => $time));
+  // t() is not available if serving a cached page.
+  return strtr('Page execution time was %time ms.', array('%time' => $time));
 }
 
 /**
