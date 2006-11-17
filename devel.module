@@ -455,13 +455,15 @@ function devel_execute() {
     $output = ob_get_clean();
   }
 
-  $form['code'] = array('#type' => 'textarea',
+  $form['code'] = array(
+    '#type' => 'textarea',
     '#title' => t('PHP code to execute'),
-    '#description' => t('Enter some code. Do not use <code>&lt?php</code> tags.'),
+    '#description' => t('Enter some code. Do not use <code>&lt?php ?&gt;</code> tags.')
   );
+  $form['#action'] = url($_GET['q'], NULL, 'devel-execute');
   $form['op'] = array('#type' => 'submit', '#value' => t('Execute'));
-
-  return '<code>'. $output .'</code>'. drupal_get_form('devel_execute', $form);
+ 
+  return '<code id="devel-execute">'. $output .'</code>'. drupal_get_form('devel_execute', $form);
 }
 
 /**
