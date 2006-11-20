@@ -439,7 +439,7 @@ function devel_settings() {
 function devel_cache_clear() {
   global $base_url;
   db_query('DELETE FROM {cache}');
-  drupal_set_message('cache cleared').
+  drupal_set_message('cache cleared');
   $referer = referer_uri();
   header('Location: '. ($referer ? $referer : $base_url));
   exit();
