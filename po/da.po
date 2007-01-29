@@ -1,83 +1,388 @@
 # Danish translation of Drupal (devel.module)
-# Copyright 2006 Morten Wulff <wulff@psyke.org>
+# Copyright 2006-2007 Morten Wulff <wulff@ratatosk.net>
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Danish translation of Drupal (devel.module) $Id$\n"
 "POT-Creation-Date: 2005-07-25 17:54+0200\n"
-"PO-Revision-Date: 2006-02-12 12:38+0100\n"
-"Last-Translator: Morten Wulff <wulff@psyke.org>\n"
-"Language-Team: Danish <danish@psyke.org>\n"
+"PO-Revision-Date: 2007-01-29 16:33+0100\n"
+"Last-Translator: Morten Wulff <wulff@ratatosk.net>\n"
+"Language-Team: Danish <l10n@drupaldanmark.dk>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Language: Danish\n"
+"X-Poedit-Country: DENMARK\n"
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:30
-msgid "empty cache"
-msgstr "tøm mellemlager"
+#: devel.module:28
+msgid "Helper functions, pages, and blocks to assist Drupal developers. The devel blocks can be managed via the !block page."
+msgstr "Hjælpefunktioner, sider og blokke der støtter Drupal-udvikling. Blokken kan styres via !block-siden."
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:33
-msgid "variable viewer"
-msgstr "gennemse variable"
+#: devel.module:28
+msgid "block administration"
+msgstr "indstil blok"
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:48
-msgid " Page execution time was %time ms."
-msgstr "Side afviklet på %time ms."
+#: devel.module:30
+msgid "This is a list of defined user functions that generated this current request lifecycle. Click on a function name to view its documention."
+msgstr "En liste af de funktioner, der startede denne forespørgsels livscyklus. Klik på en funktions navn for at se den tilhørende dokumentation."
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:64
-msgid "<p>The user is being redirected to %destination.</p>"
-msgstr "<p>Brugeren omdirigeres til %destination.</p>"
+#: devel.module:32
+msgid "Clicking a module's reinstall button will simulate installing a module. <code>hook_install()</code> will be executed and the schema version number will be set to the most recent update number. Make sure to manually clear out any existing tables first."
+msgstr "Klik på knappen geninstallér for at simulere en installation af et modul. <code>hook_install()</code> kaldes og schema versionsnummeret sættes til det seneste opdateringsnummer. Du skal selv fjerne evt. eksisterende tabeller."
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:191
-msgid "Development helper functions"
-msgstr "Hjælpefunktioner til udvikling"
+#: devel.module:34
+msgid "Here are the contents of your <code>$_SESSION</code> variable."
+msgstr "Indholdet af din <code>$_SESSION</code> variabel."
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:199
-msgid "Display page timer"
-msgstr "Vis tidsforbrug"
+#: devel.module:36
+msgid "This is a list of the variables and their values currently stored in variables table and the <code>$conf</code> array of your settings.php file. These variables are usually accessed with <a href=\"@variable-get-doc\">variable_get()</a> and <a href=\"@variable-set-doc\">variable_set()</a>."
+msgstr "En liste af variable og deres værdier gemt i variables-tabellen og <code>$conf</code>-tabellen i settings.php. Disse variable tilgås oftest med <a href=\"@variable-get-doc\">variable_get()</a> og <a href=\"@variable-set-doc\">variable_set()</a>."
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:199;200;202
-msgid "Disabled"
-msgstr "Deaktiveret"
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:30
+#: devel.module:48
+msgid "Empty cache"
+msgstr "Tøm mellemlager"
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:199;200;202
-msgid "Enabled"
-msgstr "Aktiveret"
+#: devel.module:54
+msgid "Database queries"
+msgstr "Databaseforespørgsler"
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:199
-msgid "Display page execution time in the query log box."
-msgstr "Hvis sidens afviklingstid i kassen med forespørgselsloggen."
+#: devel.module:58
+msgid "Empty database queries"
+msgstr "Tøm databaseforespørgsler"
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:200
+#: devel.module:63
+msgid "phpinfo()"
+msgstr "phpinfo()"
+
+#: devel.module:69
+msgid "function reference"
+msgstr "funktionsreference"
+
+#: devel.module:75
+msgid "Reinstall modules"
+msgstr "Geninstallér moduler"
+
+#: devel.module:82
+msgid "Reset menus"
+msgstr "Nulstil menuer"
+
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:33
+#: devel.module:90
+msgid "Variable viewer"
+msgstr "Vis variable"
+
+#: devel.module:96
+msgid "Session viewer"
+msgstr "Vis sessioner"
+
+#: devel.module:102
+#: ;232
+msgid "Switch user"
+msgstr "Skift bruger"
+
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:0
+#: devel.module:109
+#: ;233
+msgid "Devel"
+msgstr "Udvikling"
+
+#: devel.module:120
+#: ;136
+msgid "Devel load"
+msgstr "Devel load"
+
+#: devel.module:127
+msgid "Devel render"
+msgstr "Devel render"
+
+#: devel.module:216
+msgid "%message in %file on line %line."
+msgstr "%message i %file på linje %line."
+
+#: devel.module:234
+msgid "Execute PHP"
+msgstr "Udfør PHP"
+
+#: devel.module:246
+msgid "switch user"
+msgstr "skift bruger"
+
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:0
+#: devel.module:260
+#: ;940;0
+msgid "devel"
+msgstr "udvikling"
+
+#: devel.module:262
+msgid "Adjust module settings for devel module"
+msgstr "Tilpas indstillingerne for devel-modulet."
+
+#: devel.module:263
+msgid "Clear the database cache tables which store page, menu, node, and variable caches."
+msgstr "Ryd mellemlageret i databasen."
+
+#: devel.module:265
+msgid "View a list of currently defined user functions with documentation links"
+msgstr "Vis en liste af brugerfunktioner med links til dokumentationen"
+
+#: devel.module:266
+msgid "Re-run hook_install() for a given module"
+msgstr "Kør hook_install() igen for et givet modul"
+
+#: devel.module:267
+msgid "Resets all menu items to their default settings"
+msgstr "Gendanner standardindstillingerne for alle menupunkter"
+
+#: devel.module:268
+msgid "List the variables and their values currently stored in variables table"
+msgstr "Viser variable og deres værdier fra variables-tabellen."
+
+#: devel.module:269
+msgid "List the contents of $_SESSION"
+msgstr "Vis indholdet af $_SESSION"
+
+#: devel.module:281
+msgid "Execute php"
+msgstr "Udfør php"
+
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:200
+#: devel.module:462
+msgid "Query log"
+msgstr "Forespørgselslog"
+
+#: devel.module:464
+msgid "Collect query info"
+msgstr "Indsaml information om forespørgsler"
+
+#: devel.module:466
+msgid "Collect query info. If disabled, no query log functionality will work."
+msgstr "Forespørgselsloggen virker ikke hvis denne funktion slås fra."
+
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:200
+#: devel.module:468
 msgid "Display query log"
 msgstr "Vis forespørgselslog"
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:200
-msgid "Display a log of the database queries needed to generate the current page, the and the execution time for each. Also, a queries which are repeated during a single page view are summed in the # column, and printed in red since they are candidates for caching."
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:200
+#: devel.module:470
+msgid "Display a log of the database queries needed to generate the current page, and the execution time for each. Also, queries which are repeated during a single page view are summed in the # column, and printed in red since they are candidates for caching."
 msgstr "Vis en log over de databaseforespørgsler der blev foretaget for at bygge den aktuelle side samt deres afviklingstider. Desuden bliver alle gentagne forespørgsler markeret i '#'-kolonnen, da de er kandidater til mellemlagring."
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:201
-msgid "Query execution threshhold"
-msgstr "Tidsrænse for forespørgsel"
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:200
+#: devel.module:472
+msgid "Sort query log"
+msgstr "Sorter forespørgselslog"
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:201
-msgid "Enter an integer in milliseconds. Any query which takes longer than this many milliseconds will be highlighted in the query log. This indicates a possibliy inefficient query, or a candidate for caching."
+#: devel.module:474
+msgid "by source"
+msgstr "efter kilde"
+
+#: devel.module:474
+msgid "by duration"
+msgstr "efter varighed"
+
+#: devel.module:475
+msgid "The query table can be sorted in the order that the queries were executed or by descending duration."
+msgstr "Tabellen kan sorteres efter den rækkefølge forespørgslerne blev udført eller efter faldende varighed."
+
+#: devel.module:478
+msgid "Slow query highlighting"
+msgstr "Fremhæv langsomme forespørgsler"
+
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:201
+#: devel.module:482
+msgid "Enter an integer in milliseconds. Any query which takes longer than this many milliseconds will be highlighted in the query log. This indicates a possibly inefficient query, or a candidate for caching."
 msgstr "Indtast et antal millisekunder. Enhver forespørgsel der tager længere end det angivne antal millisekunder bliver fremhævet i forespørgselsloggen. Det indikerer en muligvis ineffektiv forespørgsel eller en kandidat til mellemlagring."
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:202
+#: devel.module:485
+msgid "Store executed queries"
+msgstr "Gem udførte forespørgsler"
+
+#: devel.module:487
+msgid "Store statistics about executed queries. See the devel_x tables. This feature is currently only available for the MySQL database backend."
+msgstr "Gem statistik om udførte forespørgsler. Se devel_x-tabellerne. Denne funktion findes i øjeblikket kun til MySQL."
+
+#: devel.module:489
+msgid "Sampling interval"
+msgstr "Opdateringsinterval"
+
+#: devel.module:492
+msgid "If storing query statistics, only store every nth page view. 1 means every page view, 2 every second, and so on."
+msgstr "Gem kun hver n'te sidevisning. 1 betyder alle sidevisninger, 2 betyder hver anden, osv."
+
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:199
+#: devel.module:495
+msgid "Display page timer"
+msgstr "Vis tidsforbrug"
+
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:199
+#: devel.module:497
+msgid "Display page execution time in the query log box."
+msgstr "Hvis sidens afviklingstid i kassen med forespørgselsloggen."
+
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:200
+#: devel.module:500
+msgid "Display memory usage"
+msgstr "Vis hukommelsesforbrug"
+
+#: devel.module:502
+msgid "Display how much memory is used to generate the current page. This will show memory usage when devel_init() is called and when devel_exit() is called. PHP must have been compiled with the <em>--enable-memory-limit</em> configuration option for this feature to work."
+msgstr "Vis hvor meget hukommelse der bruges til at vise den aktuelle side. Vise hukommelsesforbrug når devel_init() kaldes og når devel_exit() kaldes. PHP skal være kompileret med <em>--enable-memory-limit</em> for at denne funktionalitet virker."
+
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:202
+#: devel.module:505
 msgid "Display redirection page"
 msgstr "Vis omdirigeringsside"
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:202
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:202
+#: devel.module:507
 msgid "When a module executes drupal_goto(), the query log and other developer information is lost. Enabling this setting presents an intermediate page to developers so that the log can be examined before continuing to the destination page."
 msgstr "Når et modul kalder drupal_goto() mistes forespørgselsloggen og anden udviklingsinformation. Aktiver denne indstilling for at se en mellemliggende side, der viser loggen før der fortsættes til næste side."
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:210
+#: devel.module:510
+msgid "Display form element keys and weights"
+msgstr "Vis nøgler og vægte af formular-elementer"
+
+#: devel.module:512
+msgid "Form element names are needed for performing themeing or altering a form. Their weights determine the position of the element. Enabling this setting will show these keys and weights beside each form item."
+msgstr "Navne på formular-elementer er nødvendige når man skal lave temaer eller ændre en formular. Vægtene bestemmer rækkefølgen af elementerne."
+
+#: devel.module:515
+msgid "Error handler"
+msgstr "Fejlhåndtering"
+
+#: devel.module:517
+msgid "None"
+msgstr "Ingen"
+
+#: devel.module:517
+msgid "Standard drupal"
+msgstr "Standard Drupal"
+
+#: devel.module:517
+msgid "Backtrace"
+msgstr "Sporing"
+
+#: devel.module:518
+msgid "Choose an error handler for your site. <em>Backtrace</em> prints nice debug information when an error is noticed, and you !choose. <em>None</em> is a good option when stepping through the site in your debugger."
+msgstr "Vælg hvordan fejl håndteres af dit site. <em>Sporing</em> udskriver debug information når der opstår en fejl og du !choose. <em>Ingen</em> er et godt valg når du gennemgår kode i din debugger."
+
+#: devel.module:518
+msgid "to show errors on screen"
+msgstr "for at vise fejl på skærmen"
+
+#: devel.module:526
+msgid "Default"
+msgstr "Standard"
+
+#: devel.module:527
+msgid "Log only"
+msgstr "Kun log"
+
+#: devel.module:530
+msgid "Other (%library)"
+msgstr "Andet (%library)"
+
+#: devel.module:534
+msgid "SMTP library"
+msgstr "SMTP bibliotek"
+
+#: devel.module:561
+msgid "PHP code to execute"
+msgstr "Udfør PHP kode"
+
+#: devel.module:562
+msgid "Enter some code. Do not use <code>&lt;?php ?&gt;</code> tags."
+msgstr "Indtast noget kode. Du skal ikke bruge <code>&lt;?php ?&gt;</code>-tags."
+
+#: devel.module:564
+msgid "Execute"
+msgstr "Udfør"
+
+#: devel.module:595
+msgid "Are you sure you want to reset all menu items to their default settings?"
+msgstr "Ønsker du at gendanne standardindstillinger for alle menupunkter?"
+
+#: devel.module:597
+msgid "Any custom additions or changes to the menu will be lost."
+msgstr "Alle tilføjelser til og ændringer af menuen går tabt."
+
+#: devel.module:598
+msgid "Reset all"
+msgstr "Gendan alle"
+
+#: devel.module:599
+msgid "Cancel"
+msgstr "Annuller"
+
+#: devel.module:608
+msgid "Primary links"
+msgstr "Primære henvisninger"
+
+#: devel.module:612
+msgid "The menu items have been reset to their default settings."
+msgstr "Menupunkternes standardindstillinger gendannet."
+
+#: devel.module:637
+msgid "Reinstall @name module"
+msgstr "Geninstallér modulet @name."
+
+#: devel.module:666
+msgid "Reinstalled the %name module."
+msgstr "%name geninstalleret."
+
+#: devel.module:940
+msgid "Mail sent:<br />Key: %mailkey<br />To: %to<br />From: %from<br />Subject: %subject<br />Body: %body<br /><br />Additional headers: !header"
+msgstr "Mail sendt:<br />Nøgle: %mailkey<br />Til: %to<br />Fra: %from<br />Emne: %subject<br />Indhold: %body<br /><br />Yderligere brevhoveder: !header"
+
+#: devel.module:954
+msgid "Total time (ms)"
+msgstr "Samlet tid (ms)"
+
+#: devel.module:955
+msgid "Average (ms)"
+msgstr "Gennemsnit (ms)"
+
+#: devel.module:956
+msgid "Standard deviation (ms)"
+msgstr "Standardafvigelse (ms)"
+
+#: devel.module:957
+msgid "Count"
+msgstr "Tæl"
+
+#: devel.module:958
+msgid "Function"
+msgstr "Funktion"
+
+#: devel.module:959
+msgid "Query"
+msgstr "Forespørgsel"
+
+#: devel.module:977
+msgid "Delete collected query statistics"
+msgstr "Slet indsamlet forespørgselsstatistik"
+
+#: devel.module:985
+msgid "Stored query statistics deleted."
+msgstr "Indsamlet forespørgselsstatistik slettet."
+
+#: devel.module:216
+msgid "php"
+msgstr "php"
+
+# d:\Drupal-contributions-CVS\modules\devel\devel.module:210
+#: devel.module:224
 msgid "access devel information"
 msgstr "tilgå udviklingsinformation"
 
-#: d:\Drupal-contributions-CVS\modules\devel\devel.module:0
-msgid "devel"
-msgstr "udvikling"
+#: devel.module:224
+msgid "execute php code"
+msgstr "udfør PHP-kode"
+
+#: devel.module:224
+msgid "switch users"
+msgstr "skift bruger"
 
