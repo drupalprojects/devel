@@ -47,9 +47,6 @@ function devel_install() {
       db_query($sql);
       
   }
-
-  // Enable the blocks automatically at install.
-  _block_rehash();
 }
 
 /**
@@ -105,4 +102,12 @@ function devel_update_5() {
       $ret[] = update_sql("ALTER TABLE {devel_queries} CHANGE query query text NOT NULL");
   }
   return $ret;
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function devel_enable() {
+  // Enable the blocks automatically at install.
+  _block_rehash();
 }
