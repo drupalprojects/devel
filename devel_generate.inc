@@ -188,11 +188,19 @@ function devel_create_greeking($words, $title = FALSE) {
 }
 
 function devel_add_terms($nodes, $terms) {
+  $used = array();
   if(count($terms) > 0){
     foreach($nodes as $nid => $type) {
-      $rand = rand(1, 6);
+      $rand = rand(1, 6); // how many terms*
       while ($rand--) {
-      $tid = $terms[$type][@array_rand($terms[$type])];
+        $again = TRUE;
+        while ($again) {
+          $tid = $terms[$type][@array_rand($terms[$type])];
+          if (!isset($used[$nid][$tid])) {
+            $again = FALSE;
+            $used[$nid][$tid] = $tid;
+          }
+        }
         if ($tid) {
           db_query("INSERT INTO {term_node} (nid, tid) VALUES (%d, %d)", $nid, $tid);
         }
