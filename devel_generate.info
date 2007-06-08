@@ -1,5 +1,5 @@
 ; $Id$
 name = Generator
 description = Generate dummy users, nodes, and taxonomy terms.
-version = "$Name$"
 package = Development
+version = "$Name$"
