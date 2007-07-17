@@ -31,6 +31,68 @@ function devel_create_users($num, $kill) {
   drupal_set_message(t('!num_users created.', array('!num_users' => format_plural($num, '1 user', '@count users'))));
 }
 
+function devel_generate_content($num_nodes, $num_comments, $title_length, $kill) {
+  if ($kill) {
+    db_query("DELETE FROM {comments}");
+    db_query("DELETE FROM {node}");
+    db_query("DELETE FROM {node_revisions}");
+    db_query("DELETE FROM {node_comment_statistics}");
+    if (db_table_exists('term_node')) {
+      db_query("DELETE FROM {term_node}");
+    }
+    if (db_table_exists('forum')) {
+      db_query("DELETE FROM {forum}");
+    }
+    db_query("DELETE FROM {url_alias}");
+    switch ($GLOBALS['db_type']) {
+      case 'mysql':
+      case 'mysqli':
+        db_query("UPDATE {sequences} SET id = '0' WHERE name = '{node}_nid'");
+        db_query("UPDATE {sequences} SET id = '0' WHERE name = '{comments}_cid'");
+        db_query("ALTER TABLE {node} AUTO_INCREMENT = 1");
+        db_query("ALTER TABLE {comments} AUTO_INCREMENT = 1");
+        break;
+      case 'pgsql':
+        db_query("SELECT setval('{node}_nid_seq', 1, false)");
+        db_query("SELECT setval('{comments}_cid_seq', 1, false)");
+        break;
+    }
+    drupal_set_message(t('Content deleted.'));
+  }
+  else {
+    // Get the next nid without incrementing it.
+    switch ($GLOBALS['db_type']) {
+      case 'mysql':
+      case 'mysqli':
+        $next_nid = db_result(db_query("SELECT id FROM {sequences} WHERE name = '{node}_nid'")) + 1;
+        break;
+      case 'pgsql':
+        // This little trick is necessery, as the currval() function won't work until the nextval()
+        // function is called in the current session.
+        $next_nid = db_result(db_query("SELECT nextval('{node}_nid_seq')"));
+        db_query("SELECT setval('{node}_nid_seq', %d, false)", $next_nid);
+        break;
+    }
+  }
+
+  // Get user id.
+  $users = devel_get_users();
+
+  $terms = devel_get_terms();
+
+  // Create $num_nodes pseudo-random nodes.
+  devel_create_nodes($num_nodes, $users, $title_length);
+  drupal_set_message(t('%num nodes created.', array('%num' => $num_nodes)));
+
+  $nodes = devel_get_nodes($next_nid);
+
+  devel_add_terms($nodes, $terms);
+
+  $comments = devel_get_comments();
+
+  devel_create_comments($num_comments, $users, $nodes, $comments);
+  drupal_set_message(t('%num comments created.', array('%num' => $num_comments)));
+}
 
 function devel_create_nodes($records, $users, $title_length = 8) {
 
@@ -49,8 +111,17 @@ function devel_create_nodes($records, $users, $title_length = 8) {
     for ($i = 1; $i <= $records; $i++) {
       $node->uid = $users[array_rand($users)];
       $node->type = $types[array_rand($types)];
-      // get the next nid without incrementing it
-      $next_nid = db_result(db_query("SELECT id FROM {sequences} WHERE name = '{node}_nid'"))+1;
+      // Get the next nid without incrementing it.
+      switch ($GLOBALS['db_type']) {
+        case 'mysql':
+        case 'mysqli':
+          $next_nid = db_result(db_query("SELECT id FROM {sequences} WHERE name = '{node}_nid'")) + 1;
+          break;
+        case 'pgsql':
+          $next_nid = db_result(db_query("SELECT currval('{node}_nid_seq')")) + 1;
+          break;
+      }
+
       
       $title = devel_create_greeking(rand(1, $title_length), TRUE);
       /*
