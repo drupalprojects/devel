@@ -50,6 +50,17 @@ function devel_install() {
 }
 
 /**
+ * Implementation of hook_disable().
+ */
+function devel_disable() {
+  // Query logging should probably not be set if devel.module is disabled.
+  if (variable_get('dev_query', 0)) {
+    variable_set('dev_query',0);
+    drupal_set_message(t('Disabled query logging since devel module is disabled.'));
+  }
+}
+
+/**
  * Do update 1 again as the hook_install() was missing and new
  * installations are not having the weight set.
  */
@@ -102,15 +113,4 @@ function devel_update_5() {
       $ret[] = update_sql("ALTER TABLE {devel_queries} CHANGE query query text NOT NULL");
   }
   return $ret;
-}
-
-/**
- * Implementation of hook_disable().
- */
-function devel_disable() {
-  // Query logging should probably not be set if devel.module is disabled.
-  if (variable_get('dev_query', 0)) {
-    variable_set('dev_query',0);
-    drupal_set_message(t('Disabled query logging since devel module is disabled.'));
-  }
 }
