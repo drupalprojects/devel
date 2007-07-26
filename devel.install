@@ -45,7 +45,7 @@ function devel_install() {
         PRIMARY KEY (tid)
       );";
       db_query($sql);
-      
+
   }
 }
 
@@ -103,15 +103,6 @@ function devel_update_5() {
   }
   return $ret;
 }
-
-/**
- * Implementation of hook_enable().
- */
-function devel_enable() {
-  // Enable the blocks automatically at install.
-  _block_rehash();
-}
-
 
 /**
  * Implementation of hook_disable().
