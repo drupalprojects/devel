@@ -157,10 +157,55 @@ function devel_menu($may_cache) {
         );
       }
     }
+    
+    /*
+     * TODO: this is very naive. We don't preserve views arguments like other tabs. 
+     * I tried, but it I started borrowing too much Views menu code. I think
+     * we need some refactoring in Views!
+     * I concluded that the result and 'render' operations yield no useful info
+     * so no tabs exist for those.
+    */
+    $urls = views_get_all_urls();
+    foreach ($urls as $view_name => $url) {
+      if (module_exists('views_ui')) {
+        $items[] = array('path' => "$url/load",
+              'title' => t('Dev load'),
+              'callback' => 'devel_load_object',
+              'callback arguments' => array('view', $view_name),
+              'access' => user_access('administer views'),
+              'type' => MENU_LOCAL_TASK,
+              'weight' => 8,
+        );
+        $items[] = array('path' => "$url/queries",
+              'title' => t('Dev queries'),
+              'callback' => 'devel_views_object',
+              'callback arguments' => array('queries', $view_name),
+              'access' => user_access('administer views'),
+              'type' => MENU_LOCAL_TASK,
+              'weight' => 9,
+        );
+        $items[] = array('path' => "$url/items",
+              'title' => t('Dev items'),
+              'callback' => 'devel_views_object',
+              'callback arguments' => array('items', $view_name),
+              'access' => user_access('administer views'),
+              'type' => MENU_LOCAL_TASK,
+              'weight' => 10,
+        );
+      }
+    }
+    
     drupal_add_css(drupal_get_path('module', 'devel') .'/devel.css');
   }
 
   return $items;
+}
+
+function devel_views_object($type, $view_name) {
+  $view = views_get_view($view_name);
+  $return = views_build_view($type, $view);
+  // dvr($return);
+  return devel_print_object($return);
 }
 
 /**
@@ -924,6 +969,9 @@ function devel_load_object($type, $id) {
       $object = user_load(array('uid' => $id));
       drupal_set_title(check_plain($object->name));
       break;
+    case 'view':
+      $object = views_get_view($id);
+      drupal_set_title(check_plain($object->name));
   }
 
   return devel_print_object($object);
@@ -950,22 +998,28 @@ function devel_render_object($type, $id) {
 }
 
 function devel_print_object($object) {
-  foreach ($object as $field => $value) {
-    if (is_null($value)) {
-      $printed_value = 'NULL';
-    }
-    else if (is_array($value) || is_object($value)) {
-      ob_start();
-      print_r($value);
-      $printed_value = ob_get_clean();
-      $printed_value = '<pre>'. check_plain($printed_value) .'</pre>';
-    }
-    else {
-      $printed_value = check_plain($value);
-    }
+  if (is_array($value) || is_object($value)) {
+    foreach ($object as $field => $value) {
+      if (is_null($value)) {
+        $printed_value = 'NULL';
+      }
+      else if (is_array($value) || is_object($value)) {
+        ob_start();
+        print_r($value);
+        $printed_value = ob_get_clean();
+        $printed_value = '<pre>'. check_plain($printed_value) .'</pre>';
+      }
+      else {
+        $printed_value = check_plain($value);
+      }
 
-    $output .= theme('box', $field, $printed_value);
+      $output .= theme('box', $field, $printed_value);
+    }
   }
+  else {
+    $output .= theme('box', 'Value', check_plain($object));
+  }
+  
   return $output;
 }
 
