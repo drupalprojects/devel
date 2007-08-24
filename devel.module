@@ -165,9 +165,9 @@ function devel_menu($may_cache) {
      * I concluded that the result and 'render' operations yield no useful info
      * so no tabs exist for those.
     */
-    $urls = views_get_all_urls();
-    foreach ($urls as $view_name => $url) {
-      if (module_exists('views_ui')) {
+    if (module_exists('views_ui')) {
+      $urls = views_get_all_urls();
+      foreach ($urls as $view_name => $url) {
         $items[] = array('path' => "$url/load",
               'title' => t('Dev load'),
               'callback' => 'devel_load_object',
