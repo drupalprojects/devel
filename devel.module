@@ -998,7 +998,7 @@ function devel_render_object($type, $id) {
 }
 
 function devel_print_object($object) {
-  if (is_array($value) || is_object($value)) {
+  if (is_array($object) || is_object($object)) {
     foreach ($object as $field => $value) {
       if (is_null($value)) {
         $printed_value = 'NULL';
