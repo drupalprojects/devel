@@ -176,6 +176,11 @@ function devel_create_comments($records, $users, $nodes, $comments) {
 
     db_query("INSERT INTO {comments} (cid, nid, pid, uid, subject, comment, status, thread, timestamp) VALUES (%d, %d, %d, %d, '%s', '%s', %d, %d, %d)", $comment->cid, $comment->nid, $comment->pid, $comment->uid, $comment->subject, $comment->comment, 0, 0, time());
   }
+  
+  // update comments statistics
+  foreach ($nodes as $nid => $type) {
+    _comment_update_node_statistics($nid);
+  }
 }
 
 function devel_generate_vocabs($records, $maxlength = 12, $types = array('story', 'blog', 'forum', 'page')) {
@@ -411,7 +416,12 @@ function devel_add_terms($nodes, $terms) {
   $used = array();
   if(count($terms) > 0){
     foreach($nodes as $nid => $type) {
-      $rand = rand(1, 6); // how many terms*
+      if ($type == 'forum') {
+        $rand = 1;
+      }
+      else {
+        $rand = rand(1, 6); // how many terms*
+      }
       while ($rand--) {
         $again = TRUE;
         while ($again) {
@@ -423,6 +433,10 @@ function devel_add_terms($nodes, $terms) {
         }
         if ($tid) {
           db_query("INSERT INTO {term_node} (nid, tid) VALUES (%d, %d)", $nid, $tid);
+          
+          if (module_exists('forum') && ($type == 'forum')) {
+            db_query('UPDATE {forum} SET tid = %d WHERE nid = %d', $tid, $nid);
+          }
         }
       }
     }
