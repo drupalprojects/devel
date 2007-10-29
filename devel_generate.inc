@@ -82,15 +82,11 @@ function devel_generate_content($num_nodes, $num_comments, $title_length, $kill)
   // Get user id.
   $users = devel_get_users();
 
-  $terms = devel_get_terms();
-
   // Create $num_nodes pseudo-random nodes.
   devel_create_nodes($num_nodes, $users, $title_length);
   drupal_set_message(t('%num nodes created.', array('%num' => $num_nodes)));
 
   $nodes = devel_get_nodes($next_nid);
-
-  devel_add_terms($nodes, $terms);
 
   $comments = devel_get_comments();
 
@@ -147,6 +143,11 @@ function devel_create_nodes($records, $users, $title_length = 8) {
       $node->comment = 2;
       $node->created = time();
       $node->changed = time();
+      
+      // TODO: add ability to disable terms
+      if (1 || $add_terms) {
+        devel_generate_add_terms($node);
+      }
 
       // Save the node:
       node_save($node);
@@ -157,6 +158,20 @@ function devel_create_nodes($records, $users, $title_length = 8) {
     }
   }
 }
+
+function devel_generate_add_terms(&$node) {
+  $sql = "SELECT DISTINCT(tid) as tid, v.tags FROM {term_data} td INNER JOIN {vocabulary} v ON td.vid=v.vid INNER JOIN {vocabulary_node_types} vnt ON v.vid=vnt.vid WHERE vnt.type = '%s' ORDER BY RAND()";
+  $result = db_query_range($sql, $node->type, 0, 5);
+  while ($row = db_fetch_object($result)) {
+    if ($row->tags) {
+      $node->taxonomy['tags'][] = $row->tid;
+    }
+    else {
+      $node->taxonomy[$row->tid] = $row->tid;
+    }
+  }
+}
+
 
 function devel_create_comments($records, $users, $nodes, $comments) {
   $users = array_merge($users, array('0'));
@@ -418,37 +433,6 @@ function devel_create_greeking($words, $title = FALSE) {
   return $greeking;
 }
 
-function devel_add_terms($nodes, $terms) {
-  $used = array();
-  if(count($terms) > 0){
-    foreach($nodes as $nid => $type) {
-      if ($type == 'forum') {
-        $rand = 1;
-      }
-      else {
-        $rand = rand(1, 6); // how many terms*
-      }
-      while ($rand--) {
-        $again = TRUE;
-        while ($again) {
-          $tid = $terms[$type][@array_rand($terms[$type])];
-          if (!isset($used[$nid][$tid])) {
-            $again = FALSE;
-            $used[$nid][$tid] = $tid;
-          }
-        }
-        if ($tid) {
-          db_query("INSERT INTO {term_node} (nid, tid) VALUES (%d, %d)", $nid, $tid);
-          
-          if (module_exists('forum') && ($type == 'forum')) {
-            db_query('UPDATE {forum} SET tid = %d WHERE nid = %d', $tid, $nid);
-          }
-        }
-      }
-    }
-  }
-}
-
 function devel_get_users() {
   $users = array();
   $result = db_query("SELECT uid FROM {users}");
@@ -474,16 +458,4 @@ function devel_get_comments() {
     $comments[$comment->nid][] = $comment->cid ;
   }
   return comments;
-}
-
-function devel_get_terms() {
-  $terms = array();
-  $result = db_query("SELECT d.tid, v.vid FROM {vocabulary} v, {term_data} d WHERE v.vid = d.vid");
-  while($term = db_fetch_object($result)){
-    $result2 = db_query("SELECT n.type FROM {vocabulary_node_types} n WHERE n.vid = %d", $term->vid);
-    while ($nt = db_fetch_object($result2)) {
-      $terms[$nt->type][] = $term->tid;
-    }
-  }
-  return $terms;
 }
