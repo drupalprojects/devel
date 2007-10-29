@@ -43,6 +43,10 @@ function devel_generate_content($num_nodes, $num_comments, $title_length, $kill)
     if (db_table_exists('forum')) {
       db_query("DELETE FROM {forum}");
     }
+    if (db_table_exists('relatedlinks')) {
+      db_query("DELETE FROM {relatedlinks}");
+      db_query("DELETE FROM {relatedlinks_tracker}");
+    }
     db_query("DELETE FROM {url_alias}");
     switch ($GLOBALS['db_type']) {
       case 'mysql':
@@ -96,14 +100,23 @@ function devel_generate_content($num_nodes, $num_comments, $title_length, $kill)
 
 function devel_create_nodes($records, $users, $title_length = 8) {
 
-  $possible_types = array("story", "blog", "forum", "page");
+  $sql = "SELECT type FROM node_type WHERE module IN ('node', 'forum')";
+  $result = db_query($sql);
+  while ($row = db_fetch_object($result)) {
+    $possible_types[] = $row->type;
+  }
+  
+  // For now, eliminate types which have any CCK fields. Help wanted.
+  $fields = content_fields();
+  foreach ($fields as $field) {
+    $ineligible[] = $field['type_name'];
+  }
+  $possible_types = array_diff($possible_types, $ineligible);
+  
   // Only use types that exist.
   $installed_types = array_keys(node_get_types('types'));
-  foreach ($possible_types as $type) {
-    if (in_array($type, $installed_types)) {
-      $types[] = $type;
-    }
-  }
+  $types = array_intersect($possible_types, $installed_types);
+  
   $users = array_merge($users, array('0'));
 
   if (is_array($types)) {
@@ -124,13 +137,6 @@ function devel_create_nodes($records, $users, $title_length = 8) {
 
 
       $title = devel_create_greeking(rand(1, $title_length), TRUE);
-      /*
-      $title_words = rand(1, 8);
-      while($i < $title_words){
-      	$title .= devel_generate_word(rand(4, 9));
-      	$i;
-      }
-      */
       $node->title = $title;
       $node->body = "node #$next_nid ($node->type) - ". devel_create_content();
       $node->teaser = node_teaser($node->body);
