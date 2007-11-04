@@ -88,7 +88,7 @@ function devel_generate_content_form() {
   $form['num_comments'] = array(
     '#type' => 'textfield',
     '#title' => t('How many comments would you like to generate?'),
-    '#default_value' => 500,
+    '#default_value' => 0,
     '#size' => 10,
   );
   $form['title_length'] = array(
