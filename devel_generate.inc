@@ -103,11 +103,13 @@ function devel_create_nodes($records, $users, $title_length = 8) {
   }
   
   // For now, eliminate types which have any CCK fields. Help wanted.
-  $fields = content_fields();
-  foreach ($fields as $field) {
-    $ineligible[] = $field['type_name'];
+  if (module_exists('content')) {
+    $fields = content_fields();
+    foreach ($fields as $field) {
+      $ineligible[] = $field['type_name'];
+    }
+    $possible_types = array_diff($possible_types, $ineligible);
   }
-  $possible_types = array_diff($possible_types, $ineligible);
   
   // Only use types that exist.
   $installed_types = array_keys(node_get_types('types'));
@@ -159,6 +161,7 @@ function devel_create_nodes($records, $users, $title_length = 8) {
   }
 }
 
+// TODO: respect the 'multiple' vocab property. Also the required property.
 function devel_generate_add_terms(&$node) {
   $sql = "SELECT DISTINCT(tid) as tid, v.tags FROM {term_data} td INNER JOIN {vocabulary} v ON td.vid=v.vid INNER JOIN {vocabulary_node_types} vnt ON v.vid=vnt.vid WHERE vnt.type = '%s' ORDER BY RAND()";
   $result = db_query_range($sql, $node->type, 0, 5);
