@@ -31,54 +31,12 @@ function devel_create_users($num, $kill) {
   drupal_set_message(t('!num_users created.', array('!num_users' => format_plural($num, '1 user', '@count users'))));
 }
 
-function devel_generate_content($num_nodes, $num_comments, $title_length, $kill) {
+function devel_generate_content($num_nodes, $num_comments, $title_length, $kill, $node_types = array()) {
   if ($kill) {
-    db_query("DELETE FROM {comments}");
-    db_query("DELETE FROM {node}");
-    db_query("DELETE FROM {node_revisions}");
-    db_query("DELETE FROM {node_comment_statistics}");
-    if (db_table_exists('term_node')) {
-      db_query("DELETE FROM {term_node}");
-    }
-    if (db_table_exists('forum')) {
-      db_query("DELETE FROM {forum}");
-    }
-    if (db_table_exists('relatedlinks')) {
-      db_query("DELETE FROM {relatedlinks}");
-      db_query("DELETE FROM {relatedlinks_tracker}");
-    }
-    if (db_table_exists('nodequeue_nodes')) {
-      db_query("DELETE FROM {nodequeue_nodes}");
-    }
-    db_query("DELETE FROM {url_alias}");
-    switch ($GLOBALS['db_type']) {
-      case 'mysql':
-      case 'mysqli':
-        db_query("UPDATE {sequences} SET id = '0' WHERE name = '{node}_nid'");
-        db_query("UPDATE {sequences} SET id = '0' WHERE name = '{comments}_cid'");
-        db_query("ALTER TABLE {node} AUTO_INCREMENT = 1");
-        db_query("ALTER TABLE {comments} AUTO_INCREMENT = 1");
-        break;
-      case 'pgsql':
-        db_query("SELECT setval('{node}_nid_seq', 1, false)");
-        db_query("SELECT setval('{comments}_cid_seq', 1, false)");
-        break;
-    }
-    drupal_set_message(t('Content deleted.'));
-  }
-  else {
-    // Get the next nid without incrementing it.
-    switch ($GLOBALS['db_type']) {
-      case 'mysql':
-      case 'mysqli':
-        $next_nid = db_result(db_query("SELECT id FROM {sequences} WHERE name = '{node}_nid'")) + 1;
-        break;
-      case 'pgsql':
-        // This little trick is necessery, as the currval() function won't work until the nextval()
-        // function is called in the current session.
-        $next_nid = db_result(db_query("SELECT nextval('{node}_nid_seq')"));
-        db_query("SELECT setval('{node}_nid_seq', %d, false)", $next_nid);
-        break;
+    $sql = 'SELECT nid FROM {node} WHERE type IN ('. implode(', ', array_fill(0, count($node_types), "'%s'")). ')';
+    $result = db_query($sql, $node_types);
+    while ($row = db_fetch_object($result)) {
+      node_delete($row->nid);
     }
   }
 
@@ -86,7 +44,7 @@ function devel_generate_content($num_nodes, $num_comments, $title_length, $kill)
   $users = devel_get_users();
 
   // Create $num_nodes pseudo-random nodes.
-  devel_create_nodes($num_nodes, $users, $title_length);
+  devel_create_nodes($num_nodes, $users, $title_length, $node_types);
   drupal_set_message(t('%num nodes created.', array('%num' => $num_nodes)));
 
   $nodes = devel_get_nodes($next_nid);
@@ -97,28 +55,7 @@ function devel_generate_content($num_nodes, $num_comments, $title_length, $kill)
   drupal_set_message(t('%num comments created.', array('%num' => $num_comments)));
 }
 
-function devel_create_nodes($records, $users, $title_length = 8) {
-
-  $sql = "SELECT type FROM node_type WHERE module IN ('node', 'forum')";
-  $result = db_query($sql);
-  while ($row = db_fetch_object($result)) {
-    $possible_types[] = $row->type;
-  }
-  
-  // For now, eliminate types which have any CCK fields. Help wanted.
-  if (module_exists('content')) {
-    $fields = content_fields();
-    foreach ($fields as $field) {
-      $ineligible[] = $field['type_name'];
-    }
-    $possible_types = array_diff($possible_types, $ineligible);
-  }
-  
-  // Only use types that exist.
-  $installed_types = array_keys(node_get_types('types'));
-  $types = array_intersect($possible_types, $installed_types);
-  
-  $users = array_merge($users, array('0'));
+function devel_create_nodes($records, $users, $title_length = 8, $types = array()) {
 
   if (is_array($types)) {
     // Insert new data:
