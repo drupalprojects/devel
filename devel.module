@@ -157,9 +157,9 @@ function devel_menu($may_cache) {
         );
       }
     }
-    
+
     /*
-     * TODO: this is very naive. We don't preserve views arguments like other tabs. 
+     * TODO: this is very naive. We don't preserve views arguments like other tabs.
      * I tried, but it I started borrowing too much Views menu code. I think
      * we need some refactoring in Views!
      * I concluded that the result and 'render' operations yield no useful info
@@ -194,7 +194,7 @@ function devel_menu($may_cache) {
         );
       }
     }
-    
+
     drupal_add_css(drupal_get_path('module', 'devel') .'/devel.css');
     drupal_add_js(drupal_get_path('module', 'devel') .'/devel.js');
   }
@@ -213,7 +213,7 @@ function devel_views_object($type, $view_name) {
  * Implementation of hook_init(). Avoids custom error handling for better
  * behavior when stepping though in a debugger.
  */
-function devel_init() {    
+function devel_init() {
   if (strstr($_SERVER['PHP_SELF'], 'update.php') || strstr($_GET['q'], 'autocomplete') || $_GET['q'] == 'upload/js' || substr($_GET['q'], 0, strlen('system/files')) == 'system/files') {
     // update.php relies on standard error handler. avoid breaking a few other pages.
   }
@@ -240,10 +240,10 @@ function devel_init() {
       // we need user_access() in the shutdown function
       drupal_load('module', 'user');
     }
-    
+
     register_shutdown_function('devel_shutdown');
-    
-    
+
+
     if (variable_get('dev_mem', 0) && function_exists('memory_get_usage')) {
       global $memory_init;
 
@@ -306,7 +306,7 @@ function devel_block($op = 'list', $delta = 0) {
   if ($op == 'list') {
     $blocks[0]['info'] = t('Switch user');
     $blocks[1]['info'] = t('Devel');
-    $blocks[2]['info'] = t('Execute PHP');    
+    $blocks[2]['info'] = t('Execute PHP');
     return $blocks;
   }
   else if ($op == 'view') {
@@ -396,17 +396,17 @@ function devel_switch_user_form() {
     '#maxlength' => 255,
   );
   $form['submit'] = array(
-    '#type' => 'submit', 
+    '#type' => 'submit',
     '#value' => t('Switch'),
   );
   return $form;
-  
+
 }
 
 function devel_switch_user_form_validate($form_id, $form_values) {
   if (!$account = user_load(array('name' => $form_values['username']))) {
     form_set_error('username', t('Username not found'));
-  } 
+  }
 }
 
 function devel_switch_user_form_submit($form_id, $form_values) {
@@ -480,14 +480,14 @@ function devel_shutdown() {
          return;
        }
     }
-    
+
     // don't append to CLI scripts
     if (empty($_SERVER['REQUEST_METHOD'])) {
       return;
     }
-   
+
     if (isset($user) && user_access('access devel information')) {
-    
+
       list($counts, $query_summary) = devel_query_summary();
       // Query log off, timer on.
       if (!variable_get('devel_query_display', 0) && variable_get('dev_timer', 0)) {
@@ -514,7 +514,7 @@ function devel_shutdown() {
         }
         $output .= '</div>';
       }
-    
+
       if (variable_get('dev_mem', FALSE) && function_exists('memory_get_usage')) {
         $memory_shutdown = memory_get_usage();
         $list = array();
@@ -523,14 +523,14 @@ function devel_shutdown() {
         }
         $output .= '<div class="dev-memory-usage"><h3>'. 'Memory usage:' .'</h3>'. theme('item_list', $list) .'</div>';
       }
-      // TODO: gzip this text if we are sending a gzip page. see drupal_page_header(). 
-    
-    
+      // TODO: gzip this text if we are sending a gzip page. see drupal_page_header().
+
+
       if ($output) {
         print $output;
       }
     }
-  }           
+  }
 
   devel_store_queries();
 }
@@ -582,7 +582,7 @@ function t_safe($string) {
 }
 
 /**
- * Returns a list of all currently defined user functions in the current 
+ * Returns a list of all currently defined user functions in the current
  * request lifecycle, with links their documentation.
  */
 function devel_function_reference() {
@@ -594,7 +594,7 @@ function devel_function_reference() {
   }
   return theme('item_list', $links);
 }
- 
+
 function devel_db_query($query) {
   global $active_db;
   $args = func_get_args();
@@ -631,16 +631,16 @@ function devel_admin_settings() {
     '#maxlength' => 4,
     '#description' => t('Enter an integer in milliseconds. Any query which takes longer than this many milliseconds will be highlighted in the query log. This indicates a possibly inefficient query, or a candidate for caching.'),
   );
-  $form['queries']['devel_store_queries'] = array('#type' => 'checkbox', 
-    '#title' => t('Store executed queries'), 
-    '#default_value' => variable_get('devel_store_queries', 0), 
+  $form['queries']['devel_store_queries'] = array('#type' => 'checkbox',
+    '#title' => t('Store executed queries'),
+    '#default_value' => variable_get('devel_store_queries', 0),
     '#description' => t('Store statistics about executed queries. See the devel_x tables. This feature is currently only available for the MySQL database backend.'));
-  $form['queries']['devel_store_random'] = array('#type' => 'textfield', 
-    '#title' => t('Sampling interval'), 
-    '#default_value' => variable_get('devel_store_random', 1), 
-    '#size' => 4, 
+  $form['queries']['devel_store_random'] = array('#type' => 'textfield',
+    '#title' => t('Sampling interval'),
+    '#default_value' => variable_get('devel_store_random', 1),
+    '#size' => 4,
     '#description' => t('If storing query statistics, only store every nth page view. 1 means every page view, 2 every second, and so on.'));
-  
+
   $form['dev_timer'] = array('#type' => 'checkbox',
     '#title' => t('Display page timer'),
     '#default_value' => variable_get('dev_timer', 0),
@@ -695,7 +695,7 @@ function devel_admin_settings() {
 function devel_cache_clear() {
   // clear preprocessor cache
   drupal_clear_css_cache();
-  
+
   // clear core tables
   $core = array('cache', 'cache_filter', 'cache_menu', 'cache_page');
   $alltables = array_merge($core, module_invoke_all('devel_caches'));
@@ -734,10 +734,10 @@ function devel_execute_form_submit($form_id, $form) {
  * Menu callback; clear the database, resetting the menu to factory defaults.
  */
 function devel_menu_reset_form() {
-  return confirm_form(array(), 
-    t('Are you sure you want to reset all menu items to their default settings?'), 
-    'admin/build/menu', 
-    t('Any custom additions or changes to the menu will be lost.'), 
+  return confirm_form(array(),
+    t('Are you sure you want to reset all menu items to their default settings?'),
+    'admin/build/menu',
+    t('Any custom additions or changes to the menu will be lost.'),
     t('Reset all'),
     t('Cancel')
   );
@@ -846,7 +846,7 @@ function devel_variable() {
   }
   $form['variables'] = array('#type' => 'checkboxes', '#options' => $variables);
   $form['submit'] = array(
-    '#type' => 'submit', 
+    '#type' => 'submit',
     '#value' => t('Delete'),
   );
   return $form;
@@ -854,7 +854,7 @@ function devel_variable() {
 
 function theme_devel_variable($form) {
   $children = element_children($form['name']);
-  foreach ($children as $key) {      
+  foreach ($children as $key) {
     $rows[] = array(
       drupal_render($form['variables'][$key]),
       drupal_render($form['name'][$key]),
@@ -885,7 +885,7 @@ function devel_variable_submit($form_id, $form_values) {
 function devel_variable_edit($name) {
   $value = variable_get($name, 'not found');
   $form['name'] = array(
-    '#type' => 'value', 
+    '#type' => 'value',
     '#value' => $name
   );
   $form['value'] = array(
@@ -895,18 +895,18 @@ function devel_variable_edit($name) {
   );
   if (is_string($value) || is_numeric($value)) {
     $form['new'] = array(
-      '#type' => 'textarea', 
+      '#type' => 'textarea',
       '#title' => t('New value'),
       '#default_value' => $value
     );
     $form['submit'] = array(
-      '#type' => 'submit', 
+      '#type' => 'submit',
       '#value' => t('Submit'),
     );
   }
   else {
     $form['new'] = array(
-      '#type' => 'item', 
+      '#type' => 'item',
       '#title' => t('New value'),
       '#value' => t('Sorry, complex variable types may not be edited yet. Use the <em>Execute PHP</em> block and the <a href="@variable-set-doc">variable_set()</a> function.', array('@variable-set-doc' => 'http://api.drupal.org/api/HEAD/function/variable_set'))
     );
@@ -925,7 +925,10 @@ function devel_variable_edit_submit($form_id, $form_values) {
  * Menu callback: display the session.
  */
 function devel_session() {
-  return dprint_r($_SESSION, TRUE);
+  global $user;
+  $output = dprint_r($_SESSION, TRUE);
+  $output .= session_name(). '='. $user->sid;
+  return $output;
 }
 
 /**
@@ -1025,7 +1028,7 @@ function devel_print_object($object) {
   else {
     $output .= theme('box', 'Value', check_plain($object));
   }
-  
+
   return $output;
 }
 
@@ -1071,7 +1074,7 @@ function _devel_table_sort($a, $b) {
 	$b = is_array($b[0]) ? $b[0]['data'] : $b[0];
 	if ($a < $b) { return 1; }
 	if ($a > $b) { return -1; }
-	return 0;	
+	return 0;
 }
 
 /**
@@ -1092,7 +1095,7 @@ function dargs($always = TRUE) {
     dsm($bt[1]['args']);
     $printed = TRUE;
   }
-} 
+}
 
 /**
  * Print a variable to the 'message' area of the page. Uses drupal_set_message()
@@ -1156,7 +1159,7 @@ function dprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r') 
   	}
     if ($return) {
       return $printed_value;
-    } 
+    }
     else {
       print $printed_value;
     }
@@ -1258,10 +1261,10 @@ function devel_queries_empty() {
 /*
  * migration related functions
  */
- 
+
 /**
  * Menu callback. Rebuild node _comment_stats table.
- * 
+ *
  * @return void
  **/
 function devel_rebuild_node_comment_statistics_page() {
@@ -1274,9 +1277,9 @@ function devel_rebuild_node_comment_statistics_page() {
  * Empty node_comment_statistics table and rebuild. Is fast.
  * TODO: if 2 comments have exact same timestamp, the function can get wrong uid and name fields.
  * Handles when comment timestamps have been manually set in admin
- * 
+ *
  * @return void
- **/ 
+ **/
 function devel_rebuild_node_comment_statistics() {
   $sql = "DELETE FROM {node_comment_statistics}";
   db_query($sql);
@@ -1286,7 +1289,7 @@ function devel_rebuild_node_comment_statistics() {
 
 /**
  * Set sequences table to a sane state. Useful after a bulk import.
- * 
+ *
  * @return void
  **/
 function sequence_reset($table, $column) {
@@ -1297,7 +1300,7 @@ function sequence_reset($table, $column) {
 
 /**
  * Enable or disable indexes for a given table. Useful during a bulk import.
- * 
+ *
  * @return void
  **/
 function devel_table_keys($tables, $verb = 'ENABLE') {
@@ -1308,7 +1311,7 @@ function devel_table_keys($tables, $verb = 'ENABLE') {
 
 /**
  * Save contents of an url to filesystem. Works for images.
- * 
+ *
  * @return void
  **/
 function wget($url, $file) {
