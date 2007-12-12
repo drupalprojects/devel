@@ -1119,7 +1119,7 @@ function dpm($input, $name = NULL) {
  */
 function dvm($input, $name = NULL) {
   if (user_access('access devel information')) {
-    $export = dprint_r($input, TRUE, $name, 'var_dump');
+    $export = dprint_r($input, TRUE, $name, 'var_dump', FALSE);
     drupal_set_message($export);
   }
 }
@@ -1140,7 +1140,7 @@ function dpr($input, $return = FALSE, $name = NULL) {
  * Like dpr, but uses var_dump() instead
  */
 function dvr($input, $return = FALSE, $name = NULL) {
-  return dprint_r($input, $return, $name, 'var_dump');
+  return dprint_r($input, $return, $name, 'var_dump', FALSE);
 }
 
 /**
@@ -1148,14 +1148,17 @@ function dvr($input, $return = FALSE, $name = NULL) {
  * Displays only for users with proper permissions. If
  * you want a string returned instead of a print, use the 2nd param.
  */
-function dprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r') {
+function dprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r', $check = TRUE) {
   if (user_access('access devel information')) {
   	if ($name) {
   	  $name .= ' => ';
   	}
   	ob_start();
   	$function($input);
-  	$output = check_plain(ob_get_clean());
+  	$output = ob_get_clean();
+  	if ($check) {
+  	  $output = check_plain($output);
+  	}
     if (count($input, COUNT_RECURSIVE) > DEVEL_MIN_TEXTAREA) {
       // direction:ltr; comes from http://drupal.org/node/105732
       // don't use fapi here because sometimes fapi will not be loaded
