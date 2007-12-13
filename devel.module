@@ -325,6 +325,7 @@ function devel_block($op = 'list', $delta = 0) {
         if (user_access('access devel information')) {
           $links[] = l('Devel settings', 'admin/settings/devel', array('title' => t('Adjust module settings for devel module')));
           $links[] = l('Empty cache', 'devel/cache/clear', array('title' => t('Clear the database cache tables which store page, menu, node, and variable caches.')), drupal_get_destination());
+          $links[] = l('Run cron', 'admin/logs/status/run-cron', array('title' => t('Execute functions scheduled for cron runs.')), drupal_get_destination());
           $links[] = l('Phpinfo()', 'admin/logs/status/php');
           $links[] = l('Function reference', 'devel/reference', array('title' => t('View a list of currently defined user functions with documentation links')));
           $links[] = l('Reinstall modules', 'devel/reinstall', array('title' => t('Re-run hook_install() for a given module')));
