@@ -840,14 +840,14 @@ function devel_variable() {
   $result = db_query($sql. tablesort_sql($header));
   while ($row = db_fetch_object($result)) {
     $variables[$row->name] = '';
-    $form['name'][$row->name] = array('#value' => $row->name);
+    $form['name'][$row->name] = array('#value' => check_plain($row->name));
     if (drupal_strlen($row->value) > 70) {
       $value = drupal_substr($row->value, 0, 65) .'...';
     }
     else {
       $value = $row->value;
     }
-    $form[$row->name]['value'] = array('#value' => $value);
+    $form[$row->name]['value'] = array('#value' => check_plain($value));
     $form[$row->name]['length'] = array('#value' => $row->length);
     $form[$row->name]['edit'] = array('#value' => l(t('edit'), "devel/variable/edit/$row->name"));
   }
