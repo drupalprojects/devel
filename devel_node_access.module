@@ -187,6 +187,18 @@ function devel_node_access_block($op = 'list', $delta = 0) {
   }
 }
 
+/**
+* Implementation of hook_node_access_explain
+*/
+function devel_node_access_node_access_explain($row) {
+  if ($row->gid == 0 && $row->realm == 'all') {
+    if ($row->nid == 0) {
+      return 'All users may view all nodes.';
+    } else {
+      return 'All users may view this node.';
+    }
+  }
+}
 
 function devel_node_access_views_tables() {
   $tables['node_access'] =
