@@ -3,11 +3,11 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  devel_generate.inc,v 1.1.2.5 2007/07/19 16:54:45 thehunmonkgroup
-#  devel.module,v 1.106.4.63 2007/09/07 20:18:11 weitzman
+#  devel_generate.inc,v 1.1.2.12 2007/12/15 01:56:40 dww
+#  devel.module,v 1.106.4.78 2008/01/26 00:29:37 dww
 #  devel.info,v 1.1.4.5 2007/06/13 19:41:05 dww
-#  devel_generate.module,v 1.1.2.4 2007/07/19 16:54:45 thehunmonkgroup
-#  devel_node_access.module,v 1.7.4.2 2006/12/27 06:15:13 weitzman
+#  devel_generate.module,v 1.1.2.7 2008/01/15 04:06:56 weitzman
+#  devel_node_access.module,v 1.7.4.4 2008/01/23 16:49:37 weitzman
 #  devel_node_access.info,v 1.1.4.5 2007/06/13 19:41:05 dww
 #  macro.module,v 1.1.2.3 2006/11/21 15:32:24 weitzman
 #  devel.install,v 1.8.4.6 2007/07/26 19:27:48 thehunmonkgroup
@@ -20,7 +20,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2007-11-12 17:22+0100\n"
+"POT-Creation-Date: 2008-01-29 20:19+0800\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -37,27 +37,23 @@ msgstr ""
 msgid "!num_users created."
 msgstr ""
 
-#: devel_generate.inc:60
-msgid "Content deleted."
-msgstr ""
-
-#: devel_generate.inc:85
+#: devel_generate.inc:48
 msgid "%num nodes created."
 msgstr ""
 
-#: devel_generate.inc:94
+#: devel_generate.inc:55
 msgid "%num comments created."
 msgstr ""
 
-#: devel_generate.inc:272
+#: devel_generate.inc:248
 msgid "Deleted taxonomy."
 msgstr ""
 
-#: devel_generate.inc:277
+#: devel_generate.inc:253
 msgid "Created the following new vocabularies: !vocs"
 msgstr ""
 
-#: devel_generate.inc:282
+#: devel_generate.inc:258
 msgid "Created the following new terms: !terms"
 msgstr ""
 
@@ -95,7 +91,7 @@ msgstr ""
 msgid "Empty cache"
 msgstr ""
 
-#: devel.module:56;363
+#: devel.module:56
 msgid "Rebuild node_comment_statistics table"
 msgstr ""
 
@@ -127,11 +123,11 @@ msgstr ""
 msgid "Session viewer"
 msgstr ""
 
-#: devel.module:118;306;314
+#: devel.module:118;307;328
 msgid "Switch user"
 msgstr ""
 
-#: devel.module:125;307 devel.info:0
+#: devel.module:125;308 devel.info:0
 msgid "Devel"
 msgstr ""
 
@@ -155,365 +151,373 @@ msgstr ""
 msgid "Dev items"
 msgstr ""
 
-#: devel.module:290
+#: devel.module:291
 msgid "%message in %file on line %line."
 msgstr ""
 
-#: devel.module:308
+#: devel.module:309
 msgid "Execute PHP"
 msgstr ""
 
-#: devel.module:335
-msgid "This user can switch back."
+#: devel.module:315
+msgid "Number of users to display in the list"
 msgstr ""
 
-#: devel.module:342
-msgid "Caution: this user will be unable to switch back."
-msgstr ""
-
-#: devel.module:353;1203;0
+#: devel.module:337;1237;0
 msgid "devel"
 msgstr ""
 
-#: devel.module:355
+#: devel.module:339
 msgid "Adjust module settings for devel module"
 msgstr ""
 
-#: devel.module:356
+#: devel.module:340
 msgid "Clear the database cache tables which store page, menu, node, and variable caches."
 msgstr ""
 
-#: devel.module:358
+#: devel.module:341
+msgid "Execute functions scheduled for cron runs."
+msgstr ""
+
+#: devel.module:343
 msgid "View a list of currently defined user functions with documentation links"
 msgstr ""
 
-#: devel.module:359
+#: devel.module:344
 msgid "Re-run hook_install() for a given module"
 msgstr ""
 
-#: devel.module:360
+#: devel.module:345
 msgid "Resets all menu items to their default settings"
 msgstr ""
 
-#: devel.module:361
+#: devel.module:346
 msgid "Edit and delete site variables"
 msgstr ""
 
-#: devel.module:362
+#: devel.module:347
 msgid "List the contents of $_SESSION"
 msgstr ""
 
-#: devel.module:375
+#: devel.module:359
 msgid "Execute php"
 msgstr ""
 
-#: devel.module:388
+#: devel.module:391
+msgid "This user can switch back."
+msgstr ""
+
+#: devel.module:398
+msgid "Caution: this user will be unable to switch back."
+msgstr ""
+
+#: devel.module:408
 msgid "Enter username"
 msgstr ""
 
-#: devel.module:394
+#: devel.module:415
 msgid "Switch"
 msgstr ""
 
-#: devel.module:402
+#: devel.module:423
 msgid "Username not found"
 msgstr ""
 
-#: devel.module:445
+#: devel.module:466
 msgid "<p>The user is being redirected to <a href=\"@destination\">@destination</a>.</p>"
 msgstr ""
 
-#: devel.module:497
+#: devel.module:518
 msgid " Queries taking longer than %threshold ms and queries executed more than once, are <span class=\"marker\">highlighted</span>."
 msgstr ""
 
-#: devel.module:516
+#: devel.module:537
 msgid "Memory used at %type: %value MB"
 msgstr ""
 
-#: devel.module:606
+#: devel.module:627
 msgid "Query log"
 msgstr ""
 
-#: devel.module:608
+#: devel.module:629
 msgid "Collect query info"
 msgstr ""
 
-#: devel.module:610
+#: devel.module:631
 msgid "Collect query info. If disabled, no query log functionality will work."
 msgstr ""
 
-#: devel.module:612
+#: devel.module:633
 msgid "Display query log"
 msgstr ""
 
-#: devel.module:614
+#: devel.module:635
 msgid "Display a log of the database queries needed to generate the current page, and the execution time for each. Also, queries which are repeated during a single page view are summed in the # column, and printed in red since they are candidates for caching."
 msgstr ""
 
-#: devel.module:616
+#: devel.module:637
 msgid "Sort query log"
 msgstr ""
 
-#: devel.module:618
+#: devel.module:639
 msgid "by source"
 msgstr ""
 
-#: devel.module:618
+#: devel.module:639
 msgid "by duration"
 msgstr ""
 
-#: devel.module:619
+#: devel.module:640
 msgid "The query table can be sorted in the order that the queries were executed or by descending duration."
 msgstr ""
 
-#: devel.module:622
+#: devel.module:643
 msgid "Slow query highlighting"
 msgstr ""
 
-#: devel.module:626
+#: devel.module:647
 msgid "Enter an integer in milliseconds. Any query which takes longer than this many milliseconds will be highlighted in the query log. This indicates a possibly inefficient query, or a candidate for caching."
 msgstr ""
 
-#: devel.module:629
+#: devel.module:650
 msgid "Store executed queries"
 msgstr ""
 
-#: devel.module:631
+#: devel.module:652
 msgid "Store statistics about executed queries. See the devel_x tables. This feature is currently only available for the MySQL database backend."
 msgstr ""
 
-#: devel.module:633
+#: devel.module:654
 msgid "Sampling interval"
 msgstr ""
 
-#: devel.module:636
+#: devel.module:657
 msgid "If storing query statistics, only store every nth page view. 1 means every page view, 2 every second, and so on."
 msgstr ""
 
-#: devel.module:639
+#: devel.module:660
 msgid "Display page timer"
 msgstr ""
 
-#: devel.module:641
+#: devel.module:662
 msgid "Display page execution time in the query log box."
 msgstr ""
 
-#: devel.module:644
+#: devel.module:665
 msgid "Display memory usage"
 msgstr ""
 
-#: devel.module:646
+#: devel.module:667
 msgid "Display how much memory is used to generate the current page. This will show memory usage when devel_init() is called and when devel_exit() is called. PHP must have been compiled with the <em>--enable-memory-limit</em> configuration option for this feature to work."
 msgstr ""
 
-#: devel.module:649
+#: devel.module:670
 msgid "Display redirection page"
 msgstr ""
 
-#: devel.module:651
+#: devel.module:672
 msgid "When a module executes drupal_goto(), the query log and other developer information is lost. Enabling this setting presents an intermediate page to developers so that the log can be examined before continuing to the destination page."
 msgstr ""
 
-#: devel.module:654
+#: devel.module:675
 msgid "Display form element keys and weights"
 msgstr ""
 
-#: devel.module:656
+#: devel.module:677
 msgid "Form element names are needed for performing themeing or altering a form. Their weights determine the position of the element. Enabling this setting will show these keys and weights beside each form item."
 msgstr ""
 
-#: devel.module:659
+#: devel.module:680
 msgid "Error handler"
 msgstr ""
 
-#: devel.module:661
+#: devel.module:682
 msgid "None"
 msgstr ""
 
-#: devel.module:661
+#: devel.module:682
 msgid "Standard drupal"
 msgstr ""
 
-#: devel.module:661
+#: devel.module:682
 msgid "Backtrace"
 msgstr ""
 
-#: devel.module:662
+#: devel.module:683
 msgid "Choose an error handler for your site. <em>Backtrace</em> prints nice debug information when an error is noticed, and you !choose. <em>None</em> is a good option when stepping through the site in your debugger."
 msgstr ""
 
-#: devel.module:662
+#: devel.module:683
 msgid "to show errors on screen"
 msgstr ""
 
-#: devel.module:670
+#: devel.module:691
 msgid "Default"
 msgstr ""
 
-#: devel.module:671
+#: devel.module:692
 msgid "Log only"
 msgstr ""
 
-#: devel.module:674
+#: devel.module:695
 msgid "Other (!library)"
 msgstr ""
 
-#: devel.module:678
+#: devel.module:699
 msgid "SMTP library"
 msgstr ""
 
-#: devel.module:709
+#: devel.module:730
 msgid "PHP code to execute"
 msgstr ""
 
-#: devel.module:710
+#: devel.module:731
 msgid "Enter some code. Do not use <code>&lt;?php ?&gt;</code> tags."
 msgstr ""
 
-#: devel.module:712
+#: devel.module:733
 msgid "Execute"
 msgstr ""
 
-#: devel.module:732
+#: devel.module:753
 msgid "Are you sure you want to reset all menu items to their default settings?"
 msgstr ""
 
-#: devel.module:734
+#: devel.module:755
 msgid "Any custom additions or changes to the menu will be lost."
 msgstr ""
 
-#: devel.module:735
+#: devel.module:756
 msgid "Reset all"
 msgstr ""
 
-#: devel.module:736
+#: devel.module:757
 msgid "Cancel"
 msgstr ""
 
-#: devel.module:745
+#: devel.module:766
 msgid "Primary links"
 msgstr ""
 
-#: devel.module:749
+#: devel.module:770
 msgid "The menu items have been reset to their default settings."
 msgstr ""
 
-#: devel.module:774
+#: devel.module:795
 msgid "Reinstall @name module"
 msgstr ""
 
-#: devel.module:790
+#: devel.module:811
 msgid "Warning - will delete your module tables and variables."
 msgstr ""
 
-#: devel.module:805
+#: devel.module:826
 msgid "Reinstalled the %name module."
 msgstr ""
 
-#: devel.module:820;862
+#: devel.module:841;890
 msgid "Name"
 msgstr ""
 
-#: devel.module:821;863
+#: devel.module:842;891
 msgid "Value"
 msgstr ""
 
-#: devel.module:822;864
+#: devel.module:843;892
 msgid "Length"
 msgstr ""
 
-#: devel.module:823;865
+#: devel.module:844;893
 msgid "Operations"
 msgstr ""
 
-#: devel.module:839
+#: devel.module:867
 msgid "edit"
 msgstr ""
 
-#: devel.module:844
+#: devel.module:872
 msgid "Delete"
 msgstr ""
 
-#: devel.module:887
+#: devel.module:915
 msgid "Old value"
 msgstr ""
 
-#: devel.module:893;904
+#: devel.module:921;932
 msgid "New value"
 msgstr ""
 
-#: devel.module:898
+#: devel.module:926
 msgid "Submit"
 msgstr ""
 
-#: devel.module:905
+#: devel.module:933
 msgid "Sorry, complex variable types may not be edited yet. Use the <em>Execute PHP</em> block and the <a href=\"@variable-set-doc\">variable_set()</a> function."
 msgstr ""
 
-#: devel.module:914
+#: devel.module:942
 msgid "Saved new value for %name"
 msgstr ""
 
-#: devel.module:1076
+#: devel.module:1107
 msgid " Page execution time was %time ms."
 msgstr ""
 
-#: devel.module:1203
+#: devel.module:1237
 msgid "Mail sent:<br />Key: %mailkey<br />To: %to<br />From: %from<br />Subject: %subject<br />Body: %body<br /><br />Additional headers: !header"
 msgstr ""
 
-#: devel.module:1217
+#: devel.module:1251
 msgid "Total (ms)"
 msgstr ""
 
-#: devel.module:1218
+#: devel.module:1252
 msgid "Average (ms)"
 msgstr ""
 
-#: devel.module:1219
+#: devel.module:1253
 msgid "Std deviation (ms)"
 msgstr ""
 
-#: devel.module:1220
+#: devel.module:1254
 msgid "Count"
 msgstr ""
 
-#: devel.module:1221
+#: devel.module:1255
 msgid "Function"
 msgstr ""
 
-#: devel.module:1222
+#: devel.module:1256
 msgid "Query"
 msgstr ""
 
-#: devel.module:1240
+#: devel.module:1274
 msgid "Delete collected query statistics"
 msgstr ""
 
-#: devel.module:1248
+#: devel.module:1282
 msgid "Stored query statistics deleted."
 msgstr ""
 
-#: devel.module:290
+#: devel.module:291
 msgid "php"
 msgstr ""
 
-#: devel.module:876
+#: devel.module:904
 msgid "one variable deleted"
 msgid_plural "@count variables deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: devel.module:298
+#: devel.module:299
 msgid "access devel information"
 msgstr ""
 
-#: devel.module:298
+#: devel.module:299
 msgid "execute php code"
 msgstr ""
 
-#: devel.module:298
+#: devel.module:299
 msgid "switch users"
 msgstr ""
 
@@ -549,39 +553,51 @@ msgstr ""
 msgid "Delete all users but user 1 before generating new users."
 msgstr ""
 
-#: devel_generate.module:71;107;143
+#: devel_generate.module:71;134;170
 msgid "Do it!"
 msgstr ""
 
-#: devel_generate.module:84
+#: devel_generate.module:87
+msgid ". <strong>Warning</strong>. This type contains CCK fields which won't be populated. See !url"
+msgstr ""
+
+#: devel_generate.module:87
+msgid "this CCK issue."
+msgstr ""
+
+#: devel_generate.module:104
+msgid "Which node types do you want to create?"
+msgstr ""
+
+#: devel_generate.module:110
+msgid "<strong>Delete existing content</strong> before generating new content."
+msgstr ""
+
+#: devel_generate.module:116
 msgid "How many nodes would you like to generate?"
 msgstr ""
 
-#: devel_generate.module:90
+#: devel_generate.module:122
 msgid "How many comments would you like to generate?"
 msgstr ""
 
-#: devel_generate.module:96
+#: devel_generate.module:128
 msgid "Max word length of titles"
 msgstr ""
 
-#: devel_generate.module:102
-msgid "Delete existing content before generating new content."
-msgstr ""
-
-#: devel_generate.module:120
+#: devel_generate.module:147
 msgid "How many vocabularies would you like to generate?"
 msgstr ""
 
-#: devel_generate.module:126
+#: devel_generate.module:153
 msgid "How many terms would you like to generate?"
 msgstr ""
 
-#: devel_generate.module:132
+#: devel_generate.module:159
 msgid "Max word length of term/vocab names"
 msgstr ""
 
-#: devel_generate.module:138
+#: devel_generate.module:165
 msgid "Delete existing terms and vocabularies before generating new content."
 msgstr ""
 
@@ -717,19 +733,23 @@ msgstr ""
 msgid "delete"
 msgstr ""
 
-#: devel_node_access.module:181
+#: devel_node_access.module:170
+msgid "explained"
+msgstr ""
+
+#: devel_node_access.module:183
 msgid "node_access entries for nodes shown on this page"
 msgstr ""
 
-#: devel_node_access.module:196
+#: devel_node_access.module:210
 msgid "Node Access: realm"
 msgstr ""
 
-#: devel_node_access.module:202
+#: devel_node_access.module:216
 msgid "Node Access Realm"
 msgstr ""
 
-#: devel_node_access.module:214
+#: devel_node_access.module:228
 msgid "Node Access: Realm"
 msgstr ""
 
