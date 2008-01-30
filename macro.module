@@ -74,7 +74,7 @@ function macro_menu($may_cache) {
  * Implementation of hook_perm().
  */
 function macro_perm() {
-  return array('macro access');
+  return array('administer macro settings', 'macro access');
 }
 
 /**
