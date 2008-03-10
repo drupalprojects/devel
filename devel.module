@@ -580,7 +580,7 @@ function devel_store_queries() {
 }
 
 function devel_query_summary() {
-  if (variable_get('dev_query', FALSE)) {
+  if (variable_get('dev_query', FALSE) && is_array($queries)) {
     global $queries;
     foreach ($queries as $query) {
       $text[] = $query[0];
