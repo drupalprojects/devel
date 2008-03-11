@@ -130,6 +130,8 @@ function devel_menu($may_cache) {
     );
   }
   else {
+    // Include the class so calls to krumo() succeed.
+    has_krumo();
     if (is_numeric(arg(1))) {
       if (arg(0) == 'node') {
         $items[] = array('path' => 'node/'. arg(1) .'/load',
@@ -214,7 +216,7 @@ function devel_views_object($type, $view_name) {
  * behavior when stepping though in a debugger.
  */
 function devel_init() {
-  if (strstr($_SERVER['PHP_SELF'], 'update.php') || strstr($_GET['q'], 'autocomplete') || $_GET['q'] == 'upload/js' || substr($_GET['q'], 0, strlen('system/files')) == 'system/files') {
+    if (strstr($_SERVER['PHP_SELF'], 'update.php') || strstr($_GET['q'], 'autocomplete') || $_GET['q'] == 'upload/js' || substr($_GET['q'], 0, strlen('system/files')) == 'system/files') {
     // update.php relies on standard error handler. avoid breaking a few other pages.
   }
   else {
@@ -229,6 +231,8 @@ function devel_init() {
             break;
           case DEVEL_ERROR_HANDLER_BACKTRACE:
             set_error_handler('backtrace_error_handler');
+            // we want to include the class early so that anyone may call krumo() as needed.
+            has_krumo();            
             break;
           case DEVEL_ERROR_HANDLER_NONE:
             restore_error_handler();
@@ -252,6 +256,18 @@ function devel_init() {
   }
 }
 
+// return boolean. no need for cache here.
+function has_krumo() {
+  // see README.txt or just download from http://krumo.sourceforge.net/
+  @include_once './'. drupal_get_path('module', 'devel'). '/krumo/class.krumo.php';
+  if (function_exists('krumo')) {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+}
+
 function backtrace_error_handler($errno, $message, $filename, $line) {
   if ($errno & (E_ALL ^ E_NOTICE)) {
     $types = array(1 => 'error', 2 => 'warning', 4 => 'parse error', 8 => 'notice', 16 => 'core error', 32 => 'core warning', 64 => 'compile error', 128 => 'compile warning', 256 => 'user error', 512 => 'user warning', 1024 => 'user notice', 2048 => 'strict warning');
@@ -259,36 +275,13 @@ function backtrace_error_handler($errno, $message, $filename, $line) {
 
     if (variable_get('error_level', 1) == 1) {
       $backtrace = debug_backtrace();
-      array_shift($backtrace);
-      $rows[0][] = array('data' => '<strong>'. $entry. '</strong>', 'colspan' => 3);
-      $i=1;
-      foreach ($backtrace as $trace) {
-        $rows[$i][] = $trace['class']. $trace['type']. l($trace['function'], "http://api.drupal.org/api/HEAD/function/". $trace['function']);
-        $rows[$i][] = $trace['file'] ? $trace['file']. ': '. $trace['line'] : '';
-        if (!empty($trace['args'])) {
-          foreach ($trace['args'] as $arg) {
-            if (is_array($arg) || is_object($arg)) {
-              $args[] = dpr($arg, TRUE);
-            }
-            else {
-              $args[] = check_plain($arg);
-            }
-          }
-          $rows[$i][] = implode(', ', $args);
-          $i++;
-          unset($args);
-        }
+      foreach ($backtrace as $call) {
+        $nicetrace[$call['function']] = $call;
       }
-      if (function_exists('theme_table')) {
-        $header = array('function', 'file: line', 'arguments');
-        print theme('table', $header, $rows);
-      }
-      else {
-        print_r($rows);
-      }
+      krumo($nicetrace);
     }
 
-    watchdog('php', t('%message in %file on line %line.', array('%error' => $types[$errno], '%message' => $message, '%file' => $filename, '%line' => $line)), WATCHDOG_ERROR);
+    watchdog('php', '%message in %file on line %line.', array('%error' => $types[$errno], '%message' => $message, '%file' => $filename, '%line' => $line), WATCHDOG_ERROR);
   }
 }
 
@@ -688,7 +681,7 @@ function devel_admin_settings() {
     '#title' => t('Error handler'),
     '#default_value' => variable_get('devel_error_handler', DEVEL_ERROR_HANDLER_STANDARD),
     '#options' => array(DEVEL_ERROR_HANDLER_NONE => t('None'), DEVEL_ERROR_HANDLER_STANDARD => t('Standard drupal'), DEVEL_ERROR_HANDLER_BACKTRACE => t('Backtrace')),
-    '#description' => t('Choose an error handler for your site. <em>Backtrace</em> prints nice debug information when an error is noticed, and you !choose. <em>None</em> is a good option when stepping through the site in your debugger.', array('!choose' => l(t('to show errors on screen'), 'admin/settings/error-reporting'))),
+    '#description' => t('Choose an error handler for your site. <em>Backtrace</em> prints nice debug information when an error is noticed, and you !choose. <strong>Backtrace requires the <a href="!krumo">krumo library</a></strong>. <em>None</em> is a good option when stepping through the site in your debugger.', array('!krumo' => url("http://krumo.sourceforge.net"), '!choose' => l(t('choose to show errors on screen'), 'admin/settings/error-reporting'))),
   );
 
   // Save any old SMTP library
@@ -864,13 +857,18 @@ function devel_variable() {
   while ($row = db_fetch_object($result)) {
     $variables[$row->name] = '';
     $form['name'][$row->name] = array('#value' => check_plain($row->name));
-    if (drupal_strlen($row->value) > 70) {
-      $value = drupal_substr($row->value, 0, 65) .'...';
+    if (has_krumo()) {
+      $value = krumo_ob(variable_get($row->name, NULL));
     }
     else {
-      $value = $row->value;
+      if (drupal_strlen($row->value) > 70) {
+        $value = check_plain(drupal_substr($row->value, 0, 65)) .'...';
+      }
+      else {
+        $value = check_plain($row->value);
+      }
     }
-    $form[$row->name]['value'] = array('#value' => check_plain($value));
+    $form[$row->name]['value'] = array('#value' => $value);
     $form[$row->name]['length'] = array('#value' => $row->length);
     $form[$row->name]['edit'] = array('#value' => l(t('edit'), "devel/variable/edit/$row->name"));
   }
@@ -956,8 +954,9 @@ function devel_variable_edit_submit($form_id, $form_values) {
  */
 function devel_session() {
   global $user;
-  $output = dprint_r($_SESSION, TRUE);
-  $output .= session_name(). '='. $user->sid;
+  $output = kprint_r($_SESSION, TRUE);
+  $headers = array(t('Session name'), t('Session ID'));
+  $output .= theme('table', $headers, array(array(session_name(), $user->sid)));
   return $output;
 }
 
@@ -1034,6 +1033,27 @@ function devel_render_object($type, $id) {
   }
 
   return devel_print_object($object);
+}
+
+/**
+ * Print an object or array using either Krumo (if installed) or devel_print_object()
+ *
+ * @param $object
+ *   array or object to print
+ * @param $prefix
+ *   prefixing for output items
+ */
+function kdevel_print_object($object, $prefix = NULL) {
+  return has_krumo() ? krumo_ob($object) : devel_print_object($object, $prefix);
+}
+
+// Save krumo htlm using output buffering.
+function krumo_ob($object) {
+  ob_start();
+  krumo($object);
+  $output = ob_get_contents();
+  ob_end_clean();
+  return $output;
 }
 
 function devel_print_object($object) {
@@ -1160,10 +1180,28 @@ function dpr($input, $return = FALSE, $name = NULL) {
 }
 
 /**
+ * An alias for kprint_r(). Saves carpal tunnel syndrome.
+ */
+function kpr($input, $return = FALSE, $name = NULL) {
+  return kprint_r($input, $return, $name);
+}
+
+/**
  * Like dpr, but uses var_dump() instead
  */
 function dvr($input, $return = FALSE, $name = NULL) {
   return dprint_r($input, $return, $name, 'var_dump', FALSE);
+}
+
+function kprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r') {
+  if (has_krumo()) {
+    if (user_access('access devel information')) {
+      return $return ? krumo_ob($input) : krumo($input);
+    }
+  }
+  else {
+    return dprint_r($input, $return = FALSE, $name = NULL, 'print_r');
+  }
 }
 
 /**
@@ -1183,9 +1221,13 @@ function dprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r', 
   	  $output = check_plain($output);
   	}
     if (count($input, COUNT_RECURSIVE) > DEVEL_MIN_TEXTAREA) {
-      // direction:ltr; comes from http://drupal.org/node/105732
-      // don't use fapi here because sometimes fapi will not be loaded
-      $printed_value = "<textarea rows=30 style=\"width: 100%;\">\n". $name . $output . '</textarea>';
+      if (has_krumo()) {
+        $printed_value = krumo_ob($input);
+      }
+      else {
+        // don't use fapi here because sometimes fapi will not be loaded
+        $printed_value = "<textarea rows=30 style=\"width: 100%;\">\n". $name . $output . '</textarea>';
+      }
     }
   	else {
     	$printed_value = '<pre>' . $name . $output . '</pre>';
@@ -1200,15 +1242,20 @@ function dprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r', 
 }
 
 /**
- * Print the function call stack. This works even without xdebug installed.
+ * Print the function call stack.
  */
 function ddebug_backtrace() {
   if (user_access('access devel information')) {
-    if (function_exists('debug_print_backtrace')) {
-      debug_print_backtrace();
+    $trace = debug_backtrace();
+    array_shift($trace);
+    foreach ($trace as $key => $value) {
+      $rich_trace[$value['function']] = $value;
+    }
+    if (has_krumo()) {
+      print krumo($rich_trace);
     }
     else {
-      dprint_r(debug_backtrace());
+      dprint_r($rich_trace);
     }
   }
 }

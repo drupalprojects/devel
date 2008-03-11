@@ -8,8 +8,12 @@ summary includes how many times each query was executed on a page
 (shouldn't run same query multiple times), and how long each query
  took (short is good - use cache for complex queries).
 
-Also a dpr() function is provided, which pretty prints arrays and strings. Useful during
+Also dpr() and dpm() functions are provided, which pretty print arrays and strings. Useful during
 development.
+
+You should also download Krumo from http://krumo.sourceforge.net/. Unpack it into a subdirectory 
+called krumo. Devel will automatically start using it. You may also call krumo($variable) to get 
+a pretty print of any variable.
 
 Included in this package is also: 
 - devel_node_access module which prints out the node_access records for a given node._
@@ -21,8 +25,3 @@ AUTHOR/MAINTAINER
 ======================
 -moshe weitzman
 weitzman at tejasa DOT com
-
-NOTE
-====
-The subdirectory generate/ includes some scripts that can be used to help testing
-on a Drupal site. See generate/README.txt for details.
