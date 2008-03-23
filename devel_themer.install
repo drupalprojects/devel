@@ -12,7 +12,10 @@ function devel_themer_requirements($phase) {
    $t = get_t();
    
    if ($phase == 'install' || $phase == 'runtime') {
-     if (extension_loaded('Zend Optimizer')) {
+     // we need the Optimizer check function
+      drupal_load('module', 'devel');
+
+      if (!devel_is_compatible_optimizer()) {
        $requirements['optimizer'] = array(
          'title' => $t('Zend Optimizer'),
          'description' => $t('You must disable the Zend Optimizer php extension in order to enable this module. Zend Optimizer is <a href="!url">horribly buggy and segfaults your Apache</a>.', array('!url' => url('http://drupal.org/node/126098'))),
