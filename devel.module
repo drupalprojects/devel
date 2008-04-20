@@ -216,7 +216,7 @@ function devel_views_object($type, $view_name) {
  * behavior when stepping though in a debugger.
  */
 function devel_init() {
-    if (strstr($_SERVER['PHP_SELF'], 'update.php') || strstr($_GET['q'], 'autocomplete') || $_GET['q'] == 'upload/js' || substr($_GET['q'], 0, strlen('system/files')) == 'system/files') {
+    if (strstr($_SERVER['PHP_SELF'], 'update.php') || strstr($_GET['q'], 'autocomplete') || $_GET['q'] == 'admin/content/node-settings/rebuild' || $_GET['q'] == 'upload/js' || substr($_GET['q'], 0, strlen('system/files')) == 'system/files') {
     // update.php relies on standard error handler. avoid breaking a few other pages.
   }
   else {
