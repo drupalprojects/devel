@@ -154,4 +154,5 @@ function devel_update_6002() {
     'module' => 'devel',
   );
   menu_link_save($item);
+  return array();
 }
