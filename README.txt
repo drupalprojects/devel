@@ -11,14 +11,20 @@ summary includes how many times each query was executed on a page
 Also dpr() and dpm() functions are provided, which pretty print arrays and strings. Useful during
 development.
 
-You should also download Krumo from http://krumo.sourceforge.net/. Unpack it into a subdirectory 
-called krumo. Devel will automatically start using it. You may also call krumo($variable) to get 
-a pretty print of any variable.
-
 Included in this package is also: 
 - devel_node_access module which prints out the node_access records for a given node._
 - macro.module which records form submissions and can pay them back later or on another site. More
 information available at http://drupal.org/node/79900.
+
+Goodies
+-------------
+- You should also download Krumo from http://krumo.sourceforge.net/. Unpack it into a subdirectory 
+called krumo. Devel will automatically start using it. You may also call krumo($variable) to get 
+a pretty print of any variable.
+
+- You should grab fb.php from http://www.firephp.org/ and put it in the devel directory. Then you can log 
+php variables to the firebug console. Is quite useful. See http://www.firephp.org/ for usage information.
+
 
 
 AUTHOR/MAINTAINER

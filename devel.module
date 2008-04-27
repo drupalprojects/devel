@@ -200,10 +200,23 @@ function devel_menu($may_cache) {
     if (user_access('access devel information')) {
       drupal_add_css(drupal_get_path('module', 'devel') .'/devel.css');
       drupal_add_js(drupal_get_path('module', 'devel') .'/devel.js');
+      include_once drupal_get_path('module', 'devel') .'/fb.php';
     }
   }
 
   return $items;
+}
+
+/**
+ * Calls the http://www.firephp.org/ fb() function if it is found.
+ *
+ * @return void
+ */
+function dfb() {
+  if (function_exists('fb')) {
+    $args = func_get_args();
+    call_user_func_array('fb', $args);
+  }
 }
 
 function devel_views_object($type, $view_name) {
