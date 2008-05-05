@@ -1202,7 +1202,7 @@ function dargs($always = TRUE) {
  */
 function dpm($input, $name = NULL) {
   if (user_access('access devel information')) {
-    $export = dprint_r($input, TRUE, $name);
+    $export = kprint_r($input, TRUE, $name);
     drupal_set_message($export);
   }
 }
