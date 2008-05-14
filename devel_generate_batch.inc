@@ -13,14 +13,16 @@
 function devel_batch_generate_content($num_nodes, $num_comments, $title_length, $kill_content, $add_upload, $add_terms, $add_alias, $node_types) {
   $operations = array();
 
+  // Setup the batch operations and save the variables.
+  $vars = compact('num_comments', 'title_length', 'add_upload', 'add_terms', 'add_alias', 'node_types');
+  $operations[] = array('devel_batch_generate_content_pre_node', array($vars));
+
   // add the kill operation
   if ($kill_content) {
     $operations[] = array('devel_batch_generate_content_kill', array());
   }
 
   // add the operations to create the nodes
-  $vars = compact('num_comments', 'title_length', 'add_upload', 'add_terms', 'add_alias', 'node_types');
-  $operations[] = array('devel_batch_generate_content_pre_node', array($vars));
   for ($num = 0; $num < $num_nodes; $num ++) {
     $operations[] = array('devel_batch_generate_content_add_node', array());
   }
