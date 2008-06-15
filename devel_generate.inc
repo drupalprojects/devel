@@ -91,9 +91,12 @@ function devel_create_nodes($records, $users, $title_length = 8, $types = array(
         devel_generate_add_terms($node);
       }
 
+      // A flag to let hook_nodeapi() implementations know that this is a generated node.
+      $node->devel_generate = $records;
+      
       // Save the node:
       node_save($node);
-
+      
       // Setup a path:
       db_query("INSERT INTO {url_alias} (src, dst) VALUES ('%s', '%s')", "node/$node->nid", "node-$node->nid-$node->type");
       unset($node);
