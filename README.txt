@@ -22,8 +22,7 @@ Goodies
 called krumo. Devel will automatically start using it. You may also call krumo($variable) to get 
 a pretty print of any variable.
 
-- You should grab fb.php from http://www.firephp.org/ and put it in the devel directory. Then you can log 
-php variables to the firebug console. Is quite useful. See http://www.firephp.org/ for usage information.
+AJAX developers in particular ought to install FirePHP Core from http://www.firephp.org/ and put it in the devel directory. Your path to fb.php should looks like devel/FirePHPCore/lib/FirePHPCore/fb.php. You can use svn checkout http://firephp.googlecode.com/svn/trunk/trunk/Libraries/FirePHPCore. Then you can log php variables to the Firebug console. Is quite useful. 
 
 
 
