@@ -200,7 +200,7 @@ function devel_themer_catch_function() {
         if (empty($meta['variables'])) {
           $variables = array();
         }
-        elseif (has_krumo()) {
+        elseif (FALSE && has_krumo()) {
           $variables = krumo_ob($meta['variables']);
         }
         else {
