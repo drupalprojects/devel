@@ -461,7 +461,6 @@ function devel_themer_exit() {
     $GLOBALS['devel_theme_calls']['devel_themer_uri'] = url("devel_themer/variables/$request_id");
     print '<script type="text/javascript">jQuery.extend(Drupal.settings, '.  drupal_to_js($GLOBALS['devel_theme_calls']) .");</script>\n";
     
-    // TODO: use own cache table
     // Write the variables information to the cache table. It will be retrieved on demand via AJAX.
     cache_set('devel_themer_'. $request_id, $GLOBALS['devel_themer_server'], 'cache_devel_themer', time()+3600);
   }
