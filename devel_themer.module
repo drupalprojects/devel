@@ -49,17 +49,22 @@ function devel_themer_menu() {
  */
 function devel_themer_ajax_variables($request_id, $call) {
   if ($data = cache_get('devel_themer_'. $request_id)) {
-    if ($variables = $data->data[$call]['variables']) {
-      $html = devel_print_object($variables, NULL, FALSE);
-      drupal_json(array('status' => TRUE, 'data' => $html));
+    $variables = $data->data[$call]['variables'];
+    if (has_krumo()) { 	 
+      print krumo_ob($variables); 	 
+    } 
+    elseif ($data->data[$call]['type'] == 'func') { 	 
+      print devel_print_object($variables, NULL, FALSE); 	 
     }
     else {
-      drupal_json(array('status' => FALSE, 'data' => 'Theme call not found.'));
+      print devel_print_object($variables, '$', FALSE);
     }
   }
   else {
-    drupal_json(array('status' => FALSE, 'data' => 'Request ID not found.'));
+    print 'Request ID not found.';
   }
+  $GLOBALS['devel_shutdown'] = FALSE;
+  return;
 }
 
 /**
@@ -249,12 +254,12 @@ function devel_themer_catch_function() {
         'duration' => $time['time'],
         'used' => $used,
         'candidates' => $candidates,
-        'args' => array('Temporarily disabled. Will be back soon.'),
       );
       
       // This variable gets serialized and cached on the server.
       $GLOBALS['devel_themer_server'][$key] = array(
         'variables' => $meta['variables'],
+        'type' => $meta['type'],
       );
     }
     else {
@@ -453,6 +458,7 @@ function devel_themer_exit() {
   $request_id = uniqid();
   if (!empty($GLOBALS['devel_theme_calls']) && $_SERVER['REQUEST_METHOD'] != 'POST') {
     $GLOBALS['devel_theme_calls']['request_id'] = $request_id;
+    $GLOBALS['devel_theme_calls']['devel_themer_uri'] = url("devel_themer/variables/$request_id");
     print '<script type="text/javascript">jQuery.extend(Drupal.settings, '.  drupal_to_js($GLOBALS['devel_theme_calls']) .");</script>\n";
     
     // TODO: use own cache table
