@@ -199,7 +199,7 @@ function devel_themer_get_extension() {
 
 /**
  * Intercepts all theme calls (including templates), adds to template log, and dispatches to original theme function.
- * This function gets injected into theme registry in devel_exit().
+ * This function gets injected into theme registry in devel_themer_theme_registry_alter().
  */
 function devel_themer_catch_function() {
   $args = func_get_args();
