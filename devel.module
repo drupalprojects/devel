@@ -499,15 +499,20 @@ function devel_shutdown() {
 
   $output = '';
 
-  // use $GLOBALS['devel_shutdown'] = FALSE in order to supress devel footer for a page. not necessary if your page
-  // outputs a text/javascript or text/xml Content-type http header. Thats advised where applicable.
+  // Set $GLOBALS['devel_shutdown'] = FALSE in order to supress the
+  // devel footer for a page.  Not necessary if your page outputs any
+  // of the Content-type http headers tested below (e.g. text/xml,
+  // text/javascript, etc).  This is is advised where applicable.
   if ($GLOBALS['devel_shutdown'] !== FALSE) {
     // Try not to break non html pages.
     if (function_exists('drupal_get_headers')) {
-       $headers = drupal_get_headers();
-       if(strstr($headers, 'xml') || strstr($headers, 'javascript') || strstr($headers, 'json') || strstr($headers, 'plain')|| strstr($headers, 'image')) {
-         return;
-       }
+      $headers = drupal_get_headers();
+      $formats = array('xml', 'javascript', 'json', 'plain', 'image', 'application', 'x-comma-separated-values');
+      foreach ($formats as $format) {
+        if (strstr($headers, $format)) {
+          return;
+        }
+      }
     }
 
     // don't append to CLI scripts
