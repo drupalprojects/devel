@@ -151,7 +151,7 @@ function devel_menu($may_cache) {
       }
       elseif (arg(0) == 'user') {
         $items[] = array('path' => 'user/'. arg(1) .'/load',
-          'title' => t('Devel load'),
+          'title' => t('Dev load'),
           'callback' => 'devel_load_object',
           'callback arguments' => array('user', arg(1)),
           'access' => user_access('access devel information'),
