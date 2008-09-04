@@ -22,8 +22,6 @@ function devel_help($section) {
   switch ($section) {
     case 'devel/reference':
       return '<p>'. t('This is a list of defined user functions that generated this current request lifecycle. Click on a function name to view its documention.'). '</p>';
-    case 'devel/reinstall':
-      return '<p>'. t('Clicking a module\'s reinstall button will simulate uninstalling/installing a module. <code>hook_uninstall()</code> and <code>hook_install()</code> will be executed and the schema version number will be set to the most recent update number. You may have to manually clear out any existing tables first if the module doesn\'t implement <code>hook_uninstall()</code>.'). '</p>';
     case 'devel/session':
       return '<p>'. t('Here are the contents of your <code>$_SESSION</code> variable.'). '</p>';
     case 'devel/variable':
@@ -68,6 +66,7 @@ function devel_menu() {
     'menu_name' => 'devel',
   );
   $items['devel/reinstall'] = array(
+    'title' => 'Reinstall modules',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('devel_reinstall'),
     'description' => 'Run hook_uninstall() and then hook_install() for a given module.',
@@ -997,32 +996,6 @@ function devel_menu_rebuild() {
   menu_rebuild();
   drupal_set_message(t('The menu router has been rebuilt.'));
   drupal_goto();
-}
-
-/**
- * Implementation of hook_forms().
- */
-function devel_forms() {
-  $forms = array();
-  if (user_access('access devel information')) {
-    // registers each devel_reinstall_$module form_id
-    $modules = module_list();
-    foreach ($modules as $module) {
-      $forms['devel_reinstall_'. $module]['callback'] = 'devel_reinstall_form';
-    }
-  }
-  return $forms;
-}
-
-function devel_reinstall_form(&$form_state, $module) {
-  $form = array(
-    '#submit' => array('devel_reinstall_submit'),
-    'submit' => array(
-      '#type' => 'submit',
-      '#value' => t('Reinstall @name module', array('@name' => $module))
-    ),
-  );
-  return $form;
 }
 
 /**
