@@ -1178,7 +1178,6 @@ function devel_session() {
   global $user;
   $output = kprint_r($_SESSION, TRUE);
   $headers = array(t('Session name'), t('Session ID'));
-  dsm($user);
   $output .= theme('table', $headers, array(array(session_name(), session_id())));
   return $output;
 }
