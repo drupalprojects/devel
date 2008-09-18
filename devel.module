@@ -741,7 +741,7 @@ function devel_store_queries() {
             $qids[$hash] = db_result(db_query("SELECT lastval();"));
           }
           else {
-            $qids[$hash] = mysql_insert_id();
+            $qids[$hash] = db_last_insert_id();
           }
         }
       }
