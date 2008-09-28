@@ -216,7 +216,7 @@ function devel_menu($may_cache) {
  * @return void
  */
 function dfb() {
-  if (function_exists('fb')) {
+  if (function_exists('fb') && user_access('access devel information')) {
     $args = func_get_args();
     call_user_func_array('fb', $args);
   }
