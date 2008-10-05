@@ -134,14 +134,14 @@ function devel_menu($may_cache) {
     has_krumo();
     if (is_numeric(arg(1))) {
       if (arg(0) == 'node') {
-        $items[] = array('path' => 'node/'. arg(1) .'/load',
+        $items[] = array('path' => 'node/'. arg(1) .'/devel/load',
           'title' => t('Dev load'),
           'callback' => 'devel_load_object',
           'callback arguments' => array('node', arg(1)),
           'access' => user_access('access devel information'),
           'type' => MENU_LOCAL_TASK,
         );
-        $items[] = array('path' => 'node/'. arg(1) .'/render',
+        $items[] = array('path' => 'node/'. arg(1) .'/devel/render',
           'title' => t('Dev render'),
           'callback' => 'devel_render_object',
           'callback arguments' => array('node', arg(1)),
@@ -170,7 +170,7 @@ function devel_menu($may_cache) {
     if (module_exists('views_ui')) {
       $urls = views_get_all_urls();
       foreach ($urls as $view_name => $url) {
-        $items[] = array('path' => "$url/load",
+        $items[] = array('path' => "$url/devel/load",
               'title' => t('Dev load'),
               'callback' => 'devel_load_object',
               'callback arguments' => array('view', $view_name),
@@ -178,7 +178,7 @@ function devel_menu($may_cache) {
               'type' => MENU_LOCAL_TASK,
               'weight' => 8,
         );
-        $items[] = array('path' => "$url/queries",
+        $items[] = array('path' => "$url/devel/queries",
               'title' => t('Dev queries'),
               'callback' => 'devel_views_object',
               'callback arguments' => array('queries', $view_name),
@@ -186,7 +186,7 @@ function devel_menu($may_cache) {
               'type' => MENU_LOCAL_TASK,
               'weight' => 9,
         );
-        $items[] = array('path' => "$url/items",
+        $items[] = array('path' => "$url/devel/items",
               'title' => t('Dev items'),
               'callback' => 'devel_views_object',
               'callback arguments' => array('items', $view_name),
