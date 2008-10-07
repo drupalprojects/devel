@@ -24,7 +24,7 @@ function devel_node_access_help($section) {
     return t('Development helper for node_access table');
     break;
   case 'admin/help#devel_node_access':
-    $output .= '<p>'. t('This module helps in site development.  Specifically, when an access control module is used to limit access to some or all nodes, this module provides some feedback showing the node_access table in the database.') ."</p>\n";
+    $output  = '<p>'. t('This module helps in site development.  Specifically, when an access control module is used to limit access to some or all nodes, this module provides some feedback showing the node_access table in the database.') ."</p>\n";
     $output .= '<p>'. t('The node_access table is one method Drupal provides to hide content from some users while displaying it to others.  By default, Drupal shows all nodes to all users.  There are a number of optional modules which may be installed to hide content from some users.') ."</p>\n";
     $output .= '<p>'. t('If you have not installed any of these modules, you really have no need for the devel_node_access module.  This module is intended for use during development, so that developers and admins can confirm that the node_access table is working as expected.  You probably do not want this module enabled on a production site.') ."</p>\n";
     $output .= '<p>'. t('This module provides two blocks.  One called Devel Node Access by User is visible when a single node is shown on a page.  This block shows which users can view, update or delete the node shown.  Note that this block uses an inefficient algorithm to produce its output.  You should only enable this block on sites with very few user accounts.') ."</p>\n";
@@ -49,8 +49,39 @@ function devel_node_access_menu($may_cache) {
                      'access' => user_access(DNA_ACCESS_VIEW),
                      'type' => MENU_CALLBACK,
     );
+
+    if (!module_exists('devel')) {
+      $items[] = array('path' => 'admin/settings/devel',
+                       'title' => t('Devel node access'),
+                       'callback' => 'drupal_get_form',
+                       'callback arguments' => array('devel_node_access_admin_settings'),
+                       'access' => user_access('administer site configuration'),
+                       'type' => MENU_NORMAL_ITEM
+      );
+    }
   }
   return $items;
+}
+
+function devel_node_access_admin_settings() {
+  $form = array();
+  return system_settings_form($form);
+}
+
+function devel_node_access_form_alter($form_id, &$form) {
+  $t = 't';
+  if ($form_id == 'devel_admin_settings' || $form_id == 'devel_node_access_admin_settings') {
+    $form['devel_node_access_debug_mode'] = array(
+      '#type'          => 'checkbox',
+      '#title'         => t('Devel Node Access debug mode'),
+      '#default_value' => variable_get('devel_node_access_debug_mode', FALSE),
+      '#description'   => t('Debug mode verifies the grants in the node_access table against those that would be set by running !Rebuild_permissions, and displays them all; this can cause considerable overhead.', array('!Rebuild_permissions' => l('['. $t('Rebuild permissions') .']', 'admin/content/node-settings'))),
+    );
+    // push these down:
+    $form['devel_error_handler']['#weight'] = 1;
+    $form['smtp_library']['#weight'] = 1;
+    $form['buttons']['#weight'] = 2;
+  }
 }
 
 function dna_summary() {
@@ -145,22 +176,6 @@ function devel_node_access_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
   if ($op == 'view') {
     // remember this node, for display in our block
     dna_visible_nodes($node->nid);
-  }
-}
-
-function devel_node_access_form_alter($form_id, &$form) {
-  $t = 't';
-  if ($form_id == 'devel_admin_settings' && module_exists('devel_node_access')) {
-    $form['devel_node_access_debug_mode'] = array(
-      '#type'          => 'checkbox',
-      '#title'         => t('Devel Node Access debug mode'),
-      '#default_value' => variable_get('devel_node_access_debug_mode', FALSE),
-      '#description'   => t('Debug mode verifies the grants in the node_access table against those that would be set by running !Rebuild_permissions, and displays them all; this can cause considerable overhead.', array('!Rebuild_permissions' => l('['. $t('Rebuild permissions') .']', 'admin/content/node-settings'))),
-    );
-    // push these down:
-    $form['devel_error_handler']['#weight'] = 1;
-    $form['smtp_library']['#weight'] = 1;
-    $form['buttons']['#weight'] = 2;
   }
 }
 
