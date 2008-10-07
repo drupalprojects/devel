@@ -133,7 +133,7 @@ function dna_summary() {
   return $output;
 }
 
-function dna_visible_nodes($nid = null) {
+function dna_visible_nodes($nid = NULL) {
   static $nids = array();
   if ($nid) {
     $nids[$nid] = $nid;
@@ -193,7 +193,6 @@ function devel_node_access_block($op = 'list', $delta = 0) {
       $blocks[1]['status'] = 0;
       $blocks[1]['region'] = 'footer';
       return $blocks;
-      break;
 
     case 'view':
       if (!user_access(DNA_ACCESS_VIEW)) {
@@ -245,7 +244,8 @@ function devel_node_access_block($op = 'list', $delta = 0) {
               $acquired_grants_nid = array();
               if ($node = node_load(array('nid' => $nid))) {
                 // check node_access_acquire_grants()
-                if ($grants = _devel_node_access_module_invoke_all('node_access_records', $node)) {
+                $grants = _devel_node_access_module_invoke_all('node_access_records', $node);
+                if (!empty($grants)) {
                   $top_priority = intval($grants[0]['priority']);
                   foreach ($grants as $grant) {
                     $priority = intval($grant['priority']);
@@ -330,7 +330,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             // fill in the table rows
             $rows = array();
             foreach ($all_grants as $grant) {
-              $row = NULL;
+              $row = new stdClass();
               $row->nid = $grant['nid'];
               $row->title = $grant['#title'];
               $row->priority = $grant['priority'];
@@ -448,7 +448,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
 }
 
 /**
- * Implementation of hook_node_access_explain
+ * Implementation of hook_node_access_explain().
  */
 function devel_node_access_node_access_explain($row) {
   if ($row->gid == 0 && $row->realm == 'all') {
