@@ -1480,6 +1480,33 @@ function dargs($always = TRUE) {
   }
 }
 
+// An alias for drupal_debug().
+function dd($data, $label = NULL) {
+  return drupal_debug($data, $label);
+}
+
+// Log any variable to a drupal_debug.log in the site's temp directory.
+// See http://drupal.org/node/314112
+function drupal_debug($data, $label = NULL) {
+  ob_start();
+  print_r($data);
+  $string = ob_get_clean();
+  if ($label) {
+    $out = $label. ': '. $string;
+  }
+  else {
+    $out = $string;
+  }
+  $out .= "\n";
+ 
+  // The temp directory does vary across multiple simpletest instances.
+  $file = file_directory_temp(). '/drupal_debug.txt';
+  if (file_put_contents($file, $out, FILE_APPEND) === FALSE) {
+    drupal_set_message(t('The file could not be written.'), 'error');
+    return FALSE;
+  }
+}
+
 /**
  * Print a variable to the 'message' area of the page. Uses drupal_set_message()
  */
