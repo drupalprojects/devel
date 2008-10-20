@@ -251,8 +251,9 @@ function performance_log_summary_apc($params = array()) {
 }
 
 function performance_log_summary_db($params = array()) {
-  $result = db_query("SELECT * FROM {performance_summary} WHERE path = '%s'", $params['path']);
-  if (db_num_rows($result)) {
+  $num_rows = db_result(db_query("SELECT COUNT(*) FROM {performance_summary} WHERE path = '%s'", $params['path']));
+  if ($num_rows) {
+    $result = db_query("SELECT * FROM {performance_summary} WHERE path = '%s'", $params['path']);
     $row = db_fetch_object($result);
     db_query("UPDATE {performance_summary} 
       SET last_access = %d,
