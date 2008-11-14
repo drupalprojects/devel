@@ -66,6 +66,7 @@ function devel_generate_add_comments($node, $users, $num_comments, $title_length
     $comment->format = FILTER_FORMAT_DEFAULT;
     $comment->name = 'devel generate';
     $comment->mail = 'devel_generate@example.com';
+    $comment->timestamp = rand($node->created, time());
 
     switch ($i % 3) {
       case 1:
