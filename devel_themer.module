@@ -472,7 +472,7 @@ function devel_themer_exit() {
     // Write the variables information to the a file. It will be retrieved on demand via AJAX.
     // We used to write this to DB but was getting 'Warning: Got a packet bigger than 'max_allowed_packet' bytes'
     // Writing to temp dir means we don't worry about folder existence/perms and cleanup is free.
-    file_put_contents(file_directory_temp(). "/devel_themer_$request_id", serialize($GLOBALS['devel_themer_server']));
+    devel_put_contents(file_directory_temp(). "/devel_themer_$request_id", serialize($GLOBALS['devel_themer_server']));
 
     $GLOBALS['devel_theme_calls']['request_id'] = $request_id;
     $GLOBALS['devel_theme_calls']['devel_themer_uri'] = url("devel_themer/variables/$request_id");
@@ -574,4 +574,21 @@ function devel_themer_popup() {
 EOT;
 
   drupal_add_js(array('thmr_popup' => $popup), 'setting');
+}
+
+// Temporary - for D6 only since we support PHP4
+function devel_put_contents($n, $d, $flag = false) {
+    if (function_exists('file_put_contents')){
+        file_put_contents($n, $d, $flag);
+    } else {
+        $mode = ($flag == FILE_APPEND || strtoupper($flag) == 'FILE_APPEND') ? 'a' : 'w';
+        $f = @fopen($n, $mode);
+        if ($f === false) {
+            return 0;
+        } else {
+            if (is_array($d)) $d = implode($d);
+            fwrite($f, $d);
+            fclose($f);
+        }
+    }
 }
