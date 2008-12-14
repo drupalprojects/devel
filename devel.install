@@ -57,7 +57,7 @@ function devel_install() {
 }
 
  /**
- * Implementation of hook_install()
+ * Implementation of hook_uninstall().
  */
 function devel_uninstall() {
   drupal_uninstall_schema('devel');
