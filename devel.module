@@ -171,6 +171,7 @@ function devel_menu() {
     'access callback' => 'user_access',
     'access arguments' => array('access devel information'),
     'type' => MENU_LOCAL_TASK,
+    'weight' => 100,
   );
   $items['node/%node/devel/render'] = array(
     'title' => 'Dev render',
@@ -179,6 +180,7 @@ function devel_menu() {
     'access callback' => 'user_access',
     'access arguments' => array('access devel information'),
     'type' => MENU_LOCAL_TASK,
+    'weight' => 100,
   );
   $items['user/%user/devel/load'] = array(
     'title' => 'Dev load',
@@ -187,6 +189,7 @@ function devel_menu() {
     'access callback' => 'user_access',
     'access arguments' => array('access devel information'),
     'type' => MENU_LOCAL_TASK,
+    'weight' => 100,
   );
   $items['user/%user/devel/render'] = array(
     'title' => 'Dev render',
@@ -195,6 +198,7 @@ function devel_menu() {
     'access callback' => 'user_access',
     'access arguments' => array('access devel information'),
     'type' => MENU_LOCAL_TASK,
+    'weight' => 100,
   );
   
   return $items;
