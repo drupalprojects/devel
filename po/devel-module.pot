@@ -3,16 +3,18 @@
 # LANGUAGE translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
 # Generated from files:
-#  devel_generate.inc,v 1.1.2.12 2007/12/15 01:56:40 dww
-#  devel.module,v 1.106.4.78 2008/01/26 00:29:37 dww
+#  devel_generate.inc,v 1.1.2.13 2008/06/15 20:26:16 weitzman
+#  devel.module,v 1.106.4.101 2008/10/09 03:08:28 weitzman
 #  devel.info,v 1.1.4.5 2007/06/13 19:41:05 dww
+#  performance.module,v 1.1.2.1 2008/10/20 20:51:52 kbahey
 #  devel_generate.module,v 1.1.2.7 2008/01/15 04:06:56 weitzman
-#  devel_node_access.module,v 1.7.4.4 2008/01/23 16:49:37 weitzman
+#  devel_node_access.module,v 1.7.4.14 2008/11/07 00:48:29 salvis
 #  devel_node_access.info,v 1.1.4.5 2007/06/13 19:41:05 dww
-#  macro.module,v 1.1.2.3 2006/11/21 15:32:24 weitzman
+#  macro.module,v 1.1.2.5 2008/06/13 03:18:16 weitzman
 #  devel.install,v 1.8.4.6 2007/07/26 19:27:48 thehunmonkgroup
 #  devel_generate.info,v 1.1.2.6 2007/06/13 19:41:05 dww
 #  macro.info,v 1.1.2.4 2007/06/13 19:41:05 dww
+#  performance.info,v 1.1 2008/10/20 19:33:59 kbahey
 #  generate-og-users.php,v 1.3 2006/06/11 00:43:25 killes
 #  generate-og2list-mail.php,v 1.4 2006/06/27 21:51:29 killes
 #
@@ -20,7 +22,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2008-01-29 20:19+0800\n"
+"POT-Creation-Date: 2008-12-21 14:18+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -45,15 +47,15 @@ msgstr ""
 msgid "%num comments created."
 msgstr ""
 
-#: devel_generate.inc:248
+#: devel_generate.inc:251
 msgid "Deleted taxonomy."
 msgstr ""
 
-#: devel_generate.inc:253
+#: devel_generate.inc:256
 msgid "Created the following new vocabularies: !vocs"
 msgstr ""
 
-#: devel_generate.inc:258
+#: devel_generate.inc:261
 msgid "Created the following new terms: !terms"
 msgstr ""
 
@@ -123,401 +125,409 @@ msgstr ""
 msgid "Session viewer"
 msgstr ""
 
-#: devel.module:118;307;328
+#: devel.module:118;321;342
 msgid "Switch user"
 msgstr ""
 
-#: devel.module:125;308 devel.info:0
+#: devel.module:125;322 devel.info:0
 msgid "Devel"
 msgstr ""
 
-#: devel.module:136;172
+#: devel.module:138;154;174
 msgid "Dev load"
 msgstr ""
 
-#: devel.module:143
+#: devel.module:145
 msgid "Dev render"
 msgstr ""
 
-#: devel.module:152
-msgid "Devel load"
-msgstr ""
-
-#: devel.module:180
+#: devel.module:182
 msgid "Dev queries"
 msgstr ""
 
-#: devel.module:188
+#: devel.module:190
 msgid "Dev items"
 msgstr ""
 
-#: devel.module:291
-msgid "%message in %file on line %line."
-msgstr ""
-
-#: devel.module:309
+#: devel.module:323
 msgid "Execute PHP"
 msgstr ""
 
-#: devel.module:315
+#: devel.module:329
 msgid "Number of users to display in the list"
 msgstr ""
 
-#: devel.module:337;1237;0
+#: devel.module:351;1380;0
 msgid "devel"
 msgstr ""
 
-#: devel.module:339
+#: devel.module:353
 msgid "Adjust module settings for devel module"
 msgstr ""
 
-#: devel.module:340
+#: devel.module:354
 msgid "Clear the database cache tables which store page, menu, node, and variable caches."
 msgstr ""
 
-#: devel.module:341
+#: devel.module:355
 msgid "Execute functions scheduled for cron runs."
 msgstr ""
 
-#: devel.module:343
+#: devel.module:357
 msgid "View a list of currently defined user functions with documentation links"
 msgstr ""
 
-#: devel.module:344
+#: devel.module:358
 msgid "Re-run hook_install() for a given module"
 msgstr ""
 
-#: devel.module:345
+#: devel.module:359
 msgid "Resets all menu items to their default settings"
 msgstr ""
 
-#: devel.module:346
+#: devel.module:360
 msgid "Edit and delete site variables"
 msgstr ""
 
-#: devel.module:347
+#: devel.module:361
 msgid "List the contents of $_SESSION"
 msgstr ""
 
-#: devel.module:359
+#: devel.module:373
 msgid "Execute php"
 msgstr ""
 
-#: devel.module:391
+#: devel.module:405
 msgid "This user can switch back."
 msgstr ""
 
-#: devel.module:398
+#: devel.module:412
 msgid "Caution: this user will be unable to switch back."
 msgstr ""
 
-#: devel.module:408
+#: devel.module:422
 msgid "Enter username"
 msgstr ""
 
-#: devel.module:415
+#: devel.module:429
 msgid "Switch"
 msgstr ""
 
-#: devel.module:423
+#: devel.module:437
 msgid "Username not found"
 msgstr ""
 
-#: devel.module:466
+#: devel.module:480
 msgid "<p>The user is being redirected to <a href=\"@destination\">@destination</a>.</p>"
 msgstr ""
 
-#: devel.module:518
+#: devel.module:537
 msgid " Queries taking longer than %threshold ms and queries executed more than once, are <span class=\"marker\">highlighted</span>."
 msgstr ""
 
-#: devel.module:537
+#: devel.module:556
 msgid "Memory used at %type: %value MB"
 msgstr ""
 
-#: devel.module:627
+#: devel.module:681
 msgid "Query log"
 msgstr ""
 
-#: devel.module:629
-msgid "Collect query info"
-msgstr ""
-
-#: devel.module:631
+#: devel.module:683
 msgid "Collect query info. If disabled, no query log functionality will work."
 msgstr ""
 
-#: devel.module:633
-msgid "Display query log"
+#: devel.module:685
+msgid "You must disable or upgrade the php Zend Optimizer extension in order to enable this feature. The minimum required version is 3.2.8. Earlier versions of Zend Optimizer are <a href=\"!url\">horribly buggy and segfault your Apache</a> ... "
 msgstr ""
 
-#: devel.module:635
-msgid "Display a log of the database queries needed to generate the current page, and the execution time for each. Also, queries which are repeated during a single page view are summed in the # column, and printed in red since they are candidates for caching."
-msgstr ""
-
-#: devel.module:637
-msgid "Sort query log"
-msgstr ""
-
-#: devel.module:639
-msgid "by source"
-msgstr ""
-
-#: devel.module:639
-msgid "by duration"
-msgstr ""
-
-#: devel.module:640
-msgid "The query table can be sorted in the order that the queries were executed or by descending duration."
-msgstr ""
-
-#: devel.module:643
-msgid "Slow query highlighting"
-msgstr ""
-
-#: devel.module:647
-msgid "Enter an integer in milliseconds. Any query which takes longer than this many milliseconds will be highlighted in the query log. This indicates a possibly inefficient query, or a candidate for caching."
-msgstr ""
-
-#: devel.module:650
-msgid "Store executed queries"
-msgstr ""
-
-#: devel.module:652
-msgid "Store statistics about executed queries. See the devel_x tables. This feature is currently only available for the MySQL database backend."
-msgstr ""
-
-#: devel.module:654
-msgid "Sampling interval"
-msgstr ""
-
-#: devel.module:657
-msgid "If storing query statistics, only store every nth page view. 1 means every page view, 2 every second, and so on."
-msgstr ""
-
-#: devel.module:660
-msgid "Display page timer"
-msgstr ""
-
-#: devel.module:662
-msgid "Display page execution time in the query log box."
-msgstr ""
-
-#: devel.module:665
-msgid "Display memory usage"
-msgstr ""
-
-#: devel.module:667
-msgid "Display how much memory is used to generate the current page. This will show memory usage when devel_init() is called and when devel_exit() is called. PHP must have been compiled with the <em>--enable-memory-limit</em> configuration option for this feature to work."
-msgstr ""
-
-#: devel.module:670
-msgid "Display redirection page"
-msgstr ""
-
-#: devel.module:672
-msgid "When a module executes drupal_goto(), the query log and other developer information is lost. Enabling this setting presents an intermediate page to developers so that the log can be examined before continuing to the destination page."
-msgstr ""
-
-#: devel.module:675
-msgid "Display form element keys and weights"
-msgstr ""
-
-#: devel.module:677
-msgid "Form element names are needed for performing themeing or altering a form. Their weights determine the position of the element. Enabling this setting will show these keys and weights beside each form item."
-msgstr ""
-
-#: devel.module:680
-msgid "Error handler"
-msgstr ""
-
-#: devel.module:682
-msgid "None"
-msgstr ""
-
-#: devel.module:682
-msgid "Standard drupal"
-msgstr ""
-
-#: devel.module:682
-msgid "Backtrace"
-msgstr ""
-
-#: devel.module:683
-msgid "Choose an error handler for your site. <em>Backtrace</em> prints nice debug information when an error is noticed, and you !choose. <em>None</em> is a good option when stepping through the site in your debugger."
-msgstr ""
-
-#: devel.module:683
-msgid "to show errors on screen"
-msgstr ""
-
-#: devel.module:691
-msgid "Default"
-msgstr ""
-
-#: devel.module:692
-msgid "Log only"
+#: devel.module:688
+msgid "Collect query info"
 msgstr ""
 
 #: devel.module:695
-msgid "Other (!library)"
+msgid "Display query log"
+msgstr ""
+
+#: devel.module:697
+msgid "Display a log of the database queries needed to generate the current page, and the execution time for each. Also, queries which are repeated during a single page view are summed in the # column, and printed in red since they are candidates for caching."
 msgstr ""
 
 #: devel.module:699
-msgid "SMTP library"
+msgid "Sort query log"
 msgstr ""
 
-#: devel.module:730
-msgid "PHP code to execute"
+#: devel.module:701
+msgid "by source"
 msgstr ""
 
-#: devel.module:731
-msgid "Enter some code. Do not use <code>&lt;?php ?&gt;</code> tags."
+#: devel.module:701
+msgid "by duration"
 msgstr ""
 
-#: devel.module:733
-msgid "Execute"
+#: devel.module:702
+msgid "The query table can be sorted in the order that the queries were executed or by descending duration."
+msgstr ""
+
+#: devel.module:705
+msgid "Slow query highlighting"
+msgstr ""
+
+#: devel.module:709
+msgid "Enter an integer in milliseconds. Any query which takes longer than this many milliseconds will be highlighted in the query log. This indicates a possibly inefficient query, or a candidate for caching."
+msgstr ""
+
+#: devel.module:712
+msgid "Store executed queries"
+msgstr ""
+
+#: devel.module:714
+msgid "Store statistics about executed queries. See the devel_x tables. This feature is currently only available for the MySQL database backend."
+msgstr ""
+
+#: devel.module:716
+msgid "Sampling interval"
+msgstr ""
+
+#: devel.module:719
+msgid "If storing query statistics, only store every nth page view. 1 means every page view, 2 every second, and so on."
+msgstr ""
+
+#: devel.module:722
+msgid "Display page timer"
+msgstr ""
+
+#: devel.module:724
+msgid "Display page execution time in the query log box."
+msgstr ""
+
+#: devel.module:727
+msgid "Display memory usage"
+msgstr ""
+
+#: devel.module:729
+msgid "Display how much memory is used to generate the current page. This will show memory usage when devel_init() is called and when devel_exit() is called. PHP must have been compiled with the <em>--enable-memory-limit</em> configuration option for this feature to work."
+msgstr ""
+
+#: devel.module:732
+msgid "Display redirection page"
+msgstr ""
+
+#: devel.module:734
+msgid "When a module executes drupal_goto(), the query log and other developer information is lost. Enabling this setting presents an intermediate page to developers so that the log can be examined before continuing to the destination page."
+msgstr ""
+
+#: devel.module:737
+msgid "Display form element keys and weights"
+msgstr ""
+
+#: devel.module:739
+msgid "Form element names are needed for performing themeing or altering a form. Their weights determine the position of the element. Enabling this setting will show these keys and weights beside each form item."
+msgstr ""
+
+#: devel.module:742
+msgid "Error handler"
+msgstr ""
+
+#: devel.module:744
+msgid "None"
+msgstr ""
+
+#: devel.module:744
+msgid "Standard drupal"
+msgstr ""
+
+#: devel.module:744
+msgid "Backtrace"
+msgstr ""
+
+#: devel.module:745
+msgid "Choose an error handler for your site. <em>Backtrace</em> prints nice debug information when an error is noticed, and you !choose. <strong>Backtrace requires the <a href=\"!krumo\">krumo library</a></strong>. <em>None</em> is a good option when stepping through the site in your debugger."
+msgstr ""
+
+#: devel.module:745
+msgid "choose to show errors on screen"
 msgstr ""
 
 #: devel.module:753
-msgid "Are you sure you want to reset all menu items to their default settings?"
+msgid "Default"
 msgstr ""
 
-#: devel.module:755
-msgid "Any custom additions or changes to the menu will be lost."
-msgstr ""
-
-#: devel.module:756
-msgid "Reset all"
+#: devel.module:754
+msgid "Log only"
 msgstr ""
 
 #: devel.module:757
-msgid "Cancel"
+msgid "Other (!library)"
 msgstr ""
 
-#: devel.module:766
-msgid "Primary links"
+#: devel.module:761
+msgid "SMTP library"
 msgstr ""
 
-#: devel.module:770
-msgid "The menu items have been reset to their default settings."
+#: devel.module:792
+msgid "PHP code to execute"
+msgstr ""
+
+#: devel.module:793
+msgid "Enter some code. Do not use <code>&lt;?php ?&gt;</code> tags."
 msgstr ""
 
 #: devel.module:795
+msgid "Execute"
+msgstr ""
+
+#: devel.module:815
+msgid "Are you sure you want to reset all menu items to their default settings?"
+msgstr ""
+
+#: devel.module:817
+msgid "Any custom additions or changes to the menu will be lost."
+msgstr ""
+
+#: devel.module:818
+msgid "Reset all"
+msgstr ""
+
+#: devel.module:819 performance/performance.module:532
+msgid "Cancel"
+msgstr ""
+
+#: devel.module:828
+msgid "Primary links"
+msgstr ""
+
+#: devel.module:832
+msgid "The menu items have been reset to their default settings."
+msgstr ""
+
+#: devel.module:857
 msgid "Reinstall @name module"
 msgstr ""
 
-#: devel.module:811
+#: devel.module:873
 msgid "Warning - will delete your module tables and variables."
 msgstr ""
 
-#: devel.module:826
+#: devel.module:888
 msgid "Reinstalled the %name module."
 msgstr ""
 
-#: devel.module:841;890
+#: devel.module:903;957
 msgid "Name"
 msgstr ""
 
-#: devel.module:842;891
+#: devel.module:904;958
 msgid "Value"
 msgstr ""
 
-#: devel.module:843;892
+#: devel.module:905;959
 msgid "Length"
 msgstr ""
 
-#: devel.module:844;893
+#: devel.module:906;960
 msgid "Operations"
 msgstr ""
 
-#: devel.module:867
+#: devel.module:934
 msgid "edit"
 msgstr ""
 
-#: devel.module:872
+#: devel.module:939
 msgid "Delete"
 msgstr ""
 
-#: devel.module:915
+#: devel.module:982
 msgid "Old value"
 msgstr ""
 
-#: devel.module:921;932
+#: devel.module:988;999
 msgid "New value"
 msgstr ""
 
-#: devel.module:926
+#: devel.module:993
 msgid "Submit"
 msgstr ""
 
-#: devel.module:933
+#: devel.module:1000
 msgid "Sorry, complex variable types may not be edited yet. Use the <em>Execute PHP</em> block and the <a href=\"@variable-set-doc\">variable_set()</a> function."
 msgstr ""
 
-#: devel.module:942
+#: devel.module:1009
 msgid "Saved new value for %name"
 msgstr ""
 
-#: devel.module:1107
+#: devel.module:1019
+msgid "Session name"
+msgstr ""
+
+#: devel.module:1019
+msgid "Session ID"
+msgstr ""
+
+#: devel.module:1196
 msgid " Page execution time was %time ms."
 msgstr ""
 
-#: devel.module:1237
+#: devel.module:1233
+msgid "The file could not be written."
+msgstr ""
+
+#: devel.module:1380
 msgid "Mail sent:<br />Key: %mailkey<br />To: %to<br />From: %from<br />Subject: %subject<br />Body: %body<br /><br />Additional headers: !header"
 msgstr ""
 
-#: devel.module:1251
+#: devel.module:1394
 msgid "Total (ms)"
 msgstr ""
 
-#: devel.module:1252
+#: devel.module:1395
 msgid "Average (ms)"
 msgstr ""
 
-#: devel.module:1253
+#: devel.module:1396
 msgid "Std deviation (ms)"
 msgstr ""
 
-#: devel.module:1254
+#: devel.module:1397
 msgid "Count"
 msgstr ""
 
-#: devel.module:1255
+#: devel.module:1398
 msgid "Function"
 msgstr ""
 
-#: devel.module:1256
+#: devel.module:1399
 msgid "Query"
 msgstr ""
 
-#: devel.module:1274
+#: devel.module:1417
 msgid "Delete collected query statistics"
 msgstr ""
 
-#: devel.module:1282
+#: devel.module:1425
 msgid "Stored query statistics deleted."
 msgstr ""
 
-#: devel.module:291
+#: devel.module:305
 msgid "php"
 msgstr ""
 
-#: devel.module:904
+#: devel.module:971
 msgid "one variable deleted"
 msgid_plural "@count variables deleted"
 msgstr[0] ""
 msgstr[1] ""
 
-#: devel.module:299
+#: devel.module:313
 msgid "access devel information"
 msgstr ""
 
-#: devel.module:299
+#: devel.module:313
 msgid "execute php code"
 msgstr ""
 
-#: devel.module:299
+#: devel.module:313
 msgid "switch users"
 msgstr ""
 
@@ -618,139 +628,267 @@ msgid "The node_access table is one method Drupal provides to hide content from 
 msgstr ""
 
 #: devel_node_access.module:29
-msgid "If you have not installed one of these modules, you really have no need for the devel_node_access module.  This module is intended for use during development, so that developers and admins can confirm that node_access table is working as expected.  You probably do not want this module enabled on a production site."
+msgid "If you have not installed any of these modules, you really have no need for the devel_node_access module.  This module is intended for use during development, so that developers and admins can confirm that the node_access table is working as expected.  You probably do not want this module enabled on a production site."
 msgstr ""
 
 #: devel_node_access.module:30
-msgid "This module provides a %summary_page which shows show general information about your node_access table.  If you have installed the Views module, you may %browse_link.  This module also provides a block showing the rows of the node_access table relevant to whatever node(s) are shown on a given page.  Because the table shown is wide, it is recommended to enable the block in the page footer rather than a sidebar."
+msgid "This module provides two blocks.  One called Devel Node Access by User is visible when a single node is shown on a page.  This block shows which users can view, update or delete the node shown.  Note that this block uses an inefficient algorithm to produce its output.  You should only enable this block on sites with very few user accounts."
 msgstr ""
 
 #: devel_node_access.module:31
-msgid "summary page"
+msgid "The second block provided by this module shows the entries in the node_access table for any nodes shown on the current page.  You can enable the debug mode on the !settings_page to display much more information, but this can cause considerable overhead.  Because the tables shown are wide, it is recommended to enable the blocks in the page footer rather than a sidebar."
 msgstr ""
 
-#: devel_node_access.module:32
-msgid "browse node_access by realm"
+#: devel_node_access.module:32 performance/performance.module:347;451
+msgid "settings page"
 msgstr ""
 
 #: devel_node_access.module:34
+msgid "This module also provides a !summary_page which shows general information about your node_access table.  If you have installed the Views module, you may browse node_access by realm."
+msgstr ""
+
+#: devel_node_access.module:35
+msgid "summary page"
+msgstr ""
+
+#: devel_node_access.module:37
 msgid ""
 msgstr ""
 
-#: devel_node_access.module:44
+#: devel_node_access.module:47
 msgid "node_access summary"
 msgstr ""
 
-#: devel_node_access.module:57
-msgid "Access Granted to All Nodes (All Users)"
-msgstr ""
-
-#: devel_node_access.module:58
-msgid "Your node_access table contains entries that may be granting all users access to all nodes.  Depending on which access control module(s) you use, you may want to delete these entries.  If you are not using an access control module, you should probably leave these entries as is."
-msgstr ""
-
-#: devel_node_access.module:59;88;104;122;170
-msgid "realm"
-msgstr ""
-
-#: devel_node_access.module:70
-msgid "Legacy Nodes"
-msgstr ""
-
-#: devel_node_access.module:72
-msgid "You have !num nodes in your node table which are not represented in your node_access table.  If you have an access control module installed, these nodes may be hidden from all users.  This could be caused by publishing nodes before enabling the access control module.  If this is the case, manually updating each node should add it to the node_access table and fix the problem."
+#: devel_node_access.module:55
+msgid "Devel node access"
 msgstr ""
 
 #: devel_node_access.module:76
-msgid "All Nodes Represented"
+msgid "Devel Node Access debug mode"
 msgstr ""
 
 #: devel_node_access.module:78
-msgid "All nodes are represented in the node_access table."
+msgid "Debug mode verifies the grants in the node_access table against those that would be set by running !Rebuild_permissions, and displays them all; this can cause considerable overhead."
 msgstr ""
 
-#: devel_node_access.module:86
-msgid "Access Granted to All Nodes (Some Users)"
+#: devel_node_access.module:91
+msgid "Access Granted to All Nodes (All Users)"
 msgstr ""
 
-#: devel_node_access.module:87
-msgid "Your node_access table contains entries that may be granting some users access to all nodes.  This may be perfectly normal, depending on which access control module(s) you use."
+#: devel_node_access.module:92
+msgid "Your node_access table contains entries that may be granting all users access to all nodes.  Depending on which access control module(s) you use, you may want to delete these entries.  If you are not using an access control module, you should probably leave these entries as is."
 msgstr ""
 
-#: devel_node_access.module:100
-msgid "Access Granted to Some Nodes"
-msgstr ""
-
-#: devel_node_access.module:102
-msgid "The following realms appear to grant all users access to some specific nodes.  This may be perfectly normal, if some of your content is available to the public."
+#: devel_node_access.module:93;120;136;152;227;251
+msgid "realm"
 msgstr ""
 
 #: devel_node_access.module:104
-msgid "public nodes"
+msgid "Legacy Nodes"
+msgstr ""
+
+#: devel_node_access.module:106
+msgid "You have !num nodes in your node table which are not represented in your node_access table.  If you have an access control module installed, these nodes may be hidden from all users.  This could be caused by publishing nodes before enabling the access control module.  If this is the case, manually updating each node should add it to the node_access table and fix the problem."
+msgstr ""
+
+#: devel_node_access.module:110
+msgid "All Nodes Represented"
 msgstr ""
 
 #: devel_node_access.module:111
-msgid "Public Nodes"
+msgid "All nodes are represented in the node_access table."
 msgstr ""
 
 #: devel_node_access.module:118
+msgid "Access Granted to All Nodes (Some Users)"
+msgstr ""
+
+#: devel_node_access.module:119
+msgid "Your node_access table contains entries that may be granting some users access to all nodes.  This may be perfectly normal, depending on which access control module(s) you use."
+msgstr ""
+
+#: devel_node_access.module:132
+msgid "Access Granted to Some Nodes"
+msgstr ""
+
+#: devel_node_access.module:134
+msgid "The following realms appear to grant all users access to some specific nodes.  This may be perfectly normal, if some of your content is available to the public."
+msgstr ""
+
+#: devel_node_access.module:136
+msgid "public nodes"
+msgstr ""
+
+#: devel_node_access.module:143
+msgid "Public Nodes"
+msgstr ""
+
+#: devel_node_access.module:150
 msgid "Summary by Realm"
 msgstr ""
 
-#: devel_node_access.module:120
+#: devel_node_access.module:151
 msgid "The following realms grant limited access to some specific nodes."
 msgstr ""
 
-#: devel_node_access.module:122
+#: devel_node_access.module:152
 msgid "private nodes"
 msgstr ""
 
-#: devel_node_access.module:129
+#: devel_node_access.module:159
 msgid "Protected Nodes"
 msgstr ""
 
-#: devel_node_access.module:155 devel_node_access.info:0
+#: devel_node_access.module:204 devel_node_access.info:0
 msgid "Devel Node Access"
 msgstr ""
 
-#: devel_node_access.module:170
+#: devel_node_access.module:207
+msgid "Devel Node Access by User"
+msgstr ""
+
+#: devel_node_access.module:227;251
 msgid "node"
 msgstr ""
 
-#: devel_node_access.module:170
+#: devel_node_access.module:227;251
 msgid "gid"
 msgstr ""
 
-#: devel_node_access.module:170
+#: (duplicate) devel_node_access.module:227;251;438;393 
 msgid "view"
 msgstr ""
 
-#: devel_node_access.module:170
+#: devel_node_access.module:227;251;438
 msgid "update"
 msgstr ""
 
-#: devel_node_access.module:170
+#: devel_node_access.module:227;251;438
 msgid "delete"
 msgstr ""
 
-#: devel_node_access.module:170
+#: devel_node_access.module:227;251
 msgid "explained"
 msgstr ""
 
-#: devel_node_access.module:183
+#: devel_node_access.module:244;419
+msgid "ok"
+msgstr ""
+
+#: devel_node_access.module:244
+msgid "Highest priority grant, in !na."
+msgstr ""
+
+#: devel_node_access.module:245
+msgid "ignored"
+msgstr ""
+
+#: devel_node_access.module:245
+msgid "Lower priority grant, not in !na and thus ignored."
+msgstr ""
+
+#: devel_node_access.module:246
+msgid "empty"
+msgstr ""
+
+#: devel_node_access.module:246
+msgid "Does not grant any access, but could block lower priority grants."
+msgstr ""
+
+#: devel_node_access.module:247
+msgid "missing"
+msgstr ""
+
+#: devel_node_access.module:247
+msgid "Should be in !na but isn't; run Rebuild Permissions to fix this!"
+msgstr ""
+
+#: devel_node_access.module:248
+msgid "illegitimate"
+msgstr ""
+
+#: devel_node_access.module:248
+msgid "Should NOT be in !na because of lower priority!"
+msgstr ""
+
+#: devel_node_access.module:249
+msgid "alien"
+msgstr ""
+
+#: devel_node_access.module:249
+msgid "Should NOT be in !na because of unknown origin!"
+msgstr ""
+
+#: devel_node_access.module:251
+msgid "prio"
+msgstr ""
+
+#: devel_node_access.module:251
+msgid "status"
+msgstr ""
+
+#: devel_node_access.module:366
+msgid "This entry grants access to this node to this user."
+msgstr ""
+
+#: devel_node_access.module:387
+msgid "This user has the %administer_nodes permission and thus full access to all nodes."
+msgstr ""
+
+#: devel_node_access.module:393
+msgid "This user is granted %view access to node %nid !by_what"
+msgstr ""
+
+#: devel_node_access.module:403
+msgid "by the %module module itself."
+msgstr ""
+
+#: devel_node_access.module:419
+msgid "by one or more of the following grants (if they are present above with status '!ok'): !list"
+msgstr ""
+
+#: devel_node_access.module:422
+msgid "as author of the node."
+msgstr ""
+
+#: devel_node_access.module:430
 msgid "node_access entries for nodes shown on this page"
 msgstr ""
 
-#: devel_node_access.module:210
+#: devel_node_access.module:438
+msgid "username"
+msgstr ""
+
+#: devel_node_access.module:455
+msgid "Access permissions by user"
+msgstr ""
+
+#: devel_node_access.module:500
+msgid "yes"
+msgstr ""
+
+#: devel_node_access.module:503
+msgid "no"
+msgstr ""
+
+#: devel_node_access.module:514
 msgid "Node Access: realm"
 msgstr ""
 
-#: devel_node_access.module:216
+#: devel_node_access.module:520
 msgid "Node Access Realm"
 msgstr ""
 
-#: devel_node_access.module:228
+#: devel_node_access.module:532
 msgid "Node Access: Realm"
+msgstr ""
+
+#: (duplicate) devel_node_access.module:78 
+msgid "Rebuild permissions"
+msgstr ""
+
+#: (duplicate) devel_node_access.module:387 
+msgid "administer nodes"
 msgstr ""
 
 #: devel_node_access.module:0
@@ -801,32 +939,36 @@ msgstr ""
 msgid "Configure"
 msgstr ""
 
-#: macro.module:155
+#: macro.module:176
 msgid "play macro"
 msgstr ""
 
-#: macro.module:179
+#: macro.module:200
 msgid "Macro settings"
 msgstr ""
 
-#: macro.module:184
+#: macro.module:205
 msgid "Enable macro recording"
 msgstr ""
 
-#: macro.module:186
+#: macro.module:207
 msgid "Set whether the macro engine will record form submissions."
 msgstr ""
 
-#: macro.module:190
+#: macro.module:211
 msgid "Delete recorded macro"
 msgstr ""
 
-#: macro.module:192
+#: macro.module:213
 msgid "Set whether to clear previously recorded macro."
 msgstr ""
 
-#: macro.module:209
+#: macro.module:230
 msgid "An error has occured with macro #%macro_number , form_id %form_id. Please check the errors displayed for more details."
+msgstr ""
+
+#: macro.module:77
+msgid "administer macro settings"
 msgstr ""
 
 #: macro.module:77
@@ -845,7 +987,7 @@ msgstr ""
 msgid "Various blocks, pages, and functions for developers."
 msgstr ""
 
-#: devel.info:0 devel_generate.info:0 devel_node_access.info:0 macro.info:0
+#: devel.info:0 devel_generate.info:0 devel_node_access.info:0 macro.info:0 performance/performance.info:0
 msgid "Development"
 msgstr ""
 
@@ -875,5 +1017,293 @@ msgstr ""
 
 #: generate/generate-og2list-mail.php:38
 msgid "Y/m/d - G:i"
+msgstr ""
+
+#: performance/performance.module:14 performance/performance.info:0
+msgid "Performance Logging"
+msgstr ""
+
+#: performance/performance.module:15
+msgid "Logs performance data: page generation times and memory usage."
+msgstr ""
+
+#: performance/performance.module:23
+msgid "Clear APC"
+msgstr ""
+
+#: performance/performance.module:24
+msgid "Clears performance statistics collected in APC."
+msgstr ""
+
+#: performance/performance.module:32
+msgid "Performance Logs"
+msgstr ""
+
+#: performance/performance.module:33
+msgid "View performance logs: summary and details."
+msgstr ""
+
+#: performance/performance.module:38
+msgid "Performance Logs: Summary"
+msgstr ""
+
+#: performance/performance.module:39
+msgid "View summary performance logs: page generation times and memory usage."
+msgstr ""
+
+#: performance/performance.module:45
+msgid "Performance Logs: Details"
+msgstr ""
+
+#: performance/performance.module:46
+msgid "View detailed, per page, performance logs: page generation times and memory usage."
+msgstr ""
+
+#: performance/performance.module:56
+msgid "Disabled"
+msgstr ""
+
+#: performance/performance.module:57
+msgid "Enabled"
+msgstr ""
+
+#: performance/performance.module:61
+msgid "APC is enabled. It is reasonably safe to enable summary logging on live sites."
+msgstr ""
+
+#: performance/performance.module:64
+msgid "APC is not enabled. It is <strong>not</strong> safe to enable summary logging to the database on live sites."
+msgstr ""
+
+#: performance/performance.module:69
+msgid "Logging mode"
+msgstr ""
+
+#: performance/performance.module:75
+msgid "Detailed logging"
+msgstr ""
+
+#: performance/performance.module:78
+msgid "Log memory usage and page generation times for every page. This logging mode is <strong>not</strong> suitable for large sites, as it can degrade performance severly. It is intended for use by developers, or on a test copy of the site."
+msgstr ""
+
+#: performance/performance.module:83
+msgid "Summary logging (DB)"
+msgstr ""
+
+#: performance/performance.module:86
+msgid "Log summary data, such as average and maximum page generation times and memory usage to the database. This logging mode is <strong>not</strong> suitable for most live sites."
+msgstr ""
+
+#: performance/performance.module:96
+msgid "Summary logging (APC)"
+msgstr ""
+
+#: performance/performance.module:100
+msgid "Log summary data, such as average and maximum page generation times and memory usage to APC, if installed. The summary will be stored in APC memory, and hence there is no load on the database. This logging to APC is suitable for most live sites, unless the number of unique page accesses is excessively high."
+msgstr ""
+
+#: performance/performance.module:105
+msgid "Other"
+msgstr ""
+
+#: performance/performance.module:111
+msgid "Show titles instead of URLs"
+msgstr ""
+
+#: performance/performance.module:114
+msgid "URLs only"
+msgstr ""
+
+#: performance/performance.module:115
+msgid "URLs and Titles as hyperlinks"
+msgstr ""
+
+#: performance/performance.module:117
+msgid "In the reports, show path titles hyperlinked to the URLs, or just the path URLs."
+msgstr ""
+
+#: performance/performance.module:122
+msgid "Database Query timing and count"
+msgstr ""
+
+#: performance/performance.module:125
+msgid "Log database timing and count for each page. This is useful to know if the bottleneck is in excessive database query counts, or the time required to execute those queries is high. Please note that this will automatically be enabled and disabled in the settings of the devel module. Also note that enabling this will incurr some memory overhead as query times and the actual query strings are cached in memory as arrays."
+msgstr ""
+
+#: performance/performance.module:130
+msgid "Accesses threshold"
+msgstr ""
+
+#: performance/performance.module:133
+msgid "When displaying the summary report and using APC, only pages with the number of accesses larger than the specified threshold will be shown. Also, when cron runs, pages with that number of accesses or less will be removed, so as not to overflow APC's shared memory. This is useful on a live site with a high volume of hits. On a development site, you probably want this set to 0, so you can see all pages."
+msgstr ""
+
+#: performance/performance.module:151
+msgid "Performance detailed logging is !link. This can cause severe issues on live sites."
+msgstr ""
+
+#: performance/performance.module:151;158
+msgid "enabled"
+msgstr ""
+
+#: performance/performance.module:158
+msgid "Query timing and count logging is !link. This can cause memory size per page to be larger than normal."
+msgstr ""
+
+#: performance/performance.module:165
+msgid "APC has been configured for !size, which is less than the recommended 48 MB of memory. If you encounter errors when viewing the summary report, then try to increase that limit for APC."
+msgstr ""
+
+#: performance/performance.module:347
+msgid "Summary performance log is not enabled. Go to the !link to enable it."
+msgstr ""
+
+#: performance/performance.module:351;457
+msgid "Path"
+msgstr ""
+
+#: performance/performance.module:352
+msgid "Last access"
+msgstr ""
+
+#: performance/performance.module:353
+msgid "# accesses"
+msgstr ""
+
+#: performance/performance.module:354
+msgid "Max Memory (MB)"
+msgstr ""
+
+#: performance/performance.module:355
+msgid "Avg Memory (MB)"
+msgstr ""
+
+#: performance/performance.module:356
+msgid "Milliseconds (Max)"
+msgstr ""
+
+#: performance/performance.module:357
+msgid "Milliseconds (Avg)"
+msgstr ""
+
+#: performance/performance.module:358
+msgid "Query Millisecs (Max)"
+msgstr ""
+
+#: performance/performance.module:359
+msgid "Query Millisecs (Avg)"
+msgstr ""
+
+#: performance/performance.module:360
+msgid "Query Count (Max)"
+msgstr ""
+
+#: performance/performance.module:361
+msgid "Query Count (Avg)"
+msgstr ""
+
+#: performance/performance.module:416
+msgid "No statistics available yet."
+msgstr ""
+
+#: performance/performance.module:420
+msgid "Showing !shown paths with more than !threshold accesses, out of !total total paths."
+msgstr ""
+
+#: performance/performance.module:424
+msgid "Showing all !total paths."
+msgstr ""
+
+#: performance/performance.module:437
+msgid "Average memory per page: !mb_avg MB"
+msgstr ""
+
+#: performance/performance.module:438
+msgid "Average milliseconds per page: !ms_avg"
+msgstr ""
+
+#: performance/performance.module:439
+msgid "Total number of page accesses: !accesses"
+msgstr ""
+
+#: performance/performance.module:440
+msgid "First access: !access."
+msgstr ""
+
+#: performance/performance.module:441
+msgid "Last access: !access."
+msgstr ""
+
+#: performance/performance.module:451
+msgid "Detail performance log is not enabled. Go to the !link to enable it."
+msgstr ""
+
+#: performance/performance.module:455
+msgid "#"
+msgstr ""
+
+#: performance/performance.module:456
+msgid "Date"
+msgstr ""
+
+#: performance/performance.module:458
+msgid "Memory (MB)"
+msgstr ""
+
+#: performance/performance.module:459
+msgid "Milliseconds (Total)"
+msgstr ""
+
+#: performance/performance.module:460
+msgid "Anonymous?"
+msgstr ""
+
+#: performance/performance.module:461
+msgid "# Queries"
+msgstr ""
+
+#: performance/performance.module:462
+msgid "Query Milliseconds"
+msgstr ""
+
+#: performance/performance.module:477
+msgid "Yes"
+msgstr ""
+
+#: performance/performance.module:477
+msgid "No"
+msgstr ""
+
+#: performance/performance.module:485
+msgid "No log messages available."
+msgstr ""
+
+#: performance/performance.module:524
+msgid "Confirm APC clear"
+msgstr ""
+
+#: performance/performance.module:528
+msgid "Are you sure you want to clear the APC statistics for this site?"
+msgstr ""
+
+#: performance/performance.module:530
+msgid "This will clear all the collected performance statistics stored in APC. This action cannot be undone."
+msgstr ""
+
+#: performance/performance.module:531
+msgid "Clear"
+msgstr ""
+
+#: performance/performance.module:548
+msgid "Performance statistics collected in APC has been cleared."
+msgstr ""
+
+#: performance/performance.module:0
+msgid "performance"
+msgstr ""
+
+#: performance/performance.info:0
+msgid "Logs detailed and/or summary page generation time and memory consumption for page requests."
 msgstr ""
 
