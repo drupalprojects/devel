@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Devel\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2008-12-21 14:51+0100\n"
+"PO-Revision-Date: 2008-12-21 15:49+0100\n"
 "Last-Translator: Alexander Haß\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -1318,12 +1318,4 @@ msgstr "Leistung"
 #: performance/performance.info:0
 msgid "Logs detailed and/or summary page generation time and memory consumption for page requests."
 msgstr ""
-
-#, fuzzy
-#~ msgid "Devel load"
-#~ msgstr "Devel laden"
-#~ msgid "%message in %file on line %line."
-#~ msgstr "%message in %file in Zeile %line."
-#~ msgid "Content deleted."
-#~ msgstr "Inhalt gelöscht."
 
