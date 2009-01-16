@@ -666,6 +666,16 @@ function devel_exit($destination = NULL) {
   }
 }
 
+// Borrowed from Drush.
+function devel_verify_cli() {
+  if (php_sapi_name() == 'cgi') {
+    return (is_numeric($_SERVER['argc']) && $_SERVER['argc'] > 0);
+  }
+  
+  return (php_sapi_name() == 'cli');
+}
+
+
 /**
  * See devel_start() which registers this function as a shutdown function.
  */
@@ -698,7 +708,7 @@ function devel_shutdown_real() {
     }
 
     // don't append gunk to CLI scripts
-    if (empty($_SERVER['REQUEST_METHOD'])) {
+    if (devel_verify_cli()) {
       return;
     }
 
