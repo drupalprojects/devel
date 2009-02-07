@@ -537,3 +537,108 @@ function performance_url($path = '', $title = '') {
     return $path;
   }
 }
+
+/**
+ * Implementation of hook_nagios_info()
+ */
+function performance_nagios_info() {
+  return array(
+    'name'   => 'Performance logging',
+    'id'     => 'PERF',
+  );
+}
+
+/**
+ * Implementation of hook_nagios()
+ */
+function performance_nagios() {
+  $info = performance_nagios_info();
+  $id = $info['id']; 
+
+  // Find out if we have what we need enabled
+  $sum = array();
+
+  $sum[] = variable_get('performance_summary_db', 0);
+  $sum[] = variable_get('performance_summary_apc', 0);
+  $go = array_sum($sum);
+
+  if (!$go) {
+    return array(
+      $id => array(
+        'status' => NAGIOS_STATUS_UNKNOWN,
+        'text'   => t('Performance logging is not enabled'),
+      ),
+    );
+  }
+
+  // Initialize variables
+  $total_rows = $shown = $last_max = $total_bytes = $total_millisecs = $total_accesses = 0;
+
+  if (variable_get('performance_summary_apc', 0) && function_exists('apc_cache_info')) {
+    // Get the data from the APC cache
+    foreach(performance_apc_list_all() as $key) {
+      $data_list[] = apc_fetch($key);
+    }
+  }
+  else {
+    // Get the data form the database table
+    $result = db_query("SELECT * FROM {performance_summary}");
+    while($row = db_fetch_array($result)) {
+      $data_list[] = $row;
+    }
+  }
+
+  foreach($data_list as $data) {
+    $total_rows++;
+
+    // Calculate running averages
+    $total_bytes += $data['bytes_avg'];
+    $total_millisecs += $data['millisecs_avg'];
+    $total_accesses += $data['num_accesses'];
+  }
+
+  // Protect against divide by zero
+  if ($total_rows > 0) {
+    $mb_avg = number_format($total_bytes/$total_rows/1024/1024, 1);
+    $ms_avg = number_format($total_millisecs/$total_rows, 2);
+  }
+  else {
+    $mb_avg = '-';
+    $ms_avg = '-';
+  }
+
+  $status = NAGIOS_STATUS_OK;
+  $mb_thresh = variable_get('performance_nagios_mb', 8);
+  $ms_thresh = variable_get('performance_nagios_ms', 500);
+  if ($ms_avg > $ms_thresh || $mb_avg > $mb_thresh) {
+    $status = NAGIOS_STATUS_CRITICAL;
+  }
+
+  return array(
+    $id => array(
+      'status' => $status,
+      'text'   => $total_accesses . '/' .  $ms_avg . 'ms/' . $mb_avg . 'MB',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_nagios_settings()
+ */
+function performance_nagios_settings() {
+  $form['performance_nagios_ms'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Critical page generation time (milliseconds)'),
+    '#default_value' => variable_get('performance_nagios_ms', 500),
+    '#description'   => t('Number of milliseconds (average) considered critical.')
+  );
+
+  $form['performance_nagios_mb'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Critical memory (MB)'),
+    '#default_value' => variable_get('performance_nagios_mb', 8),
+    '#description'   => t('Number of megabytes (average) considered critical.')
+  );
+  return $form;
+}
+
