@@ -96,17 +96,6 @@ function performance_settings() {
     '#collapsible' => TRUE,
   );
 
-  $form['other']['performance_titles'] = array(
-    '#type'          => 'select',
-    '#title'         => t('Show titles instead of URLs'),
-    '#default_value' => variable_get('performance_titles', 0),
-    '#options'       => array(
-      0 => t('URLs only'),
-      1 => t('URLs and Titles as hyperlinks'),
-    ),
-    '#description'   => t('In the reports, show path titles hyperlinked to the URLs, or just the path URLs.'),
-  );
-
   $form['other']['dev_query'] = array(
     '#type'          => 'select',
     '#disabled'      => TRUE,
@@ -204,12 +193,10 @@ function performance_log_summary_apc($params = array()) {
       'query_count_max' => max($params['query_count'], $data['query_count_max']),
       'query_count_avg' => ($data['query_count_avg'] + $params['query_count']) / 2,
       'num_accesses'    => $data['num_accesses'] + 1,
-      'title'           => $data['title'],
     );
   }
   else {
     $data = array(
-      'title'           => strip_tags(drupal_get_title()),
       'path'            => $params['path'],
       'bytes_max'       => $params['mem'], 
       'bytes_avg'       => $params['mem'],
@@ -255,12 +242,11 @@ function performance_log_summary_db($params = array()) {
   else {
     // First time we log this path, write fresh values
     db_query("INSERT INTO {performance_summary}
-      (title, path, last_access, num_accesses,
+      (path, last_access, num_accesses,
       bytes_max, bytes_avg, millisecs_max, millisecs_avg,
       query_count_max, query_count_avg, query_timer_max, query_timer_avg)
       VALUES 
-      ('%s', '%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-      strip_tags(drupal_get_title()),
+      ('%s', %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
       $params['path'],
       time(),
       1,
@@ -279,8 +265,7 @@ function performance_log_summary_db($params = array()) {
 function performance_log_details($params = array()) {
   global $user;
   $anon = ($user->uid) ? FALSE : TRUE;
-  db_query("INSERT INTO {performance_detail} (title, path, anon, bytes, millisecs, timestamp, query_timer, query_count) VALUES ('%s', '%s', %d, %d, %d, %d, %d, %d)",
-    strip_tags(drupal_get_title()),
+  db_query("INSERT INTO {performance_detail} (path, anon, bytes, millisecs, timestamp, query_timer, query_count) VALUES ('%s', %d, %d, %d, %d, %d, %d)",
     $params['path'],
     $anon,
     $params['mem'],
@@ -365,7 +350,7 @@ function performance_view_summary() {
 
     if ($data['num_accesses'] > $threshold) {
       $shown++;
-      $row_data[] = performance_url($data['path'], $data['title']);
+      $row_data[] = $data['path'];
       $row_data[] = format_date($data['last_access'], 'small');
       $row_data[] = $data['num_accesses'];
       $row_data[] = number_format($data['bytes_max']/1024/1024, 2);
@@ -445,7 +430,7 @@ function performance_view_details() {
 
     $row_data[] = $data['pid'];
     $row_data[] = format_date($data['timestamp'], 'small');
-    $row_data[] = performance_url($data['path'], $data['title']);
+    $row_data[] = $data['path'];
     $row_data[] = number_format($data['bytes']/1024/1024, 2);
     $row_data[] = $data['millisecs'];
     $row_data[] = ($data['anon']) ? t('Yes') : t('No');
@@ -524,18 +509,6 @@ function performance_clear_apc_confirm_submit($form_id, &$form) {
 
   drupal_set_message(t('Performance statistics collected in APC has been cleared.'));
   drupal_goto('admin/settings/performance');
-}
-
-function performance_url($path = '', $title = '') {
-  if (variable_get('performance_titles', 0)) {
-    // Show titles
-    $ret = ($title) ? l($title, $path) : l($path, $path);
-    return $ret;
-  }
-  else {
-    // Show URLs only
-    return $path;
-  }
 }
 
 /**
