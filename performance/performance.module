@@ -116,19 +116,8 @@ function performance_settings() {
   return system_settings_form($form);
 }
 
-function performance_init() {
-  if (!variable_get('cache', 0)) {
-    // When page caching is off, we don't hook_exit(), instead
-    // we register a function that runs as late as possible.
-    register_shutdown_function('performance_shutdown');
-  }
-}
-
-function performance_exit() {
-  if (variable_get('cache', 0)) {
-    // Page caching is on, so we run the shutdown function directly
-    performance_shutdown();
-  }
+function performance_boot() {
+  register_shutdown_function('performance_shutdown');
 }
 
 function performance_shutdown() {
