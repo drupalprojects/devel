@@ -30,14 +30,14 @@ function performance_menu($may_cache) {
       'path'               => 'admin/logs/performance_logging_summary',
       'title'              => t('Performance Logs: Summary'),
       'description'        => t('View summary performance logs: page generation times and memory usage.'),
-      'access'             => user_access('access site reports'),
+      'access'             => user_access('access administration pages'),
       'callback'           => 'performance_view_summary',
     );
     $items[] = array(
       'path'               => 'admin/logs/performance_logging_details',
       'title'              => t('Performance Logs: Details'),
       'description'        => t('View detailed, per page, performance logs: page generation times and memory usage.'),
-      'access'             => user_access('access site reports'),
+      'access'             => user_access('access administration pages'),
       'callback'           => 'performance_view_details',
     );
   }
