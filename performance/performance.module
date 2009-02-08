@@ -134,9 +134,18 @@ function performance_exit() {
 function performance_shutdown() {
   global $queries;
 
+  if ($_GET['q']) {
+    // q= has a value, use that for the path
+    $path = $_GET['q'];
+  }
+  else {
+    // q= is empty, use whatever the site_frontpage is set to
+    $path = variable_get('site_frontpage', 'node');
+  }
+
   $params = array(
     'timer' => timer_read('page'),
-    'path'  => $_GET['q'],
+     'path'  => $path,
   );
 
   // Memory
