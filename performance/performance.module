@@ -99,17 +99,6 @@ function performance_settings() {
     '#collapsible' => TRUE,
   );
 
-  $form['other']['performance_titles'] = array(
-    '#type'          => 'select',
-    '#title'         => t('Show titles instead of URLs'),
-    '#default_value' => variable_get('performance_titles', 0),
-    '#options'       => array(
-      0 => t('URLs only'),
-      1 => t('URLs and Titles as hyperlinks'),
-    ),
-    '#description'   => t('In the reports, show path titles hyperlinked to the URLs, or just the path URLs.'),
-  );
-
   $form['other']['dev_query'] = array(
     '#type'          => 'select',
     '#title'         => t('Database Query timing and count'),
