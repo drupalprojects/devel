@@ -564,24 +564,24 @@ function performance_nagios() {
     $total_rows++;
 
     // Calculate running averages
-    $total_bytes += $data['bytes_avg'];
-    $total_millisecs += $data['millisecs_avg'];
-    $total_accesses += $data['num_accesses'];
-    $total_query_time += $data['query_timer_avg'];
+    $total_bytes       += $data['bytes_avg'];
+    $total_millisecs   += $data['millisecs_avg'];
+    $total_accesses    += $data['num_accesses'];
+    $total_query_time  += $data['query_timer_avg'];
     $total_query_count += $data['query_count_avg'];
   }
 
   // Protect against divide by zero
   if ($total_rows > 0) {
-    $mb_avg = number_format($total_bytes/$total_rows/1024/1024, 1);
-    $ms_avg = number_format($total_millisecs/$total_rows, 2);
-    $ms_query = number_format($total_query_time/$total_rows, 2);
-    $query_count = number_format($total_query_count/$total_rows, 2);
+    $ms_avg      = number_format($total_millisecs   / $total_rows, 1);
+    $ms_query    = number_format($total_query_time  / $total_rows, 1);
+    $mb_avg      = number_format($total_bytes       / $total_rows/1024/1024, 1);
+    $query_count = number_format($total_query_count / $total_rows, 2);
   }
   else {
-    $mb_avg = '-';
     $ms_avg = '-';
     $ms_query = '-';
+    $mb_avg = '-';
     $query_count = '-';
   }
 
