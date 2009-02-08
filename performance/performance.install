@@ -15,7 +15,6 @@ function performance_install() {
         query_count INT          NOT NULL DEFAULT '0',
         query_timer INT          NOT NULL DEFAULT '0',
         anon        INT(1)       DEFAULT '1',
-        title       VARCHAR(255) DEFAULT NULL,
         path        VARCHAR(255) DEFAULT NULL,
         PRIMARY KEY (pid),
         KEY (timestamp)
@@ -33,7 +32,6 @@ function performance_install() {
         query_timer_max INT          NOT NULL DEFAULT '0',
         query_timer_avg INT          NOT NULL DEFAULT '0',
         num_accesses    INT          NOT NULL DEFAULT '0',
-        title           VARCHAR(255) DEFAULT NULL,
         PRIMARY KEY (path),
         KEY  (last_access)
         ) /*!40100 DEFAULT CHARACTER SET UTF8 */ ");
@@ -48,7 +46,6 @@ function performance_install() {
         query_count  INT          NOT NULL DEFAULT '0',
         query_timer  INT          NOT NULL DEFAULT '0',
         anon         SMALLINT     DEFAULT '1',
-        title        VARCHAR(255) DEFAULT NULL,
         path         VARCHAR(255) DEFAULT NULL,
         PRIMARY KEY (pid)
       )");
@@ -66,7 +63,6 @@ function performance_install() {
         query_timer_max INT          NOT NULL DEFAULT '0',
         query_timer_avg INT          NOT NULL DEFAULT '0',
         num_accesses    INT          NOT NULL DEFAULT '0',
-        title           VARCHAR(255) DEFAULT NULL,
         PRIMARY KEY (path)
       )");
       db_query("CREATE INDEX {performance_summary}_last_access_idx ON {performance_summary} (last_access)");
