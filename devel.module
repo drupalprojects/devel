@@ -787,12 +787,7 @@ function devel_store_queries() {
         $qids[$hash] = db_result(devel_db_query("SELECT qid FROM {devel_queries} WHERE hash = '%s'", $hash));
         if (!$qids[$hash]) {
           devel_db_query("INSERT INTO {devel_queries} (query, function, hash) VALUES ('%s', '%s', '%s')", $query, $function, $hash);
-          if($db_type=='pgsql') {
-            $qids[$hash] = db_result(db_query("SELECT lastval();"));
-          }
-          else {
-            $qids[$hash] = db_last_insert_id();
-          }
+          db_last_insert_id('devel_queries', 'qid');
         }
       }
       $fields[] = "(%d, '%f')";
