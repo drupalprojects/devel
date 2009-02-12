@@ -10,7 +10,7 @@ function performance_menu($may_cache) {
   if ($may_cache) {
     $items[] = array(
       'path'               => 'admin/settings/performance_logging',
-      'title'              => t('Performance Logging'),
+      'title'              => t('Performance logging'),
       'description'        => t('Logs performance data: page generation times and memory usage.'),
       'access'             => user_access('access administration pages'),
       'callback'           => 'drupal_get_form',
