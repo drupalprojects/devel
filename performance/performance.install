@@ -132,7 +132,7 @@ function performance_requirements($phase) {
 
 function performance_update_1() {
   $ret = array();
-  db_drop_field($ret, 'performance_detail', 'title');
-  db_drop_field($ret, 'performance_summary', 'title');
+  $ret[] = update_sql("ALTER TABLE {performance_detail}  DROP title");
+  $ret[] = update_sql("ALTER TABLE {performance_summary} DROP title");
   return $ret;
 }
