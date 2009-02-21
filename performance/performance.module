@@ -593,10 +593,10 @@ function performance_nagios() {
     $mb_avg      = number_format($total_bytes       / $total_rows/1024/1024, 1);
   }
   else {
-    $ms_avg = '-';
-    $ms_query = '-';
-    $mb_avg = '-';
-    $query_count = '-';
+    $ms_avg = '';
+    $ms_query = '';
+    $mb_avg = '';
+    $query_count = '';
   }
 
   $status = NAGIOS_STATUS_OK;
