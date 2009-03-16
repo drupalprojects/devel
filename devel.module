@@ -1487,7 +1487,7 @@ function devel_query_table($queries, $counts) {
       $cell[$i][] = $count;
     }
     $cell[$i][] = l($function, "http://$api/api/$version/function/$function");
-    $pos = strpos($query[0], '*/') + 3;
+    $pos = strpos($query[0], '*/') !== FALSE ? strpos($query[0], '*/') + 3 : 0;
     $cell[$i][] = check_plain(substr($query[0], $pos));
     $i++;
     unset($diff, $count);
