@@ -167,6 +167,12 @@ function devel_generate_content_form() {
     '#title' => t('Add an url alias for each node.'),
     '#default_value' => FALSE,
   );
+  $form['add_statistics'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Generate node view statistics (node_counter table).'),
+    '#default_value' => TRUE,
+    '#access' => module_exists('statistics'),
+  );
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Do it!'),

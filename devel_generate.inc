@@ -369,6 +369,19 @@ function devel_generate_add_upload(&$node) {
 }
 
 /**
+ * Generate statistics information for a node.
+ *
+ * @param $node
+ *   A node object.
+ */
+function devel_generate_add_statistics($node) {
+  $totalcount = mt_rand(0, 500);
+  $daycount = mt_rand(0, $totalcount);
+  $timestamp = time() - mt_rand(0, $node->created);
+  db_query('INSERT INTO {node_counter} (nid, daycount, totalcount, timestamp) VALUES (%d, %d, %d, %d)', $node->nid, $daycount, $totalcount, $timestamp);
+}
+
+/**
  * Handle the devel_generate_content_form request to kill all of the content.
  * This is used by both the batch and non-batch branches of the code.
  *
@@ -455,6 +468,11 @@ function devel_generate_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       // Add an url alias. Cannot happen before save becasue we don't know the nid.
       if ($results['add_alias']) {
         path_set_alias("node/$node->nid", "node-$node->nid-$node->type");
+      }
+
+      // Add node statistics.
+      if ($results['add_statistics']) {
+        devel_generate_add_statistics($node);
       }
       break;  
     }
