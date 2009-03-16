@@ -58,8 +58,9 @@ function devel_generate_content($form_state) {
   drupal_set_message(format_plural($form_state['values']['num_nodes'], '1 node created.', '@count nodes created'));
 }
 
-function devel_generate_add_comments($node, $users, $num_comments, $title_length = 8) {
+function devel_generate_add_comments($node, $users, $max_comments, $title_length = 8) {
   // Insert new data:
+  $num_comments = mt_rand(1, $max_comments);
   for ($i = 1; $i <= $num_comments; $i++) {
     $comment->nid = $node->nid;
     $comment->cid = NULL;
@@ -461,8 +462,8 @@ function devel_generate_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         }
         break;
     case 'insert':
-      if ($results['num_comments']) {
-        devel_generate_add_comments($node, $results['users'], $results['num_comments'], $results['title_length']);
+      if ($results['max_comments']) {
+        devel_generate_add_comments($node, $results['users'], $results['max_comments'], $results['title_length']);
       }
     
       // Add an url alias. Cannot happen before save becasue we don't know the nid.
