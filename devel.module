@@ -21,6 +21,8 @@ define('DEVEL_ERROR_HANDLER_BACKTRACE', 2);
 
 define('DEVEL_MIN_TEXTAREA', 50);
 
+define('DEVEL_CURRENT_DRUPAL_VERSION',5);
+
 /**
  * Implementation of hook_help().
  */
@@ -624,7 +626,13 @@ function devel_function_reference() {
   $ufunctions = $functions['user'];
   sort($ufunctions);
   foreach($ufunctions as $function) {
-    $links[] = l($function, "http://api.drupal.org/api/HEAD/function/$function");
+    if (class_exists('ReflectionFunction')) {
+      $func = new ReflectionFunction($function);
+      $isNotCore = stristr($func->getFileName(), realpath($_SERVER['DOCUMENT_ROOT'] . '/sites')) ? true: false;
+    }
+    if (!$isNotCore) {
+      $links[] = l($function, "http://api.drupal.org/api/function/$function/" . DEVEL_CURRENT_DRUPAL_VERSION);
+    }
   }
   return theme('item_list', $links);
 }
