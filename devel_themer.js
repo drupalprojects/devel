@@ -67,6 +67,10 @@ if (Drupal.jsEnabled) {
   });
 }
 
+/**
+ * Known issue: IE does NOT support outline css property.
+ * Solution: use another browser
+ */
 function themerHilight(obj) {
   // hilight the current object (and un-highlight the last)
   if (lastObj != false) {
