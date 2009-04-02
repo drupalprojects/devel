@@ -319,9 +319,9 @@ function devel_display_source($standalone = TRUE) {
 function devel_highlight_file($path = NULL, $standalone = FALSE) {
   if (file_exists($path)) {
     $source = highlight_file($path, TRUE);
-    // add anchor links before all functions
-    // with doxygen
-    $source = preg_replace('!(\/\*\*.*?\*\/.*?)<br.*?function.*?#0000BB">(.*?)<\/span>!', '<a id="$2"></a> $0', $source);
+    // add anchor links before all functions so that we can link to a function within the source
+    // ** commented out because regexes aren't working **
+    //$source = preg_replace('!(\/\*\*.*?\*\/.*?)<br.*?function.*?#0000BB">(.*?)<\/span>!', '<a id="$2"></a> $0', $source);
     //$source = preg_replace('!(\/\*\*.*?\*\/).*?function.*?#0000BB">(.*?)<\/span>!', '<a id="$2"></a> $0', $source);
     if ($standalone) {
       $source = <<<EOT

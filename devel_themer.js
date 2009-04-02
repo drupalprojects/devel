@@ -23,7 +23,7 @@ if (Drupal.jsEnabled) {
     var themerEnabled = 0;
     var themerToggle = function () {
       themerEnabled = 1 - themerEnabled;
-      $('input', this).attr('checked', themerEnabled ? 'checked' : '');
+      $('#themer-toggle :checkbox').attr('checked', themerEnabled ? 'checked' : '');
       $('#themer-popup').css('display', themerEnabled ? 'block' : 'none');
       if (themerEnabled) {
         document.onclick = themerEvent;
@@ -31,11 +31,7 @@ if (Drupal.jsEnabled) {
           $(lastObj).css('outline', '3px solid #999');
         }
         if (!thmrSpanified) {
-          // turn on the throbber
-          //$('#themer-toggle img.throbber').show();
-          
-          // WTF?
-          window.setTimeout('spanify()', 100);
+          spanify();
         }
       }
       else {
