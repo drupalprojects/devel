@@ -245,7 +245,7 @@ function thmrRebuildPopup(objs) {
   else {
     $('#themer-popup div.duration').empty().prepend('<span class="dt">' + strs.duration + '</span>' + vars.duration + ' ms');
     $('#themer-popup dd.candidates').empty().prepend(vars.candidates.join('<span class="delimiter"> < </span>'));
-    uri = Drupal.settings.devel_themer_uri + '/' + id;
+    var uri = Drupal.settings.devel_themer_uri + '/' + id;
     if (type == 'func') {
       if (vars.candidates != undefined && vars.candidates.length != 0) {
         // populate the candidates
@@ -254,14 +254,18 @@ function thmrRebuildPopup(objs) {
         $('#themer-popup dd.preprocessors').empty();
         $('#themer-popup dt.preprocessors-type').empty();
       }
-      $('#themer-popup div.attributes').empty().load(uri).prepend('<h4>'+ strs.function_arguments + '</h4>');
+      $('#themer-popup div.attributes').empty().load(uri, {}, function() {
+        $(this).prepend('<h4>'+ strs.function_arguments + '</h4>');
+      });
       $('#themer-popup div.used').empty();
     }
     else {
       $('#themer-popup dt.candidates-type').empty().prepend(strs.candidate_files);
       $('#themer-popup dd.preprocessors').empty().prepend(vars.preprocessors.join('<span class="delimiter"> + </span>'));
       $('#themer-popup dt.preprocessors-type').empty().prepend(strs.preprocessors);
-      $('#themer-popup div.attributes').empty().load(uri).prepend('<h4>'+ strs.template_variables + '</h4>');
+      $('#themer-popup div.attributes').empty().load(uri, {}, function(){
+        $(this).prepend('<h4>'+ strs.template_variables + '</h4>');
+      });
       $('#themer-popup div.used').empty().prepend('<dt>'+ strs.file_used  +'</a></dt><dd><a href="'+ strs.source_link + vars.used +'" title="'+ strs.source_link_title +'">'+ vars.used +'</a></dd>');
     }
     thmrRefreshCollapse();
