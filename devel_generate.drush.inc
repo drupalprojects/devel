@@ -35,7 +35,7 @@ function devel_generate_drush_command() {
     ),
   );
   $items['generate taxonomy'] = array(
-    'callback' => 'drush_generate_tax',
+    'callback' => 'drush_generate_taxonomy',
     'description' => 'Creates taxonomy.',
     'arguments' => array(
       'vid' => 'Vocabulary ID into which new terms will be inserted.',
@@ -75,7 +75,7 @@ function drush_generate_users($num_users = NULL) {
 /**
  * Command callback. Generate a number of taxonomy.
  */
-function drush_generate_tax($num_vocab = NULL, $num_terms = NULL) {
+function drush_generate_taxonomy($num_vocab = NULL, $num_terms = NULL) {
   if (drush_generate_is_number($num_vocab) == FALSE) {
     drush_set_error('DEVEL_GENERATE_INVALID_VID', dt('Invalid vocabulary ID.'));
   }
@@ -116,6 +116,7 @@ function drush_generate_nodescontent($num_nodes = NULL, $num_comments = NULL) {
     $types = $all_types;
   }
   $values['values']['node_types'] = drupal_map_assoc($types);
+
   drush_generate_include_devel();
   drush_op('devel_generate_content', $values);
   drush_log(dt('Generated @num_nodes nodes, @num_comments comments per node', array('@num_nodes' => $num_nodes, '@num_comments' => $num_comments)), 'ok');

@@ -389,12 +389,15 @@ function devel_generate_add_statistics($node) {
  * @param $num
  *   array of options obtained from devel_generate_content_form.
  */
-function devel_generate_content_kill(&$results) {
+function devel_generate_content_kill($results) {
   $sql = 'SELECT nid FROM {node} WHERE type IN ('. db_placeholders($results['node_types'], 'text'). ')';
   $result = db_query($sql, $results['node_types']);
+  $i=0;
   while ($row = db_fetch_object($result)) {
     node_delete($row->nid);
+    $i++;
   }
+  drupal_set_message(format_plural($i, 'Deleted one post', 'Deleted @count posts'));
 }
 
 /**
