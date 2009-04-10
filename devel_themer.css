@@ -2,7 +2,7 @@
   position: absolute;
   padding: 3px 5px;
 }
-#themer-popup .field-label {
+.field-label {
   background: #000;
   z-index: 10001;
   color: #fff;

@@ -23,7 +23,7 @@ if (Drupal.jsEnabled) {
     var themerEnabled = 0;
     var themerToggle = function () {
       themerEnabled = 1 - themerEnabled;
-      $('#themer-toggle :checkbox').attr('checked', themerEnabled ? 'checked' : '');
+      $('input', this).attr('checked', themerEnabled ? 'checked' : '');
       $('#themer-popup').css('display', themerEnabled ? 'block' : 'none');
       if (themerEnabled) {
         document.onclick = themerEvent;
@@ -31,7 +31,11 @@ if (Drupal.jsEnabled) {
           $(lastObj).css('outline', '3px solid #999');
         }
         if (!thmrSpanified) {
-          spanify();
+          // turn on the throbber
+          //$('#themer-toggle img.throbber').show();
+          
+          // WTF?
+          window.setTimeout('spanify()', 100);
         }
       }
       else {
@@ -63,10 +67,6 @@ if (Drupal.jsEnabled) {
   });
 }
 
-/**
- * Known issue: IE does NOT support outline css property.
- * Solution: use another browser
- */
 function themerHilight(obj) {
   // hilight the current object (and un-highlight the last)
   if (lastObj != false) {
@@ -245,7 +245,7 @@ function thmrRebuildPopup(objs) {
   else {
     $('#themer-popup div.duration').empty().prepend('<span class="dt">' + strs.duration + '</span>' + vars.duration + ' ms');
     $('#themer-popup dd.candidates').empty().prepend(vars.candidates.join('<span class="delimiter"> < </span>'));
-    var uri = Drupal.settings.devel_themer_uri + '/' + id;
+    uri = Drupal.settings.devel_themer_uri + '/' + id;
     if (type == 'func') {
       if (vars.candidates != undefined && vars.candidates.length != 0) {
         // populate the candidates
@@ -254,18 +254,14 @@ function thmrRebuildPopup(objs) {
         $('#themer-popup dd.preprocessors').empty();
         $('#themer-popup dt.preprocessors-type').empty();
       }
-      $('#themer-popup div.attributes').empty().load(uri, {}, function() {
-        $(this).prepend('<h4>'+ strs.function_arguments + '</h4>');
-      });
+      $('#themer-popup div.attributes').empty().load(uri).prepend('<h4>'+ strs.function_arguments + '</h4>');
       $('#themer-popup div.used').empty();
     }
     else {
       $('#themer-popup dt.candidates-type').empty().prepend(strs.candidate_files);
       $('#themer-popup dd.preprocessors').empty().prepend(vars.preprocessors.join('<span class="delimiter"> + </span>'));
       $('#themer-popup dt.preprocessors-type').empty().prepend(strs.preprocessors);
-      $('#themer-popup div.attributes').empty().load(uri, {}, function(){
-        $(this).prepend('<h4>'+ strs.template_variables + '</h4>');
-      });
+      $('#themer-popup div.attributes').empty().load(uri).prepend('<h4>'+ strs.template_variables + '</h4>');
       $('#themer-popup div.used').empty().prepend('<dt>'+ strs.file_used  +'</a></dt><dd><a href="'+ strs.source_link + vars.used +'" title="'+ strs.source_link_title +'">'+ vars.used +'</a></dd>');
     }
     thmrRefreshCollapse();
