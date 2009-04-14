@@ -13,8 +13,8 @@ development.
 
 Included in this package is also: 
 - devel_node_access module which prints out the node_access records for a given node._
-- macro.module which records form submissions and can pay them back later or on another site. More
-information available at http://drupal.org/node/79900.
+
+Macro module has moved to http://drupal.org/project/macro.
 
 Goodies
 -------------
