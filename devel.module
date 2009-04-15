@@ -90,6 +90,13 @@ function devel_menu($may_cache) {
         'type' => MENU_CALLBACK,
       );
     }
+    $items[] = array('path' => 'devel/php',
+      'title' => t('Execute PHP Code'),
+      'callback' => 'drupal_get_form',
+      'callback arguments' =>  array('devel_execute_form'),
+      'access' => user_access('execute php code'),
+      'type' => MENU_CALLBACK,
+    );
     $items[] = array('path' => 'devel/variable',
       'title' => t('Variable editor'),
       'callback' => 'devel_variable_page',
@@ -372,6 +379,7 @@ function devel_block($op = 'list', $delta = 0, $edit = array()) {
         if (user_access('access devel information')) {
           $links[] = l('Devel settings', 'admin/settings/devel', array('title' => t('Adjust module settings for devel module')));
           $links[] = l('Empty cache', 'devel/cache/clear', array('title' => t('Clear the database cache tables which store page, menu, node, and variable caches.')), drupal_get_destination());
+          $links[] = l('Execute PHP Code', 'devel/php', array('title' => t('Execute some PHP code')));
           $links[] = l('Run cron', 'admin/logs/status/run-cron', array('title' => t('Execute functions scheduled for cron runs.')), drupal_get_destination());
           $links[] = l('Phpinfo()', 'admin/logs/status/php');
           $links[] = l('Function reference', 'devel/reference', array('title' => t('View a list of currently defined user functions with documentation links')));
