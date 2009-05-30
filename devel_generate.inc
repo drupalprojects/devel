@@ -238,6 +238,32 @@ function devel_create_content($type = NULL) {
   return $output;
 }
 
+// Return an $options array of content types.
+function devel_generate_content_types() {
+  if (module_exists('content')) {
+    $types = content_types();
+    foreach ($types as $type) {
+      $warn = '';
+      if (count($type['fields'])) {
+        $warn = t('. This type contains CCK fields which will only be populated by fields that implement the content_generate hook.');
+      }
+      $options[$type['type']] = t($type['name']). $warn;
+    }
+  }
+  else {
+    $types = node_get_types();
+    foreach ($types as $type) {
+      $options[$type->type] = t($type->name);
+    }
+  }
+  
+  // we cannot currently generate valid polls.
+  unset($options['poll']);
+  
+  return $options;
+}
+
+
 function devel_create_para($words, $type = 0) {
   $output = "";
   switch ($type) {
