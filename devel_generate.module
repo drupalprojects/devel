@@ -79,7 +79,7 @@ function devel_generate_users_form() {
 }
 
 function devel_generate_users_form_submit($form_id, &$form_state) {
-  require_once('devel_generate.inc');
+  module_load_include('inc', 'devel_generate');
   devel_create_users($form_state['values']['num'], $form_state['values']['kill_users'], $form_state['values']['time_range']);
 }
 
