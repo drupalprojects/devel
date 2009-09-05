@@ -34,7 +34,6 @@ function devel_node_access_help($path, $arg) {
       $output .= '<p>'. t('This module also provides a !summary_page which shows general information about your node_access table.  If you have installed the Views module, you may browse node_access by realm.',
                           array('!summary_page' => l(t('summary page'), 'devel/node_access/summary'))
                           ) ."</p>\n";
-      $output .= '<p>'. t('') ."</p>\n";
       return $output;
   }
 }
@@ -230,7 +229,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
 
           // include rows where nid == 0
           $nids = array_merge(array(0 => 0), dna_visible_nodes());
-          $result = db_query('SELECT na.*, n.title FROM {node_access} na LEFT JOIN {node} n ON n.nid = na.nid WHERE na.nid IN (%s) ORDER BY na.nid, na.realm, na.gid', implode(',', $nids));
+          $result = db_query('SELECT na.*, n.title FROM {node_access} na LEFT JOIN {node} n ON n.nid = na.nid WHERE na.nid IN ('. db_placeholders($nids) .') ORDER BY na.nid, na.realm, na.gid', $nids);
 
           if (!variable_get('devel_node_access_debug_mode', FALSE)) {
             $headers = array(t('node'), t('realm'), t('gid'), t('view'), t('update'), t('delete'), t('explained'));
@@ -500,8 +499,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
  * @return
  *   An array suitable for theming with theme_dna_permission().
  */
-function _devel_node_access_explain_access($op, $node, $account = NULL)
-{
+function _devel_node_access_explain_access($op, $node, $account = NULL) {
   global $user;
   static $filter_formats;
 
@@ -674,8 +672,7 @@ function _devel_node_access_filter_formats($index, $account = NULL) {
 /**
  * Helper function to create a list of the grants returned by hook_node_grants().
  */
-function _devel_node_access_get_grant_list($nid, $checked_status, $checked_grants)
-{
+function _devel_node_access_get_grant_list($nid, $checked_status, $checked_grants) {
   if (!empty($checked_status[$nid])) {
     $cgs_by_realm = array();
     foreach ($checked_grants[$nid]['view'] as $realm => $cg) {
