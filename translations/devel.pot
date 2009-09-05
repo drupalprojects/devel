@@ -7,7 +7,7 @@
 #  devel_generate_batch.inc,v 1.1.2.5 2009/02/02 21:00:52 drewish
 #  devel.module,v 1.258.2.55 2009/08/19 20:16:09 weitzman
 #  devel_generate.module,v 1.11.2.13 2009/07/03 00:30:31 weitzman
-#  devel_node_access.module,v 1.15.2.15 2009/09/05 00:13:15 salvis
+#  devel_node_access.module,v 1.15.2.16 2009/09/05 00:52:09 salvis
 #  performance.module,v 1.2.2.26 2009/08/10 15:32:04 kbahey
 #  devel_node_access.info,v 1.7.2.1 2008/05/17 03:49:30 weitzman
 #  devel_themer.module: n/a
@@ -25,7 +25,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2009-09-05 02:41+0200\n"
+"POT-Creation-Date: 2009-09-05 03:40+0200\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -1128,6 +1128,10 @@ msgstr ""
 
 #: (duplicate) devel_node_access.module:79 
 msgid "Rebuild permissions"
+msgstr ""
+
+#: devel_node_access.module:15
+msgid "view devel_node_access information"
 msgstr ""
 
 #: devel_node_access.module:47
