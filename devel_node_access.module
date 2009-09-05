@@ -237,7 +237,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             $rows = array();
             while ($row = db_fetch_object($result)) {
               $explained = module_invoke_all('node_access_explain', $row);
-              $rows[] = array(!empty($row->title) ? check_plain($row->title) : $row->nid,
+              $rows[] = array(_devel_node_access_get_node_title($row),
                               $row->realm,
                               $row->gid,
                               $row->grant_view,
@@ -278,7 +278,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
                     $top_priority = (isset($top_priority) ? max($top_priority, $priority) : $priority);
                     $grant['priority'] = (isset($grant['priority']) ? $priority : '&ndash;&nbsp;');
                     $acquired_grants_nid[$priority][$grant['realm']][$grant['gid']] = $grant + array(
-                      '#title' => ($node->title ? check_plain($node->title) : $node->nid),
+                      '#title' => _devel_node_access_get_node_title($node),
                       '#module' => (isset($grant['#module']) ? $grant['#module'] : ''),
                     );
                   }
@@ -329,8 +329,8 @@ function devel_node_access_block($op = 'list', $delta = 0) {
                       continue;
                     }
                     $fixed_grant += array(
-                      'nid'      => $nid,
-                      '#title'   => (empty($node) ? '&mdash;' : (isset($node->title) ? check_plain($node->title) : $node->nid)),
+                      'nid'    => $nid,
+                      '#title' => _devel_node_access_get_node_title($node, FALSE),
                     );
                     $all_grants[] = $fixed_grant;
                   }
@@ -418,54 +418,43 @@ function devel_node_access_block($op = 'list', $delta = 0) {
               $output .= theme_item(array('#value' => '<div class="error">'. t("You have errors in your !na table! You may be able to fix these for now by running !Rebuild_permissions, but this is likely to destroy the evidence and make it impossible to identify the underlying issues. If you don't fix those, the errors will probably come back again. <br /> DON'T do this just yet if you intend to ask for help with this situation.", $tokens) .'</div>'));
             }
 
-            // explain how access is granted (code from node_access())
-            $t = 't';
-            if (user_access('administer nodes')) {
-              $output .= t('This user has the %administer_nodes permission and thus full access to all nodes.', array('%administer_nodes' => $t('administer nodes')));
-            }
-            else {
+            // Explain whether access is granted or denied, and why (using code from node_access()).
+            $variables = array(
+              '!username' => theme('username', $user),
+              '!list' => '<div style="margin-left: 2em">'. _devel_node_access_get_grant_list($nid, $checked_status, $checked_grants) .'</div>',
+            );
+            $output .= "\n<div style='text-align: left' title='". t('These are the grants returned by hook_node_grants() for this user.') ."'>". t('!username can use the following grants (if they are present above): !list', $variables) ."</div>\n";
 
-              function devel_node_access_message($nid, $by_what) {
-                $t = 't';
-                return '<div class="form-item" style="text-align: left">'. theme_markup(array('#value' => t('This user is granted %view access to node %nid !by_what', array('%view' => $t('view'), '%nid' => $nid, '!by_what' => $by_what)))) .'</div>';
+            if (arg(0) == 'node' && is_numeric(arg(1))) {  // only for single nodes
+              $t = 't';
+              array_shift($nids);  // remove the 0
+              $accounts[] = $user;
+              if (user_is_logged_in()) {
+                $accounts[] = user_load(0);  // Anonymous, too
               }
-
-              foreach ($nids as $nid) {
-                if ($node = node_load(array('nid' => $nid))) {
-                  $module = node_get_types('module', $node);
-                  if ($module == 'node') {
-                    $module = 'node_content'; // Avoid function name collisions.
+              foreach ($accounts as $account) {
+                $variables['!username'] = theme('username', $account);
+                $output .= "\n<div style='text-align: left'>". t("!username has the following access", $variables) .' ';
+                $nid_items = array();
+                foreach ($nids as $nid) {
+                  $op_items = array();
+                  foreach (array('create', 'view', 'update', 'delete') as $op) {
+                    $explain = _devel_node_access_explain_access($op, $nid, $account);
+                    $op_items[] = "<div style='width: 5em; display: inline-block'>". t('%op: ', array('%op' => $op)) .'</div><span title="'. $explain[2] .'">'. $explain[1] .'</span>';
                   }
-                  $access = module_invoke($module, 'access', 'view', $node, $user);
-                  if (!empty($access)) {
-                    $output .= devel_node_access_message($nid, t('by the %module module itself.', array('%module' => $module)));
-                  }
-                  else {
-                    if (!empty($checked_status[$nid])) {
-                      $cgs_by_realm = array();
-                      foreach ($checked_grants[$nid]['view'] as $realm => $cg) {
-                        if (isset($cg['#module'])) {
-                          $module = $cg['#module'];
-                          unset($cg['#module']);
-                          if (!empty($module) && (strpos($realm, $module) !== 0)) {
-                            $realm = $module .':'. $realm;
-                          }
-                        }
-                        $cgs_by_realm[$realm] = $realm .': '. implode(', ', $cg);
-                      }
-                      if (!empty($cgs_by_realm)) {
-                        $output .= devel_node_access_message($nid, t("by one or more of the following grants (if they are present above): !list", array('!list' => theme('item_list', array_values($cgs_by_realm), NULL, 'ul'))));
-                      }
-                      elseif ($user->uid == $node->uid && $user->uid != 0) {
-                        $output .= devel_node_access_message($nid, t('as author of the node.'));
-                      }
-                    }
-                  }
+                  $nid_items[] = t('to node !nid:', array('!nid' => l($nid, 'node/'. $nid))) 
+                    ."\n<div style='margin-left: 2em'>". theme('item_list', $op_items, NULL, 'ul') .'</div>';
                 }
+                if (count($nid_items) == 1) {
+                  $output .= $nid_items[0];
+                }
+                else {
+                  $output .= "\n<div style='margin-left: 2em'>". theme('item_list', $nid_items, NULL, 'ul') .'</div>';
+                }
+                $output .= "\n</div>\n";
               }
             }
           }
-
           $subject = t('node_access entries for nodes shown on this page');
           return array('subject' => $subject, 'content' => $output .'<br /><br />');
 
@@ -474,7 +463,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
           if (arg(0) == 'node' && is_numeric(arg(1))) {
             $nid = arg(1);
             $node = node_load($nid);
-            $headers = array(t('username'), t('view'), t('update'), t('delete'));
+            $headers = array(t('username'), '<span title="'. t("Create nodes of the '@Node_type' type.", array('@Node_type' => node_get_types('name', $node))) .'">'. t('create') .'</span>', t('view'), t('update'), t('delete'));
             $rows = array();
             // Find all users. The following operations are very inefficient, so we
             // limit the number of users returned.  It would be better to make a
@@ -484,13 +473,15 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             while ($data = db_fetch_object($result)) {
               $account = user_load(array('uid' => $data->uid));
               $rows[] = array(theme('username', $data),
-                              theme('dna_permission', node_access('view', $node, $account)),
-                              theme('dna_permission', node_access('update', $node, $account)),
-                              theme('dna_permission', node_access('delete', $node, $account)),
+                              theme('dna_permission', _devel_node_access_explain_access('create', $nid, $account)),
+                              theme('dna_permission', _devel_node_access_explain_access('view', $nid, $account)),
+                              theme('dna_permission', _devel_node_access_explain_access('update', $nid, $account)),
+                              theme('dna_permission', _devel_node_access_explain_access('delete', $nid, $account)),
               );
             }
             if (count($rows)) {
               $output = theme('table', $headers, $rows, array('style' => 'text-align: left'));
+              $output .= theme_item(array('#value' => '', '#description' => t('(This table lists the most-recently active users. Hover your mouse over each result to see the reason for allowing or denying access.)')));
               return array('subject' => t('Access permissions by user'),
                            'content' => $output);
             }
@@ -498,6 +489,208 @@ function devel_node_access_block($op = 'list', $delta = 0) {
           break;
       }
       break;
+  }
+}
+
+/**
+ * Helper function that mimicks node.module's node_access() function.
+ * 
+ * Unfortunately, this needs to be updated manually whenever node.module changes!
+ * 
+ * @return
+ *   An array suitable for theming with theme_dna_permission().
+ */
+function _devel_node_access_explain_access($op, $node, $account = NULL)
+{
+  global $user;
+  static $filter_formats;
+
+  if (is_numeric($node) && !($node = node_load(array('nid' => $node)))) {
+    return array( FALSE, '???',
+      t('Unable to load the node &ndash; this should never happen!'),
+    );
+  }
+  if ($op == 'create' && is_object($node)) {
+    $node = $node->type;
+  }
+
+  if (!empty($account)) {
+    $filter_formats = filter_formats();  // use current user!
+    // To try to get the most authentic result we impersonate the given user!
+    // This may reveal bugs in other modules, leading to contradictory results.
+    $saved_user = $user;
+    session_save_session(FALSE);
+    $user = $account;
+    $result = _devel_node_access_explain_access($op, $node, NULL);
+    $user = $saved_user;
+    session_save_session(TRUE);
+    $second_opinion = node_access($op, $node, $account);
+    if ($second_opinion != $result[0]) {
+      $result[1] .= '<span class="'. ($second_opinion ? 'ok' : 'error') .'" title="DNA and Core seem to disagree on this item. This is a bug in either one of them and should be fixed! Try to look at this node as this user and check whether there is still disagreement.">*</span>';
+    }
+    return $result;
+  }
+
+  $variables = array(
+    '!NO' => t('NO'),
+    '!YES' => t('YES'),
+  );
+
+  if ($op == 'update' && !_devel_node_access_filter_access($node->format)) {
+    return array( FALSE,
+      t('!NO: input format', $variables),
+      t("!NO: This user is not allowed to use the input format '!format' (!fid).", $variables += array(
+        '!fid' => $node->format,
+        '!format' => (isset($filter_formats[$node->format]) ? $filter_formats[$node->format]->name : '***'),
+      )),
+    );
+  }
+  if (user_access('administer nodes')) {
+    return array( TRUE,
+      t('!YES: administer nodes', $variables),
+      t("!YES: This user has the '!administer_nodes' permission and may do everything with nodes.", $variables += array(
+        '!administer_nodes' => t('administer nodes'),
+      )),
+    );
+  }
+  elseif (!user_access('access content')) {
+    return array( FALSE,
+      t('!NO: access content', $variables),
+      t("!NO: This user does not have the '!access_content' permission and is denied doing anything with content.", $variables += array(
+        '!access_content' => t('access content'),
+      )),
+    );
+  }
+  $module = node_get_types('module', $node);
+  if ($module == 'node') {
+    $module = 'node_content';
+  }
+  $access = module_invoke($module, 'access', $op, $node, $user);
+  if (!is_null($access)) {
+    $variables += array(
+      '@module' => $module,
+      '@content_type' => (is_object($node) ? $node->type : $node),
+    );
+    if ($access) {
+      return array( TRUE,
+        t('!YES: by the module', $variables),
+        t("!YES: The '@module' module (which defines the '@content_type' content type) allows this, probably based no some permission.", $variables),
+      );
+    }
+    else {
+      return array( FALSE,
+        t('!NO: by the module', $variables),
+        t("!NO: The '@module' module (which defines the '@content_type' content type) denies this.", $variables),
+      );
+    }
+  }
+
+  if ($op != 'create' && $node->nid && $node->status) {
+    if (node_access($op, $node, $user)) {  // delegate this part
+      return array( TRUE,
+        t('!YES: node access', $variables),
+        t('!YES: Node access allows this.', $variables),
+      );
+    }
+    else {
+      return array( FALSE,
+        t('!NO: node access', $variables),
+        t('!NO: Node access denies this.', $variables),
+      );
+    }
+  }
+
+  if ($op == 'view' && $user->uid == $node->uid && $user->uid != 0) {
+    return array( TRUE,
+      t('!YES: own node', $variables),
+      t('!YES: The user may view his/her own node.', $variables),
+    );
+  }
+  return array( FALSE,
+    t('!NO: no reason', $variables),
+    t("!NO: None of the checks resulted in allowing this, so it's denied.", $variables) .
+    ($op != 'create' && !$node->status ? ' '. t('Node access was not checked because the node is not published.') : '') .
+    ($op == 'create' ? ' '. t('Is a permission missing?') : ''),
+  );
+}
+
+/*
+ * Helper function that mimicks filter.modules' filter_access(), but with the
+ * help of the user-aware _devel_node_access_filter_formats() function.
+ */
+function _devel_node_access_filter_access($format) {
+  $format = filter_resolve_format($format);
+  if (user_access('administer filters') || ($format == variable_get('filter_default_format', 1))) {
+    return TRUE;
+  }
+  else {
+    return (bool) _devel_node_access_filter_formats($format);
+  }
+}
+
+/*
+ * Helper function that mimicks filter.module's filter_formats(), but for a
+ * specific user. If #470840 gets committed, we can remove this here.
+ */
+function _devel_node_access_filter_formats($index, $account = NULL) {
+  global $user;
+  static $formats = array();
+
+  if (!isset($account)) {
+    $account = $user;
+  }
+
+  // Administrators can always use all input formats.
+  $all = user_access('administer filters', $account);
+
+  if (!isset($formats[$account->uid])) {
+    $formats[$account->uid] = array();
+
+    $query = 'SELECT * FROM {filter_formats}';
+
+    // Build query for selecting the format(s) based on the user's roles.
+    $args = array();
+    if (!$all) {
+      $where = array();
+      foreach ($account->roles as $rid => $role) {
+        $where[] = "roles LIKE '%%,%d,%%'";
+        $args[] = $rid;
+      }
+      $query .= ' WHERE '. implode(' OR ', $where) .' OR format = %d';
+      $args[] = variable_get('filter_default_format', 1);
+    }
+
+    $result = db_query($query, $args);
+    while ($format = db_fetch_object($result)) {
+      $formats[$account->uid][$format->format] = $format;
+    }
+  }
+  if (isset($index)) {
+    return isset($formats[$account->uid][$index]) ? $formats[$account->uid][$index] : FALSE;
+  }
+  return $formats[$account->uid];
+}
+
+/**
+ * Helper function to create a list of the grants returned by hook_node_grants().
+ */
+function _devel_node_access_get_grant_list($nid, $checked_status, $checked_grants)
+{
+  if (!empty($checked_status[$nid])) {
+    $cgs_by_realm = array();
+    foreach ($checked_grants[$nid]['view'] as $realm => $cg) {
+      if (isset($cg['#module'])) {
+        $module = $cg['#module'];
+        unset($cg['#module']);
+        if (!empty($module) && (strpos($realm, $module) !== 0)) {
+          $realm = $module .':'. $realm;
+        }
+      }
+      $cgs_by_realm[$realm] = $realm .': '. implode(', ', $cg);
+    }
+    if (!empty($cgs_by_realm)) {
+      return theme('item_list', array_values($cgs_by_realm), NULL, 'ul');
+    }
   }
 }
 
@@ -522,6 +715,28 @@ function devel_node_access_node_access_explain($row) {
 }
 
 /**
+ * Helper function to return a sanitized node title.
+ */
+function _devel_node_access_get_node_title($node, $clip_and_decorate = TRUE) {
+  if (isset($node)) {
+    if (isset($node->title)) {
+      $node_title = check_plain($node->title);
+      if ($clip_and_decorate) {
+        if (drupal_strlen($node_title) > 20) {
+          $node_title = "<span title='node/$node->nid: $node_title'>". drupal_substr($node_title, 0, 15) .'...</span>';
+        }
+        $node_title = '<span title="node/'. $node->nid .'">'. $node_title .'</span>';
+      }
+      return $node_title;
+    }
+    elseif (isset($node->nid)) {
+      return $node->nid;
+    }
+  }
+  return '&mdash;';
+}
+
+/**
  * Implementation of hook_theme().
  */
 function devel_node_access_theme() {
@@ -534,14 +749,7 @@ function devel_node_access_theme() {
 
 /**
  * Indicate whether user has a permission or not.
- *
- * TODO: use good looking images.
  */
 function theme_dna_permission($permission) {
-  if ($permission) {
-    return t('yes');
-  }
-  else {
-    return t('no');
-  }
+  return '<span class="'. ($permission[0] ? 'ok' : 'error') .'" title="'. $permission[2] .'">'. $permission[1] .'</span>';
 }
