@@ -38,7 +38,6 @@ function devel_node_access_help($path, $arg) {
   }
 }
 
-
 function devel_node_access_menu() {
   $items = array();
 
@@ -207,6 +206,15 @@ function _devel_node_access_module_invoke_all() {  // array returns only!
 
 function devel_node_access_block($op = 'list', $delta = 0) {
   global $user;
+  global $theme_key;
+  static $block1_visible, $hint = '';
+  if (!isset($block1_visible)) {
+    $block1_visible = db_result(db_query("SELECT status FROM {blocks} WHERE module = 'devel_node_access' AND delta = 1 AND theme = '%s'", $theme_key));
+    if (!$block1_visible) {
+      $hint = t('For per-user access permissions enable the second DNA <a href="@block">block</a>.', array('@block' => url('admin/build/block')));
+    }
+  }
+
   switch ($op) {
     case 'list':
       $blocks[0]['info'] = t('Devel Node Access');
@@ -245,6 +253,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
                               implode('; ', $explained));
             }
             $output = theme('table', $headers, $rows, array('style' => 'text-align: left'));
+            $hint = t('To see more details enable <a href="@debug_mode">debug mode</a>.', array('@debug_mode' => url('admin/settings/devel', array('fragment' => 'edit-devel-node-access-debug-mode')))) .' '. $hint;
           }
           else {
             $tr = 't';
@@ -267,7 +276,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             $all_grants = $checked_grants = $checked_status = array();
             foreach ($nids as $nid) {
               $acquired_grants_nid = array();
-              if ($node = node_load(array('nid' => $nid))) {
+              if ($node = node_load($nid)) {
                 // check node_access_acquire_grants()
                 $grants = _devel_node_access_module_invoke_all('node_access_records', $node);
                 if (!empty($grants)) {
@@ -408,7 +417,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
               $row['realm'] = (empty($grant['#module']) || strpos($grant['realm'], $grant['#module']) === 0 ? '' : $grant['#module'] .':<br />') . $grant['realm'];
               $rows[] = array('data' => array_values($row), 'class' => 'even '. $class);
             }
-            $output = theme_table($headers, $rows, array('class' => 'system-status-report', 'style' => 'text-align: left'));
+            $output = theme('table', $headers, $rows, array('class' => 'system-status-report', 'style' => 'text-align: left'));
 
             $output .= theme_item(array('#value' => '', '#description' => '(Some of the table elements provide additional information if you hover your mouse over them.)'));
 
@@ -418,15 +427,21 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             }
 
             // Explain whether access is granted or denied, and why (using code from node_access()).
-            $variables = array(
-              '!username' => theme('username', $user),
-              '!list' => '<div style="margin-left: 2em">'. _devel_node_access_get_grant_list($nid, $checked_status, $checked_grants) .'</div>',
-            );
-            $output .= "\n<div style='text-align: left' title='". t('These are the grants returned by hook_node_grants() for this user.') ."'>". t('!username can use the following grants (if they are present above): !list', $variables) ."</div>\n";
+            $tr = 't';
+            array_shift($nids);  // remove the 0
+            $accounts = array();
+            $variables['!username'] = theme('username', $user);
 
-            if (arg(0) == 'node' && is_numeric(arg(1))) {  // only for single nodes
-              array_shift($nids);  // remove the 0
+            if (user_access('administer nodes')) {
+              $variables['%administer_nodes'] = $tr('administer nodes');
+              $output .= t('!username has the %administer_nodes permission and thus full access to all nodes.', $variables) .'<br />&nbsp;';
+            }
+            else {
+              $variables['!list'] = '<div style="margin-left: 2em">'. _devel_node_access_get_grant_list($nid, $checked_status, $checked_grants) .'</div>';
+              $output .= "\n<div style='text-align: left' title='". t('These are the grants returned by hook_node_grants() for this user.') ."'>". t('!username can use these grants (if they are present above): !list', $variables) ."</div>\n";
               $accounts[] = $user;
+            }
+            if (arg(0) == 'node' && is_numeric(arg(1)) && !$block1_visible) {  // only for single nodes
               if (user_is_logged_in()) {
                 $accounts[] = user_load(0);  // Anonymous, too
               }
@@ -438,9 +453,9 @@ function devel_node_access_block($op = 'list', $delta = 0) {
                   $op_items = array();
                   foreach (array('create', 'view', 'update', 'delete') as $op) {
                     $explain = _devel_node_access_explain_access($op, $nid, $account);
-                    $op_items[] = "<div style='width: 5em; display: inline-block'>". t('%op: ', array('%op' => $op)) .'</div><span title="'. $explain[2] .'">'. $explain[1] .'</span>';
+                    $op_items[] = "<div style='width: 5em; display: inline-block'>". t('%op:', array('%op' => $op)) .' </div>'. $explain[2];
                   }
-                  $nid_items[] = t('to node !nid:', array('!nid' => l($nid, 'node/'. $nid))) 
+                  $nid_items[] = t('to node !nid:', array('!nid' => l($nid, 'node/'. $nid)))
                     ."\n<div style='margin-left: 2em'>". theme('item_list', $op_items, NULL, 'ul') .'</div>';
                 }
                 if (count($nid_items) == 1) {
@@ -452,6 +467,10 @@ function devel_node_access_block($op = 'list', $delta = 0) {
                 $output .= "\n</div>\n";
               }
             }
+          }
+
+          if (!empty($hint)) {
+            $output .= theme_item(array('#value' => '', '#description' => '('. $hint .')'));
           }
           $subject = t('node_access entries for nodes shown on this page');
           return array('subject' => $subject, 'content' => $output .'<br /><br />');
@@ -469,7 +488,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             // anyone is up for that please submit a patch.
             $result = db_query_range('SELECT DISTINCT u.* FROM {users} u ORDER BY u.access DESC', 0, 10);
             while ($data = db_fetch_object($result)) {
-              $account = user_load(array('uid' => $data->uid));
+              $account = user_load($data->uid);
               $rows[] = array(theme('username', $data),
                               theme('dna_permission', _devel_node_access_explain_access('create', $nid, $account)),
                               theme('dna_permission', _devel_node_access_explain_access('view', $nid, $account)),
@@ -492,9 +511,9 @@ function devel_node_access_block($op = 'list', $delta = 0) {
 
 /**
  * Helper function that mimicks node.module's node_access() function.
- * 
+ *
  * Unfortunately, this needs to be updated manually whenever node.module changes!
- * 
+ *
  * @return
  *   An array suitable for theming with theme_dna_permission().
  */
@@ -502,7 +521,7 @@ function _devel_node_access_explain_access($op, $node, $account = NULL) {
   global $user;
   static $filter_formats;
 
-  if (is_numeric($node) && !($node = node_load(array('nid' => $node)))) {
+  if (is_numeric($node) && !($node = node_load($node))) {
     return array( FALSE, '???',
       t('Unable to load the node &ndash; this should never happen!'),
     );
@@ -512,7 +531,7 @@ function _devel_node_access_explain_access($op, $node, $account = NULL) {
   }
 
   if (!empty($account)) {
-    $filter_formats = filter_formats();  // use current user!
+    $filter_formats = filter_formats();  // use real current user first!
     // To try to get the most authentic result we impersonate the given user!
     // This may reveal bugs in other modules, leading to contradictory results.
     $saved_user = $user;
@@ -559,10 +578,7 @@ function _devel_node_access_explain_access($op, $node, $account = NULL) {
     );
   }
   $module = node_get_types('module', $node);
-  if ($module == 'node') {
-    $module = 'node_content';
-  }
-  $access = module_invoke($module, 'access', $op, $node, $user);
+  $access = module_invoke(($module == 'node' ? 'node_content' : $module), 'access', $op, $node, $user);
   if (!is_null($access)) {
     $variables += array(
       '@module' => $module,
@@ -571,7 +587,7 @@ function _devel_node_access_explain_access($op, $node, $account = NULL) {
     if ($access) {
       return array( TRUE,
         t('!YES: by the module', $variables),
-        t("!YES: The '@module' module (which defines the '@content_type' content type) allows this, probably based no some permission.", $variables),
+        t("!YES: The '@module' module (which defines the '@content_type' content type) allows this, probably based on some permission.", $variables),
       );
     }
     else {
@@ -607,7 +623,7 @@ function _devel_node_access_explain_access($op, $node, $account = NULL) {
     t('!NO: no reason', $variables),
     t("!NO: None of the checks resulted in allowing this, so it's denied.", $variables) .
     ($op != 'create' && !$node->status ? ' '. t('Node access was not checked because the node is not published.') : '') .
-    ($op == 'create' ? ' '. t('Is a permission missing?') : ''),
+    ($op == 'create' ? ' '. t('This is most likely due to a missing permission.') : ''),
   );
 }
 
@@ -637,7 +653,7 @@ function _devel_node_access_filter_formats($index, $account = NULL) {
     $account = $user;
   }
 
-  // Administrators can always use all input formats.
+  // Administrators can always use all text formats.
   $all = user_access('administer filters', $account);
 
   if (!isset($formats[$account->uid])) {
@@ -702,7 +718,7 @@ function devel_node_access_node_access_explain($row) {
       }
     }
     if (empty($ops)) {
-      return '(No access granted to '. ($row->nid == 0 ? 'any nodes.)' : 'this node.)'); 
+      return '(No access granted to '. ($row->nid == 0 ? 'any nodes.)' : 'this node.)');
     }
     else {
       return 'All users may '. implode('/', $ops) . ($row->nid == 0 ? ' all nodes.' : ' this node.');
