@@ -355,12 +355,7 @@ function devel_generate_add_terms(&$node) {
     $sql = "SELECT tid FROM {term_data} WHERE vid = %d ORDER BY RAND()";
     $result = db_query_range($sql, $vocab->vid, 0, 5);
     while ($row = db_fetch_object($result)) {
-      if ($vocab->tags) {
-        $node->taxonomy['tags'][] = $row->tid;
-      }
-      else {
-        $node->taxonomy[$row->tid] = $row->tid;
-      }
+      $node->taxonomy[] = $row->tid;
       if (!$vocab->multiple) {
         break;
       }
