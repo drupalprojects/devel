@@ -245,6 +245,8 @@ function devel_create_content($type = NULL) {
 
 // Return an $options array of content types.
 function devel_generate_content_types() {
+  $options = array();
+
   if (module_exists('content')) {
     $types = content_types();
     foreach ($types as $type) {
