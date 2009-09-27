@@ -209,7 +209,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
   global $theme_key;
   static $block1_visible, $hint = '';
   if (!isset($block1_visible)) {
-    $block1_visible = db_result(db_query("SELECT status FROM {blocks} WHERE module = 'devel_node_access' AND delta = 1 AND theme = '%s'", $theme_key));
+    $block1_visible = db_result(db_query("SELECT status FROM {blocks} WHERE module = 'devel_node_access' AND delta = '1' AND theme = '%s'", $theme_key));
     if (!$block1_visible) {
       $hint = t('For per-user access permissions enable the second DNA <a href="@block">block</a>.', array('@block' => url('admin/build/block')));
     }
