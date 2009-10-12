@@ -186,7 +186,7 @@ function devel_node_access_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
   }
 }
 
-function _devel_node_access_module_invoke_all() {  // array returns only!
+function _devel_node_access_module_invoke_all() {  // array and scalar returns only!
   $args = func_get_args();
   $hook = array_shift($args);
   $return = array();
@@ -194,9 +194,15 @@ function _devel_node_access_module_invoke_all() {  // array returns only!
     $function = $module .'_'. $hook;
     $result = call_user_func_array($function, $args);
     if (isset($result)) {
-      foreach ($result as $key => $value) {
-        // add name of module that returned the value:
-        $result[$key]['#module'] = $module;
+      if (is_array($result)) {
+        foreach ($result as $key => $value) {
+          // add name of module that returned the value:
+          $result[$key]['#module'] = $module;
+        }
+      }
+      else {
+        // build array with result keyed by $module:
+        $result = array($module => $result);
       }
       $return = array_merge($return, $result);
     }
@@ -261,6 +267,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             $states = array(
               'default'      => array(t('default'),      'ok',      t('Default grant supplied by core in the absence of any other non-empty grants, in !na.', $variables)),
               'ok'           => array(t('ok'),           'ok',      t('Highest priority grant, in !na.', $variables)),
+              'static'       => array(t('static'),       'ok',      t('Non-standard grant in !na.', $variables)),
               'unexpected'   => array(t('unexpected'),   'warning', t('The 0/0/all/... grant applies to all nodes and all users -- usually it should not be present if any node access module is active!')),
               'ignored'      => array(t('ignored'),      'warning', t('Lower priority grant, not in !na and thus ignored.', $variables)),
               'empty'        => array(t('empty'),        'warning', t('Does not grant any access, but could block lower priority grants; not in !na.', $variables)),
@@ -321,17 +328,30 @@ function devel_node_access_block($op = 'list', $delta = 0) {
                         }
                       }
                     }
+                    $fixed_grant = (array) $active_grant;
                     if ($count_nonempty_grants == 0 && $realm == 'all' && $gid == 0 ) {
-                      $fixed_grant = ((array) $active_grant) + array(
+                      $fixed_grant += array(
                         'priority' => '&ndash;',
                         'state'    => 'default',
                       );
                     }
                     elseif (!$found) {
-                      $fixed_grant = ((array) $active_grant) + array(
-                        'priority' => '?',
-                        'state'    => 'alien',
-                      );
+                      $acknowledged = _devel_node_access_module_invoke_all('node_access_acknowledge', $fixed_grant);
+                      if (empty($acknowledged)) {
+                        // no one acknowledged this record, mark it as alien:
+                        $fixed_grant += array(
+                          'priority' => '?',
+                          'state'    => 'alien',
+                        );
+                      }
+                      else {
+                        // at least one module acknowledged the record, attribute it to the first one:
+                        $fixed_grant += array(
+                          'priority' => '&ndash;',
+                          'state'    => 'static',
+                          '#module'   => reset(array_keys($acknowledged)),
+                        );
+                      }
                     }
                     else {
                       continue;
