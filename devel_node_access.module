@@ -75,7 +75,7 @@ function devel_node_access_form_alter(&$form, $form_state, $form_id) {
       '#type'          => 'checkbox',
       '#title'         => t('Devel Node Access debug mode'),
       '#default_value' => variable_get('devel_node_access_debug_mode', FALSE),
-      '#description'   => t('Debug mode verifies the grants in the node_access table against those that would be set by running !Rebuild_permissions, and displays them all; this can cause considerable overhead.', array('!Rebuild_permissions' => l('['. $tr('Rebuild permissions') .']', 'admin/content/node-settings'))),
+      '#description'   => t('Debug mode verifies the grant records in the node_access table against those that would be set by running !Rebuild_permissions, and displays them all; this can cause considerable overhead.', array('!Rebuild_permissions' => l('['. $tr('Rebuild permissions') .']', 'admin/content/node-settings'))),
     );
     // push these down:
     $form['devel_error_handler']['#weight'] = 1;
@@ -101,7 +101,7 @@ function dna_summary() {
   }
 
   // how many nodes are not represented in the node_access table
-  $result = db_fetch_object(db_query('SELECT COUNT(n.nid) as num_nodes FROM {node} n LEFT JOIN {node_access} na ON n.nid = na.nid WHERE na.nid IS NULL'));
+  $result = db_fetch_object(db_query('SELECT COUNT(n.nid) AS num_nodes FROM {node} n LEFT JOIN {node_access} na ON n.nid = na.nid WHERE na.nid IS NULL'));
   if ($num = $result->num_nodes) {
     $output .= '<h3>'. t('Legacy Nodes') ."</h3>\n";
     $output .= '<p>'.
@@ -257,16 +257,16 @@ function devel_node_access_block($op = 'list', $delta = 0) {
           }
           else {
             $tr = 't';
-            $tokens = array('!na' => '{node_access}');
+            $variables = array('!na' => '{node_access}');
             $states = array(
-              'default'      => array(t('default'),      'ok',      t('Default grant supplied by core in the absence of any other non-empty grants, in !na.', $tokens)),
-              'ok'           => array(t('ok'),           'ok',      t('Highest priority grant, in !na.', $tokens)),
+              'default'      => array(t('default'),      'ok',      t('Default grant supplied by core in the absence of any other non-empty grants, in !na.', $variables)),
+              'ok'           => array(t('ok'),           'ok',      t('Highest priority grant, in !na.', $variables)),
               'unexpected'   => array(t('unexpected'),   'warning', t('The 0/0/all/... grant applies to all nodes and all users -- usually it should not be present if any node access module is active!')),
-              'ignored'      => array(t('ignored'),      'warning', t('Lower priority grant, not in !na and thus ignored.', $tokens)),
-              'empty'        => array(t('empty'),        'warning', t('Does not grant any access, but could block lower priority grants; not in !na.', $tokens)),
-              'missing'      => array(t('missing'),      'error',   t("Should be in !na but isn't!", $tokens)),
-              'illegitimate' => array(t('illegitimate'), 'error',   t('Should NOT be in !na because of lower priority!', $tokens)),
-              'alien'        => array(t('alien'),        'error',   t('Should NOT be in !na because of unknown origin!', $tokens)),
+              'ignored'      => array(t('ignored'),      'warning', t('Lower priority grant, not in !na and thus ignored.', $variables)),
+              'empty'        => array(t('empty'),        'warning', t('Does not grant any access, but could block lower priority grants; not in !na.', $variables)),
+              'missing'      => array(t('missing'),      'error',   t("Should be in !na but isn't!", $variables)),
+              'illegitimate' => array(t('illegitimate'), 'error',   t('Should NOT be in !na because of lower priority!', $variables)),
+              'alien'        => array(t('alien'),        'error',   t('Should NOT be in !na because of unknown origin!', $variables)),
             );
             $headers = array(t('node'), t('prio'), t('status'), t('realm'), t('gid'), t('view'), t('update'), t('delete'), t('explained'));
             $active_grants = array();
@@ -422,8 +422,8 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             $output .= theme_item(array('#value' => '', '#description' => '(Some of the table elements provide additional information if you hover your mouse over them.)'));
 
             if ($error_count > 0) {
-              $tokens['!Rebuild_permissions'] = '<a href="'. url('admin/content/node-settings/rebuild') .'">'. $tr('Rebuild permissions') .'</a>';
-              $output .= theme_item(array('#value' => '<div class="error">'. t("You have errors in your !na table! You may be able to fix these for now by running !Rebuild_permissions, but this is likely to destroy the evidence and make it impossible to identify the underlying issues. If you don't fix those, the errors will probably come back again. <br /> DON'T do this just yet if you intend to ask for help with this situation.", $tokens) .'</div>'));
+              $variables['!Rebuild_permissions'] = '<a href="'. url('admin/content/node-settings/rebuild') .'">'. $tr('Rebuild permissions') .'</a>';
+              $output .= theme_item(array('#value' => '<div class="error">'. t("You have errors in your !na table! You may be able to fix these for now by running !Rebuild_permissions, but this is likely to destroy the evidence and make it impossible to identify the underlying issues. If you don't fix those, the errors will probably come back again. <br /> DON'T do this just yet if you intend to ask for help with this situation.", $variables) .'</div>'));
             }
 
             // Explain whether access is granted or denied, and why (using code from node_access()).
@@ -623,7 +623,7 @@ function _devel_node_access_explain_access($op, $node, $account = NULL) {
     t('!NO: no reason', $variables),
     t("!NO: None of the checks resulted in allowing this, so it's denied.", $variables) .
     ($op != 'create' && !$node->status ? ' '. t('Node access was not checked because the node is not published.') : '') .
-    ($op == 'create' ? ' '. t('This is most likely due to a missing permission.') : ''),
+    ($op == 'create' ? ' '. t('This is most likely due to a withheld permission.') : ''),
   );
 }
 
