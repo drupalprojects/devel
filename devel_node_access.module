@@ -256,7 +256,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
                               $row->grant_view,
                               $row->grant_update,
                               $row->grant_delete,
-                              implode('; ', $explained));
+                              implode('<br />', $explained));
             }
             $output = theme('table', $headers, $rows, array('style' => 'text-align: left'));
             $hint = t('To see more details enable <a href="@debug_mode">debug mode</a>.', array('@debug_mode' => url('admin/settings/devel', array('fragment' => 'edit-devel-node-access-debug-mode')))) .' '. $hint;
@@ -408,7 +408,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
               $row->grant_view = $grant['grant_view'];
               $row->grant_update = $grant['grant_update'];
               $row->grant_delete = $grant['grant_delete'];
-              $row->explained = implode('; ', module_invoke_all('node_access_explain', $row));
+              $row->explained = implode('<br />', module_invoke_all('node_access_explain', $row));
               unset($row->title);
               if ($row->nid == 0 && $row->gid == 0 && $row->realm == 'all' && count($all_grants) > 1) {
                 $row->state = array('data' => $states['unexpected'][0], 'title' => $states['unexpected'][2]);
@@ -450,7 +450,10 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             $tr = 't';
             array_shift($nids);  // remove the 0
             $accounts = array();
-            $variables['!username'] = theme('username', $user);
+            $variables += array(
+              '!username' => theme('username', $user),
+              '%uid' => $user->uid,
+            );
 
             if (user_access('administer nodes')) {
               $variables['%administer_nodes'] = $tr('administer nodes');
@@ -458,7 +461,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             }
             else {
               $variables['!list'] = '<div style="margin-left: 2em">'. _devel_node_access_get_grant_list($nid, $checked_status, $checked_grants) .'</div>';
-              $output .= "\n<div style='text-align: left' title='". t('These are the grants returned by hook_node_grants() for this user.') ."'>". t('!username can use these grants (if they are present above): !list', $variables) ."</div>\n";
+              $output .= "\n<div style='text-align: left' title='". t('These are the grants returned by hook_node_grants() for this user.') ."'>". t('!username (user %uid) can use these grants (if they are present above): !list', $variables) ."</div>\n";
               $accounts[] = $user;
             }
             if (arg(0) == 'node' && is_numeric(arg(1)) && !$block1_visible) {  // only for single nodes
@@ -497,7 +500,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
 
         case 1:
           // show which users can access this node
-          if (arg(0) == 'node' && is_numeric(arg(1))) {
+          if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == null) {
             $nid = arg(1);
             $node = node_load($nid);
             $headers = array(t('username'), '<span title="'. t("Create nodes of the '@Node_type' type.", array('@Node_type' => node_get_types('name', $node))) .'">'. t('create') .'</span>', t('view'), t('update'), t('delete'));
@@ -518,7 +521,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             }
             if (count($rows)) {
               $output = theme('table', $headers, $rows, array('style' => 'text-align: left'));
-              $output .= theme_item(array('#value' => '', '#description' => t('(This table lists the most-recently active users. Hover your mouse over each result to see the reason for allowing or denying access.)')));
+              $output .= theme_item(array('#value' => '', '#description' => t('(This table lists the most-recently active users. Hover your mouse over each result for more details.)')));
               return array('subject' => t('Access permissions by user'),
                            'content' => $output);
             }
