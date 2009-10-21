@@ -1322,7 +1322,7 @@ function kprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r') 
     }
   }
   else {
-    return dprint_r($input, $return, $name, 'print_r');
+    return dprint_r($input, $return, $name, $function);
   }
 }
 
