@@ -1318,7 +1318,7 @@ function dvr($input, $return = FALSE, $name = NULL) {
 function kprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r') {
   if (has_krumo()) {
     if (user_access('access devel information')) {
-      return $return ? krumo_ob($input) : krumo($input);
+      return $return ? (isset($name) ? $name .' => ' : '') . krumo_ob($input) : krumo($input);
     }
   }
   else {
