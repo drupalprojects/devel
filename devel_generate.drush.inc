@@ -52,7 +52,7 @@ function devel_generate_drush_command() {
     'drupal dependencies' => array('devel_generate'),
     'arguments' => array(
       'num_nodes' => 'Number of nodes to generate.',
-      'num_comments' => 'Number of comments to generate.',
+      'max_comments' => 'Maximum number of comments to generate.',
     ),
     'options' => array(
       'kill' => 'Delete all content before generating new content.',
