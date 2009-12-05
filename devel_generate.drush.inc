@@ -55,7 +55,9 @@ function devel_generate_drush_command() {
       'num_comments' => 'Number of comments to generate.',
     ),
     'options' => array(
-      'kill' => 'Delete all content before generating new content.'
+      'kill' => 'Delete all content before generating new content.',
+      'add-terms' => 'Add terms to generated nodes.',
+      'add-upload' => 'Add an attached file to generated nodes.',
     ),
   );
   return $items;
@@ -111,6 +113,8 @@ function drush_generate_nodescontent($num_nodes = NULL, $max_comments = NULL) {
   $values['values']['title_length'] = '8';
   $values['values']['num_nodes'] = $num_nodes;
   $values['values']['max_comments'] = $max_comments;
+  $values['values']['add_terms'] = drush_get_option('add-terms', FALSE);
+  $values['values']['add_upload'] = drush_get_option('add-upload', FALSE);
   $all_types = array_keys(devel_generate_content_types());
   if ($types = drush_get_option('types')) {
     $types = array_intersect($types, $all_types);
