@@ -49,6 +49,7 @@ function devel_generate_drush_command() {
   $items['generate content'] = array(
     'callback' => 'drush_generate_nodescontent',
     'description' => 'Creates content.',
+    'drupal dependencies' => array('devel_generate'),
     'arguments' => array(
       'num_nodes' => 'Number of nodes to generate.',
       'num_comments' => 'Number of comments to generate.',
@@ -90,11 +91,11 @@ function drush_generate_taxonomy($num_vocab = NULL, $num_terms = NULL) {
 /**
  * Command callback. Generate a number of content.
  */
-function drush_generate_nodescontent($num_nodes = NULL, $num_comments = NULL) {
+function drush_generate_nodescontent($num_nodes = NULL, $max_comments = NULL) {
   if (drush_generate_is_number($num_nodes) == FALSE) {
     drush_set_error('DEVEL_GENERATE_INVALID_NUM_NODES', dt('Invalid number of nodes'));
   }
-  if (!empty($num_comments) && drush_generate_is_number($num_comments) == FALSE) {
+  if (!empty($max_comments) && drush_generate_is_number($max_comments) == FALSE) {
     drush_set_error('DEVEL_GENERATE_INVALID_NUM_COMMENTS', dt('Invalid number of comments.'));
   }
 
@@ -109,7 +110,7 @@ function drush_generate_nodescontent($num_nodes = NULL, $num_comments = NULL) {
   if (drush_get_option('kill')) $values['values']['kill_content'] = 1;
   $values['values']['title_length'] = '8';
   $values['values']['num_nodes'] = $num_nodes;
-  $values['values']['num_comments'] = $num_comments;
+  $values['values']['max_comments'] = $max_comments;
   $all_types = array_keys(devel_generate_content_types());
   if ($types = drush_get_option('types')) {
     $types = array_intersect($types, $all_types);
@@ -120,7 +121,7 @@ function drush_generate_nodescontent($num_nodes = NULL, $num_comments = NULL) {
   $values['values']['node_types'] = drupal_map_assoc($types);
 
   drush_op('devel_generate_content', $values);
-  drush_log(dt('Generated @num_nodes nodes, @num_comments comments per node', array('@num_nodes' => $num_nodes, '@num_comments' => $num_comments)), 'ok');
+  drush_log(dt('Generated @num_nodes nodes, @max_comments comments per node', array('@num_nodes' => $num_nodes, '@max_comments' => $max_comments)), 'ok');
 }
 
 //////////////////////////////////////////////////////////////////////////////
