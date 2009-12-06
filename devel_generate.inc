@@ -454,15 +454,18 @@ function devel_generate_content_add_node(&$results) {
   // Insert new data:
   $node->type = array_rand($results['node_types']);
   module_load_include('inc', 'node', 'node.pages');
+  $type = node_get_types('name', $node->type);
   node_object_prepare($node);
   $users = $results['users'];
   $node->uid = $users[array_rand($users)];
 
   $node->title = devel_create_greeking(mt_rand(1, $results['title_length']), TRUE);
-  $node->body = "node ($node->type) - ". devel_create_content();
-  $node->teaser = node_teaser($node->body);
-  $node->filter = variable_get('filter_default_format', 1);
-  $node->format = FILTER_FORMAT_DEFAULT;
+  if ($type->has_body) {
+    $node->body = "node ($node->type) - ". devel_create_content();
+    $node->teaser = node_teaser($node->body);
+    $node->filter = variable_get('filter_default_format', 1);
+    $node->format = FILTER_FORMAT_DEFAULT;
+  }
   $node->language = '';
   $node->revision = mt_rand(0,1);
   $node->promote = mt_rand(0, 1);
