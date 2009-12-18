@@ -468,9 +468,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
 
         case 1:
           // show which users can access this node
-          if (arg(0) == 'node' && is_numeric(arg(1))) {
-            $nid = arg(1);
-            $node = node_load($nid);
+          if (arg(0) == 'node' && is_numeric($nid = arg(1)) && $node = node_load($nid)) {
             $headers = array(t('username'), t('view'), t('update'), t('delete'));
             $rows = array();
             // Find all users. The following operations are very inefficient, so we
