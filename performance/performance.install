@@ -140,7 +140,7 @@ function performance_update_6001() {
   db_change_field($ret, 'performance_detail',  'millisecs',     'ms',     $int_field);
 
   // We don't have a cache update method, so it's better to clear it 
-  if (!function_exists('apc_fetch')) {
+  if (function_exists('apc_fetch')) {
     apc_clear_cache('user');
   }
   return $ret;
