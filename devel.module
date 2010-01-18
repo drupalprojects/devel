@@ -73,15 +73,6 @@ function devel_menu() {
     'access arguments' => array('access devel information'),
     'menu_name' => 'devel',
   );
-  $items['devel/devel_themer'] = array(
-    'title callback' => 'devel_menu_title_theme_developer',
-    'title arguments' => array(NULL),
-    'title' => 'foo',
-    'description' => 'Quickly enable or disable theme developer module. Useful for removing HTML cruft added by that module.',
-    'page callback' => 'devel_devel_themer_toggle',
-    'access arguments' => array('access devel information'),
-    'menu_name' => 'devel',
-  );
   $items['devel/source'] = array(
     'title' => 'Display the PHP code of any file in your Drupal installation',
     'page callback' => 'devel_display_source',
@@ -118,13 +109,6 @@ function devel_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('devel_execute_form'),
     'access arguments' => array('execute php code'),
-    'menu_name' => 'devel',
-  );
-  $items['devel/theme/registry'] = array(
-    'title' => 'Theme registry',
-    'description' => 'View a list of available theme functions across the whole site.',
-    'page callback' => 'devel_theme_registry',
-    'access arguments' => array('access devel information'),
     'menu_name' => 'devel',
   );
   $items['devel/elements'] = array(
@@ -205,7 +189,7 @@ function devel_menu() {
 }
 
 function devel_menu_need_destination() {
-  return array('devel/cache/clear', 'devel/devel_themer', 'devel/reinstall', 'devel/menu/reset', 'admin/og/og', 'devel/variable', 'admin/reports/status/run-cron');
+  return array('devel/cache/clear', 'devel/reinstall', 'devel/menu/reset', 'admin/og/og', 'devel/variable', 'admin/reports/status/run-cron');
 }
 
 /**
@@ -232,34 +216,6 @@ function devel_translated_menu_link_alter(&$item) {
 
 function devel_menu_access_store_queries() {
   return user_access('access devel information') && variable_get('devel_store_queries', 0);
-}
-
-function devel_menu_title_theme_developer() {
-  if (module_exists('devel_themer')) {
-    return t('Disable Theme developer');
-  }
-  else {
-    return t('Enable Theme developer');
-  }
-}
-
-function devel_devel_themer_toggle() {
-  if (module_exists('devel_themer')) {
-    module_disable(array('devel_themer'));
-  }
-  else {
-    // Sanity check in case the devel_themer schema is not installed.
-    include_once('./includes/install.inc');
-    if (drupal_get_schema_versions('devel_themer') == FALSE) {
-      drupal_install_modules(array('devel_themer'));
-    }
-    else {
-      module_enable(array('devel_themer'));
-    }
-  }
-  drupal_rebuild_theme_registry();
-  menu_rebuild();
-  drupal_goto();
 }
 
 /**
@@ -661,37 +617,6 @@ function devel_switch_user_form_submit($form, &$form_state) {
   $form_state['redirect'] = 'devel/switch/'. $form_state['values']['username'];
 }
 
-
-/**
- * TODO: i switched params as per http://drupal.org/node/144132#form-alter but needs work still
- * Implementation of hook_form_alter().
- */
-function devel_form_alter(&$form, $form_state, $form_id, $key_in = NULL) {
-  if (user_access('access devel information') && variable_get('devel_form_weights', 0)) {
-    $children = element_children($form);
-    if (empty($children)) {
-      if (isset($form['#type']) && !in_array($form['#type'], array('value', 'hidden'))) {
-        if (!isset($form['#title'])) {
-          $form['#title'] = '';
-        }
-        $form['#title'] .= " (key=$key_in, weight=". (isset($form['#weight']) ? $form['#weight'] : 0) .')';
-      }
-    }
-    else {
-      foreach (element_children($form) as $key) {
-        // We need to add the weight to fieldsets.
-        if (element_children($form[$key])) { // Which are a container of others.
-          if (!isset($form[$key]['#title'])) {
-            $form[$key]['#title'] = '';
-          }
-          $form[$key]['#title'] .= " (key=$key, weight=". (isset($form[$key]['#weight']) ? $form[$key]['#weight'] : 0) .')';
-        }
-        devel_form_alter($form[$key], $form_state, $form_id, $key);
-      }
-    }
-  }
-}
-
 function devel_exit($destination = NULL) {
   global $user;
 
@@ -992,11 +917,6 @@ function devel_admin_settings() {
     '#title' => t('Display redirection page'),
     '#default_value' => variable_get('devel_redirect_page', 0),
     '#description' => t('When a module executes drupal_goto(), the query log and other developer information is lost. Enabling this setting presents an intermediate page to developers so that the log can be examined before continuing to the destination page.'),
-  );
-  $form['devel_form_weights'] = array('#type' => 'checkbox',
-    '#title' => t('Display form element keys and weights'),
-    '#default_value' => variable_get('devel_form_weights', 0),
-    '#description' => t('Form element names are needed for performing themeing or altering a form. Their weights determine the position of the element. Enabling this setting will show these keys and weights beside each form item.'),
   );
   $form['devel_error_handler'] = array('#type' => 'radios',
     '#title' => t('Error handler'),
@@ -1871,45 +1791,4 @@ function devel_rebuild_node_comment_statistics() {
   // Insert 0 count records into the node_comment_statistics for nodes that are missing. See comment_enable()
   db_query_temporary("SELECT n.nid, n.changed, n.uid FROM {node} n LEFT JOIN {node_comment_statistics} c ON n.nid = c.nid WHERE c.comment_count IS NULL", 'missing_nids');
   db_query("INSERT INTO {node_comment_statistics} (nid, last_comment_timestamp, last_comment_name, last_comment_uid, comment_count) SELECT n.nid, n.changed, NULL, n.uid, 0 FROM missing_nids n");
-}
-
-/**
- * Set sequences table to a sane state. Useful after a bulk import.
- *
- * @return void
- **/
-function sequence_reset($table, $column) {
-  $max = db_result(db_query("SELECT MAX($column) FROM {$table}"));
-  $max = ($max ? $max+1 : 2);
-  db_query("UPDATE {sequences} SET id = $max WHERE name='${table}_$column'");
-}
-
-/**
- * Enable or disable indexes for a given table. Useful during a bulk import.
- *
- * @return void
- **/
-function devel_table_keys($tables, $verb = 'ENABLE') {
-  foreach ($tables as $table) {
-    db_query("ALTER TABLE $table $verb KEYS");
-  }
-}
-
-/**
- * Save contents of an url to filesystem. Works for images.
- *
- * @return void
- **/
-function wget($url, $file) {
-  if (file_exists($file)) {
-    return;
-  }
-  print "get: $url\n";
-  $ch = curl_init($url);
-  $fp = fopen($file, "w");
-  curl_setopt($ch, CURLOPT_FILE, $fp);
-  curl_setopt($ch, CURLOPT_HEADER, 0);
-  curl_exec($ch);
-  curl_close($ch);
-  fclose($fp);
 }
