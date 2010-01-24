@@ -11,11 +11,11 @@
  */
 function devel_generate_drush_help($section) {
   switch ($section) {
-    case 'drush:generate users':
+    case 'drush:generate-users':
       return dt('Generate user accounts.');
-    case 'drush:generate taxonomy':
+    case 'drush:generate-taxonomy':
       return dt('Generate taxonomy terms for a given vocabulary.');
-    case 'drush:generate content':
+    case 'drush:generate-content':
       return dt('Generate nodes and comments.');
   }
 }
@@ -24,8 +24,7 @@ function devel_generate_drush_help($section) {
  * Implementation of hook_drush_command().
  */
 function devel_generate_drush_command() {
-  $items['generate users'] = array(
-    'callback' => 'drush_generate_users',
+  $items['generate-users'] = array(
     'description' => 'Creates users.',
     'arguments' => array(
       'num_users' => 'Number of users to generate.',
@@ -33,9 +32,9 @@ function devel_generate_drush_command() {
     'options' => array(
       'kill' => 'Delete all users before generating new ones.',
     ),
+    'aliases' => array('genu'),
   );
-  $items['generate taxonomy'] = array(
-    'callback' => 'drush_generate_taxonomy',
+  $items['generate-taxonomy'] = array(
     'description' => 'Creates taxonomy.',
     'arguments' => array(
       'vid' => 'Vocabulary ID into which new terms will be inserted.',
@@ -44,10 +43,9 @@ function devel_generate_drush_command() {
     'options' => array(
       'kill' => 'Delete all terms in specified vocab before generating.'
     ),
-    
+    'aliases' => array('gent'),
   );
   $items['generate content'] = array(
-    'callback' => 'drush_generate_nodescontent',
     'description' => 'Creates content.',
     'drupal dependencies' => array('devel_generate'),
     'arguments' => array(
@@ -59,6 +57,7 @@ function devel_generate_drush_command() {
       'add-terms' => 'Add terms to generated nodes.',
       'add-upload' => 'Add an attached file to generated nodes.',
     ),
+    'aliases' => array('genc'),
   );
   return $items;
 }
@@ -66,7 +65,7 @@ function devel_generate_drush_command() {
 /**
  * Command callback. Generate a number of users.
  */
-function drush_generate_users($num_users = NULL) {
+function drush_devel_generate_generate_users($num_users = NULL) {
   if (drush_generate_is_number($num_users) == FALSE) {
     drush_set_error('DEVEL_GENERATE_INVALID_NUMBER', dt('Invalid number of users.'));
   }
@@ -78,7 +77,7 @@ function drush_generate_users($num_users = NULL) {
 /**
  * Command callback. Generate a number of taxonomy.
  */
-function drush_generate_taxonomy($num_vocab = NULL, $num_terms = NULL) {
+function drush_devel_generate_generate_taxonomy($num_vocab = NULL, $num_terms = NULL) {
   if (drush_generate_is_number($num_vocab) == FALSE) {
     drush_set_error('DEVEL_GENERATE_INVALID_VID', dt('Invalid vocabulary ID.'));
   }
@@ -93,7 +92,7 @@ function drush_generate_taxonomy($num_vocab = NULL, $num_terms = NULL) {
 /**
  * Command callback. Generate a number of content.
  */
-function drush_generate_nodescontent($num_nodes = NULL, $max_comments = NULL) {
+function drush_devel_generate_generate_content($num_nodes = NULL, $max_comments = NULL) {
   if (drush_generate_is_number($num_nodes) == FALSE) {
     drush_set_error('DEVEL_GENERATE_INVALID_NUM_NODES', dt('Invalid number of nodes'));
   }
