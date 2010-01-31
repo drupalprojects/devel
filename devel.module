@@ -420,7 +420,7 @@ function devel_watchdog(array $log_entry) {
   }
   $watchdog = array(
     'type' => $log_entry['type'],
-    'message' => decode_entities(strtr($log_entry['message'], $log_entry['variables'])),
+    'message' => decode_entities(strtr($log_entry['message'], (array)$log_entry['variables'])),
   );
   if (isset($log_entry['link'])) {
     $watchdog['link'] = $log_entry['link'];
