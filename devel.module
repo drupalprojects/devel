@@ -570,7 +570,7 @@ function devel_block($op = 'list', $delta = 0, $edit = array()) {
 
 function devel_block_switch_user() {
   $links = devel_switch_user_list();
-  if (!empty($links)) {
+  if (!empty($links) || user_access('switch users')) {
     $block['subject'] = t('Switch user');
     $block['content'] = theme('links', $links);
     $block['content'] .= drupal_get_form('devel_switch_user_form');
