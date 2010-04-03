@@ -1836,9 +1836,7 @@ function devel_rebuild_node_comment_statistics_page() {
 }
 
 /**
- * Update node_comment_statistics table for nodes with comments.
- * TODO: if 2 comments have exact same timestamp, the function can get wrong uid and name fields.
- * Handles when comment timestamps have been manually set in admin
+ * Regenerate the data in node_comment_statistics table.
  *
  * @return void
  **/
@@ -1847,7 +1845,7 @@ function devel_rebuild_node_comment_statistics() {
   $sql = "DELETE FROM {node_comment_statistics}";
   db_query($sql);
 
-  $sql = "INSERT INTO {node_comment_statistics} (nid, last_comment_timestamp, last_comment_name, last_comment_uid, comment_count) (select nid, c.timestamp, name, uid, comment_count FROM {comments} c INNER JOIN (SELECT MAX(timestamp) AS timestamp, COUNT(*) AS comment_count FROM {comments} WHERE status=%d GROUP BY nid) as c2 ON c.timestamp=c2.timestamp)";
+  $sql = "INSERT INTO {node_comment_statistics} (nid, last_comment_timestamp, last_comment_name, last_comment_uid, comment_count) (select nid, c.timestamp, name, uid, comment_count FROM {comments} c INNER JOIN (SELECT MAX(timestamp) AS timestamp, COUNT(*) AS comment_count FROM {comments} WHERE status=%d GROUP BY nid) AS c2 ON c.nid = c2.nid AND c.timestamp=c2.timestamp)";
   db_query($sql, COMMENT_PUBLISHED);
 
   // Insert 0 count records into the node_comment_statistics for nodes that are missing. See comment_enable()
