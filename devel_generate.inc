@@ -492,6 +492,10 @@ function devel_generate_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         if ($results['add_terms']) {
           devel_generate_add_terms($node);
         }
+        if (isset($results['add_language']) && variable_get('language_content_type_' . $node->type, 0)) {
+          $languages = array_keys($results['add_language']);
+          $node->language = $languages[array_rand($languages)];
+        }
         break;
     case 'insert':
       if ($results['max_comments']) {

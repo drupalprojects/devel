@@ -45,7 +45,7 @@ function devel_generate_drush_command() {
     ),
     'aliases' => array('gent'),
   );
-  $items['generate content'] = array(
+  $items['generate-content'] = array(
     'description' => 'Creates content.',
     'drupal dependencies' => array('devel_generate'),
     'arguments' => array(
@@ -56,6 +56,7 @@ function devel_generate_drush_command() {
       'kill' => 'Delete all content before generating new content.',
       'add-terms' => 'Add terms to generated nodes.',
       'add-upload' => 'Add an attached file to generated nodes.',
+      'languages' => 'A comma-separated list of language codes',
     ),
     'aliases' => array('genc'),
   );
@@ -92,12 +93,20 @@ function drush_devel_generate_generate_taxonomy($num_vocab = NULL, $num_terms = 
 /**
  * Command callback. Generate a number of content.
  */
-function drush_devel_generate_generate_content($num_nodes = NULL, $max_comments = NULL) {
+function drush_devel_generate_generate_content($num_nodes = NULL, $max_comments = NULL, $add_language = NULL) {
   if (drush_generate_is_number($num_nodes) == FALSE) {
     drush_set_error('DEVEL_GENERATE_INVALID_NUM_NODES', dt('Invalid number of nodes'));
   }
   if (!empty($max_comments) && drush_generate_is_number($max_comments) == FALSE) {
     drush_set_error('DEVEL_GENERATE_INVALID_NUM_COMMENTS', dt('Invalid number of comments.'));
+  }
+
+  $add_language = drush_get_option('languages');
+  if (!empty($add_language)) {
+    $add_language = explode(',', str_replace(' ', '', $add_language));
+    // Intersect with the enabled languages to make sure the language args 
+    // passed are actually enabled.
+    $values['values']['add_language'] = array_flip(array_intersect($add_language, array_keys(locale_language_list())));
   }
 
   // Let's load user 1, seems to be need for creating comments.
