@@ -56,6 +56,7 @@ function devel_generate_drush_command() {
       'kill' => 'Delete all content before generating new content.',
       'add-terms' => 'Add terms to generated nodes.',
       'add-upload' => 'Add an attached file to generated nodes.',
+      'types' => 'Specify which types of nodes to generate. Should be a comma-separated list.',
       'languages' => 'A comma-separated list of language codes',
     ),
     'aliases' => array('genc'),
