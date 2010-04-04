@@ -532,7 +532,11 @@ function devel_block($op = 'list', $delta = 0, $edit = array()) {
   if ($op == 'list') {
     $blocks[0]['info'] = t('Switch user');
 //     $blocks[1]['info'] = t('Devel');
-    $blocks[2]['info'] = t('Execute PHP');
+    $blocks[2] = array(
+      'info' => t('Execute PHP'),
+      'visibility' => 0,
+      'pages' => 'devel/php',
+    );
     return $blocks;
   }
   elseif ($op == 'configure' && $delta == 0) {
@@ -559,8 +563,7 @@ function devel_block($op = 'list', $delta = 0, $edit = array()) {
         break;
       case 2:
         if (user_access('execute php code')) {
-          $block['subject'] = t('Execute PHP');
-          $block['content'] = drupal_get_form('devel_execute_form');
+          $block['content'] = drupal_get_form('devel_execute_block_form');
         }
         break;
     }
@@ -1042,13 +1045,27 @@ function devel_cache_clear() {
 /**
  * Generates the execute block form.
  */
+function devel_execute_block_form() {
+  $form['execute'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Execute PHP Code'),
+    '#collapsible' => TRUE,
+    '#collapsed' => (!isset($_POST['code'])),
+  );
+  $form['#submit'] = array('devel_execute_form_submit');
+  return array_merge_recursive($form, devel_execute_form());
+}
+
+/**
+ * Generates the execute form.
+ */
 function devel_execute_form() {
-  $form['code'] = array(
+  $form['execute']['code'] = array(
     '#type' => 'textarea',
     '#title' => t('PHP code to execute'),
-    '#description' => t('Enter some code. Do not use <code>&lt;?php ?&gt;</code> tags.')
+    '#description' => t('Enter some code. Do not use <code>&lt;?php ?&gt;</code> tags.'),
   );
-  $form['op'] = array('#type' => 'submit', '#value' => t('Execute'));
+  $form['execute']['op'] = array('#type' => 'submit', '#value' => t('Execute'));
   $form['#redirect'] = FALSE;
   $form['#skip_duplicate_check'] = TRUE;
   return $form;
