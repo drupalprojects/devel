@@ -202,6 +202,13 @@ function devel_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 10,
   );
+  $items['devel/theme/registry'] = array(     
+    'title' => 'Theme registry',     
+    'description' => 'View a list of available theme functions across the whole site.',     
+    'page callback' => 'devel_theme_registry',     
+    'access arguments' => array('access devel information'),     
+    'menu_name' => 'devel',     
+  );
 
   return $items;
 }
