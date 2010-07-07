@@ -865,7 +865,7 @@ function devel_function_reference() {
   sort($ufunctions);
   $api = variable_get('devel_api_url', 'api.drupal.org');
   foreach ($ufunctions as $function) {
-    $links[] = l($function, "http://$api/api/$version/function/$function");
+    $links[] = l($function, "http://$api/api/function/$function/$version");
   }
   return theme('item_list', $links);
 }
