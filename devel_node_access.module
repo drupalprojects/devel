@@ -513,7 +513,11 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             $result = db_query_range('SELECT DISTINCT u.* FROM {users} u ORDER BY u.access DESC', 0, 10);
             while ($data = db_fetch_object($result)) {
               $account = user_load($data->uid);
-              $rows[] = array(theme('username', $data),
+              $username = theme('username', $data);
+              if ($account->uid == $user->uid) {
+                $username = '<strong>'. $username .'</strong>';
+              }
+              $rows[] = array($username,
                               theme('dna_permission', _devel_node_access_explain_access('create', $nid, $account)),
                               theme('dna_permission', _devel_node_access_explain_access('view', $nid, $account)),
                               theme('dna_permission', _devel_node_access_explain_access('update', $nid, $account)),
