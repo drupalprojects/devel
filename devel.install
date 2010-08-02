@@ -172,3 +172,12 @@ function devel_update_6002() {
   menu_link_save($item);
   return array();
 }
+
+/**
+ * As per issue #813132: change schablon.com to white for krumo.
+ */
+function devel_update_6003() {
+  if (variable_get('devel_krumo_skin', 'white') == 'schablon.com') {
+    variable_set('devel_krumo_skin', 'white');
+  }
+}
