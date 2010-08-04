@@ -347,7 +347,7 @@ function performance_view_summary() {
       $shown++;
       $rows[] = array('data' =>
         array(
-          $data['path'],
+          check_plain($data['path']),
           format_date($data['last_access'], 'small'),
           $data['num_accesses'],
           number_format($data['bytes_max']/1024/1024, 2),
@@ -422,7 +422,7 @@ function performance_view_details() {
       array(
         $data['pid'],
         format_date($data['timestamp'], 'small'),
-        $data['path'],
+        check_plain($data['path']),
         number_format($data['bytes']/1024/1024, 2),
         $data['millisecs'],
         ($data['anon']) ? t('Yes') : t('No'),
