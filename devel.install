@@ -180,4 +180,5 @@ function devel_update_6003() {
   if (variable_get('devel_krumo_skin', 'white') == 'schablon.com') {
     variable_set('devel_krumo_skin', 'white');
   }
+  return array();
 }
