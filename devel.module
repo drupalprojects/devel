@@ -1515,6 +1515,9 @@ function _devel_print_object($obj, $prefix = NULL, $parents = NULL, $object = FA
  * generate the page.
  */
 function devel_query_table($queries, $counts) {
+  if (empty($queries)) {
+    return FALSE;
+  }
   $version = devel_get_core_version(VERSION);
   $header = array('ms', '#', 'where', 'query');
   $i = 0;
