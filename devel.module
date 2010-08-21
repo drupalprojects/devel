@@ -401,7 +401,7 @@ function dfbt($label) {
 /**
  * Implements hook_watchdog().
  */
-function devel_watchdog(array $log_entry) {
+function devel_watchdog($log_entry) {
   if (class_exists('FirePHP')) {
     switch ($log_entry['severity']) {
       case WATCHDOG_EMERG:
