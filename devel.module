@@ -547,17 +547,23 @@ function devel_block($op = 'list', $delta = 0, $edit = array()) {
     return $blocks;
   }
   elseif ($op == 'configure' && $delta == 0) {
-    $form['devel_switch_user_list_size'] = array(
+    $form['list_size'] = array(
       '#type' => 'textfield',
       '#title' => t('Number of users to display in the list'),
       '#default_value' => variable_get('devel_switch_user_list_size', 10),
       '#size' => '3',
       '#maxlength' => '4',
     );
+    $form['show_form'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Allow entering any user name'),
+      '#default_value' => variable_get('devel_switch_user_show_form', TRUE),
+    );
     return $form;
   }
   elseif ($op == 'save' && $delta == 0) {
-    variable_set('devel_switch_user_list_size', $edit['devel_switch_user_list_size']);
+    variable_set('devel_switch_user_list_size', $edit['list_size']);
+    variable_set('devel_switch_user_show_form', $edit['show_form']);
   }
   elseif ($op == 'view') {
     $block = array();
@@ -583,7 +589,9 @@ function devel_block_switch_user() {
   if (!empty($links) || user_access('switch users')) {
     $block['subject'] = t('Switch user');
     $block['content'] = theme('links', $links);
-    $block['content'] .= drupal_get_form('devel_switch_user_form');
+    if (variable_get('devel_switch_user_show_form', TRUE)) {
+      $block['content'] .= drupal_get_form('devel_switch_user_form');
+    }
     return $block;
   }
 }
