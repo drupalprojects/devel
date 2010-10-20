@@ -730,13 +730,10 @@ function devel_exit($destination = NULL) {
   }
 }
 
-// Borrowed from Drush.
+// Borrowed from Drupal 7 - drupal_is_cli().
 function devel_verify_cli() {
-  if (php_sapi_name() == 'cgi') {
-    return (is_numeric($_SERVER['argc']) && $_SERVER['argc'] > 0);
-  }
-
-  return (php_sapi_name() == 'cli');
+  return ((!isset($_SERVER['SERVER_SOFTWARE']) || $_SERVER['SERVER_SOFTWARE'] == 'PHP CLI')
+      && (php_sapi_name() == 'cli' || (is_numeric($_SERVER['argc']) && $_SERVER['argc'] > 0)));
 }
 
 
