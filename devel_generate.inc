@@ -498,7 +498,7 @@ function devel_generate_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         }
         break;
     case 'insert':
-      if ($results['max_comments']) {
+      if ($results['max_comments'] && $node->comment >= COMMENT_NODE_READ_WRITE) {
         devel_generate_add_comments($node, $results['users'], $results['max_comments'], $results['title_length']);
       }
     
