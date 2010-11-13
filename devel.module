@@ -489,7 +489,7 @@ function devel_xhprof_enable() {
       include_once $path . '/xhprof_lib/utils/xhprof_runs.php';
       // @todo: consider a variable per-flag instead.
       xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
-      
+
       register_shutdown_function('devel_shutdown_xhprof_drush');
     }
   }
@@ -502,7 +502,7 @@ function devel_xhprof_enable() {
 function devel_boot() {
   // Initialize XHProf.
   devel_xhprof_enable();
-  
+
   if (!devel_silent()) {
     devel_start();
   }
@@ -524,7 +524,7 @@ function backtrace_error_handler($errno, $message, $filename, $line) {
   // Don't respond to the error if it was suppressed with a '@'
   if (error_reporting() == 0) return;
 
-  if ($errno & (E_ALL ^ E_NOTICE)) {
+  if ($errno & (E_ALL ^ E_NOTICE ^ E_DEPRECATED)) {
     // We can't use the PHP E_* constants here as not all versions of PHP have all
     // the constants defined, so for consistency, we just use the numeric equivelant.
     $types = array(
@@ -782,7 +782,7 @@ function devel_shutdown() {
  * Log URL to Drush log if this is a drush request.
  *
  * This shutdown function is registered by devel_xhprof_enable()
- */ 
+ */
 function devel_shutdown_xhprof_drush() {
   global $devel_run_id;
   $devel_run_id = variable_get('devel_xhprof_enabled', FALSE) ? devel_shutdown_xhprof(): NULL;
@@ -853,9 +853,9 @@ function devel_shutdown_real() {
         // theme() may not be available. not t() either.
         $output .= t_safe($msg, $args);
       }
-      
+
       $output .= devel_xhprof_link_show();
-      
+
       // TODO: gzip this text if we are sending a gzip page. see drupal_page_header().
     }
 
@@ -1044,7 +1044,7 @@ function devel_admin_settings() {
     '#default_value' => variable_get('devel_store_random', 1),
     '#size' => 4,
     '#description' => t('If storing query statistics, only store every nth page view. 1 means every page view, 2 every second, and so on.'));
-    
+
     $form['xhprof'] = array(
       '#type' => 'fieldset',
       '#title' => 'XHProf',
