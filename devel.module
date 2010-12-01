@@ -640,12 +640,13 @@ function devel_switch_user_list() {
     $list_size = variable_get('devel_switch_user_list_size', 10);
     $dest = drupal_get_destination();
     // Try to find at least $list_size users that can switch.
+    // Inactive users are omitted from all of the following db selects.
     $roles = user_roles(TRUE, 'switch users');
     if (isset($roles[DRUPAL_AUTHENTICATED_RID])) {
       // If authenticated users have this permission, just grab
       // the last $list_size users, since there won't be records in
       // {user_roles} and every user on the system can switch.
-      $users = db_query_range("SELECT DISTINCT u.uid, u.name, u.access FROM {users} u WHERE u.uid > 0 ORDER BY u.access DESC", 0, $list_size);
+      $accounts = db_query_range("SELECT DISTINCT u.uid, u.name, u.access FROM {users} u WHERE u.uid > 0 AND u.status > 0 ORDER BY u.access DESC", 0, $list_size);
     }
     else {
       $where = array('u.uid = 1');
@@ -653,29 +654,29 @@ function devel_switch_user_list() {
         $where[] = 'r.rid IN ('. implode(',', array_keys($roles)) .')';
       }
       $where_sql = implode(' OR ', $where);
-      $users = db_query_range("SELECT DISTINCT u.uid, u.name, u.access FROM {users} u LEFT JOIN {users_roles} r ON u.uid = r.uid WHERE $where_sql ORDER BY u.access DESC", 0, $list_size);
+      $accounts = db_query_range("SELECT DISTINCT u.uid, u.name, u.access FROM {users} u LEFT JOIN {users_roles} r ON u.uid = r.uid WHERE ($where_sql) AND u.status > 0 ORDER BY u.access DESC", 0, $list_size);
     }
-    while ($user = db_fetch_object($users)) {
-      $links[$user->uid] = array(
-        'title' => theme('placeholder', $user->name),
-        'href' => 'devel/switch/'. $user->name,
+    while ($account = db_fetch_object($accounts)) {
+      $links[$account->uid] = array(
+        'title' => theme('placeholder', $account->name),
+        'href' => 'devel/switch/'. $account->name,
         'query' => $dest,
         'attributes' => array('title' => t('This user can switch back.')),
         'html' => TRUE,
-        'last_access' => $user->access,
+        'last_access' => $account->access,
       );
     }
     $num_links = count($links);
     if ($num_links < $list_size) {
       // If we don't have enough, add distinct uids until we hit $list_size.
-      $users = db_query_range('SELECT uid, name, access FROM {users} WHERE uid > 0 AND uid NOT IN ('. implode(',', array_keys($links)) .') ORDER BY access DESC', 0, $list_size - $num_links);
-      while ($user = db_fetch_object($users)) {
-        $links[$user->uid] = array(
-          'title' => $user->name ? $user->name : 'anon',
-          'href' => 'devel/switch/'. $user->name,
+      $accounts = db_query_range('SELECT uid, name, access FROM {users} WHERE uid > 0 AND uid NOT IN ('. implode(',', array_keys($links)) .') AND status > 0 ORDER BY access DESC', 0, $list_size - $num_links);
+      while ($account = db_fetch_object($accounts)) {
+        $links[$account->uid] = array(
+          'title' => $account->name ? $account->name : 'anon',
+          'href' => 'devel/switch/'. $account->name,
           'query' => $dest,
           'attributes' => array('title' => t('Caution: this user will be unable to switch back.')),
-          'last_access' => $user->access,
+          'last_access' => $account->access,
         );
       }
       uasort($links, '_devel_switch_user_list_cmp');
