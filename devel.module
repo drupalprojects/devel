@@ -2008,10 +2008,10 @@ function devel_rebuild_node_comment_statistics() {
     INSERT IGNORE INTO {node_comment_statistics} (nid, last_comment_timestamp, last_comment_name, last_comment_uid, comment_count) (
       SELECT c.nid, c.timestamp, c.name, c.uid, c2.comment_count FROM {comments} c
       JOIN (
-        SELECT c.nid, MAX(c.timestamp) AS timestamp, COUNT(*) AS comment_count FROM {comments} c WHERE status = 1 GROUP BY c.nid
+        SELECT c.nid, MAX(c.timestamp) AS timestamp, COUNT(*) AS comment_count FROM {comments} c WHERE status = %d GROUP BY c.nid
       ) AS c2 ON c.nid = c2.nid AND c.timestamp = c2.timestamp
     )";
-  db_query($sql);
+  db_query($sql, COMMENT_PUBLISHED);
 
   // Insert records into the node_comment_statistics for nodes that are missing.
   $query = db_select('node', 'n');
