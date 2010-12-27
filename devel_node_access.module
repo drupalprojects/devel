@@ -514,7 +514,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             // limit the number of users returned.  It would be better to make a
             // pager query, or at least make the number of users configurable.  If
             // anyone is up for that please submit a patch.
-            $result = db_query_range('SELECT DISTINCT u.* FROM {users} u ORDER BY u.access DESC', 0, 10);
+            $result = db_query_range('SELECT DISTINCT u.uid, u.*, (u.uid <> 0) AS authorized FROM {users} u ORDER BY authorized ASC, u.access DESC', 0, 10);
             while ($data = db_fetch_object($result)) {
               $account = user_load($data->uid);
               $username = theme('username', $data);
