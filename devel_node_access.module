@@ -306,7 +306,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
                 }
                 // check node_access_grants()
                 $checked_status[$nid] = $node->status;
-                if ($node->nid && $node->status) {
+                if ($node->nid) {
                   foreach (array('view', 'update', 'delete') as $op) {
                     $checked_grants[$nid][$op] = array_merge(
                       array('all' => array(0)),
