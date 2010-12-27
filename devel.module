@@ -521,8 +521,12 @@ function devel_start() {
 }
 
 function backtrace_error_handler($errno, $message, $filename, $line) {
-  // Don't respond to the error if it was suppressed with a '@'
+  // Don't respond to the error if it was suppressed with a '@'.
   if (error_reporting() == 0) {
+    return;
+  }
+  // Don't respond to warning caused by ourselves.
+  if (preg_match('#Cannot modify header information - headers already sent .*[/\\\\]devel[/\\\\]krumo#', $message)) {
     return;
   }
   if ($errno & (E_ALL ^ E_DEPRECATED)) {
@@ -1995,7 +1999,7 @@ function devel_rebuild_node_comment_statistics_page() {
 
 /*
  * Rebuild ncs table.
- * 
+ *
  * Note: In drupal 6, this function depends on dbtng module.
  */
 function devel_rebuild_node_comment_statistics() {
