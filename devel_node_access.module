@@ -445,11 +445,11 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             }
             $output = theme('table', $headers, $rows, array('class' => 'system-status-report', 'style' => 'text-align: left'));
 
-            $output .= theme_item(array('#value' => '', '#description' => '(Some of the table elements provide additional information if you hover your mouse over them.)'));
+            $output .= theme('item', array('#value' => '', '#description' => '(Some of the table elements provide additional information if you hover your mouse over them.)'));
 
             if ($error_count > 0) {
               $variables['!Rebuild_permissions'] = '<a href="'. url('admin/content/node-settings/rebuild') .'">'. $tr('Rebuild permissions') .'</a>';
-              $output .= theme_item(array('#value' => '<div class="error">'. t("You have errors in your !na table! You may be able to fix these for now by running !Rebuild_permissions, but this is likely to destroy the evidence and make it impossible to identify the underlying issues. If you don't fix those, the errors will probably come back again. <br /> DON'T do this just yet if you intend to ask for help with this situation.", $variables) .'</div>'));
+              $output .= theme('item', array('#value' => '<div class="error">'. t("You have errors in your !na table! You may be able to fix these for now by running !Rebuild_permissions, but this is likely to destroy the evidence and make it impossible to identify the underlying issues. If you don't fix those, the errors will probably come back again. <br /> DON'T do this just yet if you intend to ask for help with this situation.", $variables) .'</div>'));
             }
 
             // Explain whether access is granted or denied, and why (using code from node_access()).
@@ -500,7 +500,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
           }
 
           if (!empty($hint)) {
-            $output .= theme_item(array('#value' => '', '#description' => '('. $hint .')'));
+            $output .= theme('item', array('#value' => '', '#description' => '('. $hint .')'));
           }
           $subject = t('node_access entries for nodes shown on this page');
           return array('subject' => $subject, 'content' => $output .'<br /><br />');
@@ -530,7 +530,7 @@ function devel_node_access_block($op = 'list', $delta = 0) {
             }
             if (count($rows)) {
               $output = theme('table', $headers, $rows, array('style' => 'text-align: left'));
-              $output .= theme_item(array('#value' => '', '#description' => t('(This table lists the most-recently active users. Hover your mouse over each result for more details.)')));
+              $output .= theme('item', array('#value' => '', '#description' => t('(This table lists the most-recently active users. Hover your mouse over each result for more details.)')));
               return array('subject' => t('Access permissions by user'),
                            'content' => $output);
             }
