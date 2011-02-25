@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 function devel_node_access_install() {
 }

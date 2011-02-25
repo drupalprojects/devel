@@ -1,4 +1,3 @@
-// $Id$
 
 /**
   *  @name    jQuery Logging plugin

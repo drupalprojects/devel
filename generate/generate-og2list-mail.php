@@ -1,6 +1,5 @@
 <?php
 
-// $Id$:
 
 /**
  * This script creates bogus mails from existing users to existing groups.
