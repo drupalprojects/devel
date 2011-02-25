@@ -1,6 +1,5 @@
 <?php
 
-// $Id$:
 
 /**
  * This script assigns existing users to existing groups.
