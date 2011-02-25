@@ -1,5 +1,4 @@
 <?php
-// $Id$
 include "includes/bootstrap.inc";
 include "includes/common.inc";
 
