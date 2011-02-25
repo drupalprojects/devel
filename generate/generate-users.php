@@ -1,6 +1,5 @@
 <?php
 // Reads a csv formatted file and creates users.
-// $Id$
 include "includes/common.inc";
 
 $handle = fopen("daten.csv", "r");

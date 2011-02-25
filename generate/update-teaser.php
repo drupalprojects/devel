@@ -1,5 +1,4 @@
 <?php
-// $Id$
 include "includes/common.inc";
 
 $result = db_query("SELECT nid,body,teaser FROM node");
