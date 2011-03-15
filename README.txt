@@ -37,5 +37,5 @@ COMPATIBILITY NOTES
 
 AUTHOR/MAINTAINER
 ======================
--moshe weitzman
-weitzman at tejasa DOT com
+Moshe Weitzman <weitzman at tejasa DOT com> http://cyrve.com
+Hans Salvisberg <drupal at salvisberg DOT com>
