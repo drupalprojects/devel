@@ -29,6 +29,8 @@ Included in this package is also:
 
 Macro module has moved to http://drupal.org/project/macro.
 
+Some nifty drush integration ships with devel and devel_generate. See drush help for details.
+
 COMPATIBILITY NOTES
 ==================
 - Modules that use AHAH may have incompatibility with the query log and other footer info. Consider setting $GLOBALS['devel_shutdown'] = FALSE in order to avoid issues.
