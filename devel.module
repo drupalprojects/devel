@@ -1190,6 +1190,7 @@ function devel_execute_block_form() {
  * Generates the execute form.
  */
 function devel_execute_form() {
+  drupal_add_css(drupal_get_path('module', 'devel') .'/devel.css');
   $form['execute']['code'] = array(
     '#type' => 'textarea',
     '#title' => t('PHP code to execute'),
