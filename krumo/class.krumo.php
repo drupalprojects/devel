@@ -66,7 +66,7 @@ Class krumo {
 	* @access public
 	* @static
 	*/
-	Function version() {
+  static Function version() {
 		return '0.2a';
 		}
 
@@ -78,7 +78,7 @@ Class krumo {
 	* @access public
 	* @static
 	*/
-	Function backtrace() {
+  static Function backtrace() {
 
 		// disabled ?
 		//
@@ -97,7 +97,7 @@ Class krumo {
 	* @access public
 	* @static
 	*/
-	Function classes() {
+  static Function classes() {
 
 		// disabled ?
 		//
@@ -121,7 +121,7 @@ This is a list of all currently declared classes.
 	* @access public
 	* @static
 	*/
-	Function interfaces() {
+  static Function interfaces() {
 
 		// disabled ?
 		//
@@ -145,7 +145,7 @@ This is a list of all currently declared interfaces.
 	* @access public
 	* @static
 	*/
-	Function includes() {
+  static Function includes() {
 
 		// disabled ?
 		//
@@ -169,7 +169,7 @@ This is a list of all currently included (or required) files.
 	* @access public
 	* @static
 	*/
-	Function functions() {
+  static Function functions() {
 
 		// disabled ?
 		//
@@ -193,7 +193,7 @@ This is a list of all currently declared functions.
 	* @access public
 	* @static
 	*/
-	Function defines() {
+  static Function defines() {
 
 		// disabled ?
 		//
@@ -217,7 +217,7 @@ This is a list of all currently declared constants (defines).
 	* @access public
 	* @static
 	*/
-	Function extensions() {
+  static Function extensions() {
 
 		// disabled ?
 		//
@@ -241,7 +241,7 @@ This is a list of all currently loaded PHP extensions.
 	* @access public
 	* @static
 	*/
-	Function headers() {
+  static Function headers() {
 
 		// disabled ?
 		//
@@ -265,7 +265,7 @@ This is a list of all HTTP request headers.
 	* @access public
 	* @static
 	*/
-	Function phpini() {
+  static Function phpini() {
 
 		// disabled ?
 		//
@@ -289,7 +289,7 @@ This is a list of the configuration settings read from <code><b><?php echo get_c
 	* @access public
 	* @static
 	*/
-	Function conf() {
+  static Function conf() {
 
 		// disabled ?
 		//
@@ -313,7 +313,7 @@ This is a list of all your configuration settings.
 	* @access public
 	* @static
 	*/
-	Function path() {
+  static Function path() {
 
 		// disabled ?
 		//
@@ -337,7 +337,7 @@ This is a list of the specified directories under your <code><b>include_path</b>
 	* @access public
 	* @static
 	*/
-	Function request() {
+  static Function request() {
 
 		// disabled ?
 		//
@@ -361,7 +361,7 @@ This is a list of all the values from the <code><b>$_REQUEST</b></code> array.
 	* @access public
 	* @static
 	*/
-	Function get() {
+  static Function get() {
 
 		// disabled ?
 		//
@@ -385,7 +385,7 @@ This is a list of all the values from the <code><b>$_GET</b></code> array.
 	* @access public
 	* @static
 	*/
-	Function post() {
+  static Function post() {
 
 		// disabled ?
 		//
@@ -409,7 +409,7 @@ This is a list of all the values from the <code><b>$_POST</b></code> array.
 	* @access public
 	* @static
 	*/
-	Function server() {
+  static Function server() {
 
 		// disabled ?
 		//
@@ -433,7 +433,7 @@ This is a list of all the values from the <code><b>$_SERVER</b></code> array.
 	* @access public
 	* @static
 	*/
-	Function cookie() {
+  static Function cookie() {
 
 		// disabled ?
 		//
@@ -457,7 +457,7 @@ This is a list of all the values from the <code><b>$_COOKIE</b></code> array.
 	* @access public
 	* @static
 	*/
-	Function env() {
+  static Function env() {
 
 		// disabled ?
 		//
@@ -481,7 +481,7 @@ This is a list of all the values from the <code><b>$_ENV</b></code> array.
 	* @access public
 	* @static
 	*/
-	Function session() {
+  static Function session() {
 
 		// disabled ?
 		//
@@ -507,7 +507,7 @@ This is a list of all the values from the <code><b>$_SESSION</b></code> array.
 	* @access public
 	* @static
 	*/
-	Function ini($ini_file) {
+  static Function ini($ini_file) {
 
 		// disabled ?
 		//
@@ -540,7 +540,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access public
 	* @static
 	*/
-	Function dump($data) {
+  static Function dump($data) {
 
 		// disabled ?
 		//
@@ -625,7 +625,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _css() {
+  static Function _css() {
 		
 		static $_css = false;
 		
@@ -703,7 +703,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access public
 	* @static
 	*/
-	Function enable() {
+  static Function enable() {
 		return true === krumo::_debug(true);
 		}
 
@@ -714,7 +714,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access public
 	* @static
 	*/
-	Function disable() {
+  static Function disable() {
 		return false === krumo::_debug(false);
 		}
 	
@@ -726,7 +726,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _debug($state=null) {
+  static Function _debug($state=null) {
 		
 		static $_ = true;
 		
@@ -751,7 +751,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _dump(&$data, $name='...') {
+  static Function _dump(&$data, $name='...') {
 
 		// object ?
 		//
@@ -830,7 +830,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _null($name) {
+  static Function _null($name) {
 ?>
 <li class="krumo-child">
 	<div class="krumo-element"
@@ -854,7 +854,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _marker() {
+  static Function _marker() {
 		
 		static $_recursion_marker;
 		if (!isset($_recursion_marker)) {
@@ -876,7 +876,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function &_hive(&$bee) {
+  static Function &_hive(&$bee) {
 		
 		static $_ = array();
 
@@ -908,7 +908,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _vars(&$data) {
+  static Function _vars(&$data) {
 
 		$_is_object = is_object($data);
 		
@@ -983,7 +983,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _recursion() {
+  static Function _recursion() {
 ?>
 <div class="krumo-nest" style="display:none;">
 	<ul class="krumo-node">
@@ -1011,7 +1011,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _array(&$data, $name) {
+  static Function _array(&$data, $name) {
 ?>
 <li class="krumo-child">
 	
@@ -1062,7 +1062,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _object(&$data, $name) {
+  static Function _object(&$data, $name) {
 ?>
 <li class="krumo-child">
 
@@ -1093,7 +1093,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _resource($data, $name) {
+  static Function _resource($data, $name) {
 ?>
 <li class="krumo-child">
 
@@ -1120,7 +1120,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _boolean($data, $name) {
+  static Function _boolean($data, $name) {
 ?>
 <li class="krumo-child">
 
@@ -1147,7 +1147,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _integer($data, $name) {
+  static Function _integer($data, $name) {
 ?>
 <li class="krumo-child">
 
@@ -1174,7 +1174,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _float($data, $name) {
+  static Function _float($data, $name) {
 ?>
 <li class="krumo-child">
 
@@ -1201,7 +1201,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 	* @access private
 	* @static
 	*/
-	Function _string($data, $name) {
+  static Function _string($data, $name) {
 
 		// extra ?
 		//
