@@ -837,7 +837,8 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 		onMouseOver="krumo.over(this);"
 		onMouseOut="krumo.out(this);">
 		
-			<a class="krumo-name"><?php echo $name;?></a>
+			<?php /* DEVEL: added htmlSpecialChars */ ?>
+			<a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
 			(<em class="krumo-type krumo-null">NULL</em>) 
 	</div>
 </li>
@@ -1020,7 +1021,8 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 		onMouseOver="krumo.over(this);"
 		onMouseOut="krumo.out(this);">
 		
-			<a class="krumo-name"><?php echo $name;?></a>
+			<?php /* DEVEL: added htmlSpecialChars */ ?>
+			<a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
 			(<em class="krumo-type">Array, <strong class="krumo-array-length"><?php echo 
 				(count($data)==1)
 					?("1 element")
@@ -1071,7 +1073,8 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 		onMouseOver="krumo.over(this);"
 		onMouseOut="krumo.out(this);">
 
-			<a class="krumo-name"><?php echo $name;?></a>
+			<?php /* DEVEL: added htmlSpecialChars */ ?>
+			<a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
 			(<em class="krumo-type">Object</em>) 
 			<strong class="krumo-class"><?php echo get_class($data);?></strong>
 	</div>
@@ -1101,7 +1104,8 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 		onMouseOver="krumo.over(this);"
 		onMouseOut="krumo.out(this);">
 		
-			<a class="krumo-name"><?php echo $name;?></a>
+			<?php /* DEVEL: added htmlSpecialChars */ ?>
+			<a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
 			(<em class="krumo-type">Resource</em>) 
 			<strong class="krumo-resource"><?php echo get_resource_type($data);?></strong>
 	</div>
@@ -1128,7 +1132,8 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 		onMouseOver="krumo.over(this);"
 		onMouseOut="krumo.out(this);">
 		
-			<a class="krumo-name"><?php echo $name;?></a>
+			<?php /* DEVEL: added htmlSpecialChars */ ?>
+			<a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
 			(<em class="krumo-type">Boolean</em>) 
 			<strong class="krumo-boolean"><?php echo $data?'TRUE':'FALSE'?></strong>
 	</div>
@@ -1155,7 +1160,8 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 		onMouseOver="krumo.over(this);"
 		onMouseOut="krumo.out(this);">
 		
-			<a class="krumo-name"><?php echo $name;?></a>
+			<?php /* DEVEL: added htmlSpecialChars */ ?>
+			<a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
 			(<em class="krumo-type">Integer</em>)
 			<strong class="krumo-integer"><?php echo $data;?></strong> 
 	</div>
@@ -1182,7 +1188,8 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 		onMouseOver="krumo.over(this);"
 		onMouseOut="krumo.out(this);">
 		
-			<a class="krumo-name"><?php echo $name;?></a>
+			<?php /* DEVEL: added htmlSpecialChars */ ?>
+			<a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
 			(<em class="krumo-type">Float</em>) 
 			<strong class="krumo-float"><?php echo $data;?></strong>
 	</div>
@@ -1219,7 +1226,8 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 		onMouseOver="krumo.over(this);"
 		onMouseOut="krumo.out(this);">
 
-			<a class="krumo-name"><?php echo $name;?></a>
+			<?php /* DEVEL: added htmlSpecialChars */ ?>
+			<a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
 			(<em class="krumo-type">String,
 				<strong class="krumo-string-length"><?php
 					echo strlen($data) ?> characters</strong> </em>)
