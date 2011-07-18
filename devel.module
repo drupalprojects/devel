@@ -503,11 +503,11 @@ function backtrace_error_handler($errno, $message, $filename, $line, $context) {
     $backtrace = debug_backtrace();
     array_shift($backtrace);
     $variables = array('%error' => $type, '%message' => $message, '%function' => $backtrace[0]['function'] .'()', '%file' => $filename, '%line' => $line);
-    $counter = 0;
+    $counter = count($backtrace);
 
     if (variable_get('error_level', 1) == 1) {
       foreach ($backtrace as $call) {
-        $nicetrace[$call['function'] .'<span class="'. $counter++ .'" />'] = $call;
+        $nicetrace[--$counter . ': ' . $call['function']] = $call;
       }
       print t('%error: %message in %function (line %line of %file).', $variables) ." =&gt;\n";
       krumo($nicetrace);
