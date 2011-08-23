@@ -1902,16 +1902,16 @@ if (variable_get('smtp_library', '') == drupal_get_filename('module', 'devel')) 
   watchdog(
     'devel',
     'Mail sent:<br />Id: %mail_id<br />To: %to<br />From: %from<br />Language: %lang<br />Subject: %subject<br />Body: %body<br /><br />Additional headers: <br />!header',
-     array(
-       '%mail_id' => $message['id'],
-       '%to' => $message['to'],
-       '%from' => $message['from'],
-       '%lang' => $message['language']->language,
-       '%subject' => $message['subject'],
-       '%body' => $message['body'],
-       '!header' => implode("<br />", $mimeheaders),
-       WATCHDOG_INFO,
-       )
+    array(
+      '%mail_id' => $message['id'],
+      '%to' => $message['to'],
+      '%from' => $message['from'],
+      '%lang' => $message['language']->language,
+      '%subject' => $message['subject'],
+      '%body' => $message['body'],
+      '!header' => implode("<br />", $mimeheaders),
+    ),
+    WATCHDOG_INFO
   );
   return TRUE;
   }
