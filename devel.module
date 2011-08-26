@@ -128,7 +128,8 @@ function devel_menu() {
   $items['devel/switch'] = array(
     'title' => 'Switch user',
     'page callback' => 'devel_switch_user',
-    'access arguments' => array('switch users'),
+    'access callback' => '_devel_switch_user_access',
+    'access arguments' => array(2),
     'type' => MENU_CALLBACK,
     'menu_name' => 'devel',
   );
@@ -203,6 +204,14 @@ function devel_menu() {
   );
 
   return $items;
+}
+
+/**
+ * Menu item access callback - check permission and token for Switch User.
+ */
+function _devel_switch_user_access($name) {
+  // Suppress notices when on other pages when menu system still checks access.
+  return user_access('switch users') && drupal_valid_token(@$_GET['token'], "devel/switch/$name|" . @$_GET['destination'], TRUE);
 }
 
 function devel_menu_need_destination() {
@@ -593,6 +602,7 @@ function devel_switch_user_list() {
   if (user_access('switch users')) {
     $list_size = variable_get('devel_switch_user_list_size', 10);
     $dest = drupal_get_destination();
+    $dest_value =  urldecode(substr($dest, strlen('destination=')));
     // Try to find at least $list_size users that can switch.
     // Inactive users are omitted from all of the following db selects.
     $roles = user_roles(TRUE, 'switch users');
@@ -611,10 +621,11 @@ function devel_switch_user_list() {
       $accounts = db_query_range("SELECT DISTINCT u.uid, u.name, u.access FROM {users} u LEFT JOIN {users_roles} r ON u.uid = r.uid WHERE ($where_sql) AND u.status > 0 ORDER BY u.access DESC", 0, $list_size);
     }
     while ($account = db_fetch_object($accounts)) {
+      $path = 'devel/switch/'. $account->name;
       $links[$account->uid] = array(
         'title' => theme('placeholder', $account->name),
-        'href' => 'devel/switch/'. $account->name,
-        'query' => $dest,
+        'href' => $path,
+        'query' => $dest . '&' . 'token=' . drupal_get_token($path . '|' . $dest_value),
         'attributes' => array('title' => t('This user can switch back.')),
         'html' => TRUE,
         'last_access' => $account->access,
@@ -624,11 +635,12 @@ function devel_switch_user_list() {
     if ($num_links < $list_size) {
       // If we don't have enough, add distinct uids until we hit $list_size.
       $accounts = db_query_range('SELECT uid, name, access FROM {users} WHERE uid > 0 AND uid NOT IN ('. implode(',', array_keys($links)) .') AND status > 0 ORDER BY access DESC', 0, $list_size - $num_links);
+      $path = 'devel/switch/'. $account->name;
       while ($account = db_fetch_object($accounts)) {
         $links[$account->uid] = array(
           'title' => $account->name ? $account->name : 'anon',
-          'href' => 'devel/switch/'. $account->name,
-          'query' => $dest,
+          'href' => $path,
+          'query' => $dest . '&' . 'token=' . drupal_get_token($path . '|' . $dest_value),
           'attributes' => array('title' => t('Caution: this user will be unable to switch back.')),
           'last_access' => $account->access,
         );
@@ -699,7 +711,13 @@ function devel_switch_user_form_validate($form, &$form_state) {
 }
 
 function devel_switch_user_form_submit($form, &$form_state) {
-  $form_state['redirect'] = 'devel/switch/'. $form_state['values']['username'];
+  $path = 'devel/switch/' . $form_state['values']['username'];
+  $dest = drupal_get_destination();
+  $dest_value =  urldecode(substr($dest, strlen('destination=')));
+  $form_state['redirect'] = array(
+    $path,
+    array('token' => drupal_get_token($path . '|' . $dest_value), 'destination' => $dest_value),
+  );
 }
 
 function devel_exit($destination = NULL) {
@@ -2008,4 +2026,3 @@ function devel_rebuild_node_comment_statistics() {
     ->from($query)
     ->execute();
 }
-
