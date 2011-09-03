@@ -635,8 +635,8 @@ function devel_switch_user_list() {
     if ($num_links < $list_size) {
       // If we don't have enough, add distinct uids until we hit $list_size.
       $accounts = db_query_range('SELECT uid, name, access FROM {users} WHERE uid > 0 AND uid NOT IN ('. implode(',', array_keys($links)) .') AND status > 0 ORDER BY access DESC', 0, $list_size - $num_links);
-      $path = 'devel/switch/'. $account->name;
       while ($account = db_fetch_object($accounts)) {
+        $path = 'devel/switch/'. $account->name;
         $links[$account->uid] = array(
           'title' => $account->name ? $account->name : 'anon',
           'href' => $path,
