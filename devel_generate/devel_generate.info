@@ -4,3 +4,4 @@ package = Development
 core = 8.x
 dependencies[] = devel
 tags[] = developer
+configure = admin/config/development/generate
