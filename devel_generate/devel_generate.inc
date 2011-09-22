@@ -703,10 +703,10 @@ function devel_generate_content_add_node(&$results) {
 function devel_generate_set_language($results, $object) {
   if (isset($results['add_language'])) {
     $languages = $results['add_language'];
-    $object->language = $languages[array_rand($languages)];
+    $language = $languages[array_rand($languages)];
   }
   else {
-    $default = language_default('language');
-    $object->language =  $default == 'en' ? LANGUAGE_NONE : $default;
+    $language = language_default()->language;
   }
+  $object->language =  $language == 'en' ? LANGUAGE_NONE : $language;
 }

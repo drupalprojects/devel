@@ -60,13 +60,8 @@ function devel_generate_fields(&$object, $obj_type, $bundle) {
         }
       }
     }
-    // TODO: Completely overriding any existing $object->{$field['field_name']}
-    // is necessary here because the forum module has a bug where it
-    // initializes the property with incorrect data.
-    // @see http://drupal.org/node/652176
-    $object->{$field['field_name']} = array(
-      $object->language => $object_field,
-    );
+    $field_name = $field['field_name'];
+    $object->{$field_name}{$object->language} = $object_field;
   }
 }
 
