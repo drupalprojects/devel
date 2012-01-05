@@ -114,7 +114,7 @@ function devel_reinstall($form, &$form_state) {
  * Process reinstall menu form submissions.
  */
 function devel_reinstall_submit($form, &$form_state) {
-  // require_once './includes/install.inc';
+  // require_once './core/includes/install.inc';
   $modules = array_filter($form_state['values']['list']);
   module_disable($modules, FALSE);
   drupal_uninstall_modules($modules, FALSE);

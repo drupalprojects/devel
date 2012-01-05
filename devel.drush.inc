@@ -117,7 +117,7 @@ function drush_devel_post_pm_enable() {
  */
 function drush_devel_fn_hook($hook) {
   // Get implementations in the .install files as well.
-  include_once './includes/install.inc';
+  include_once './core/includes/install.inc';
   drupal_load_updates();
 
   if ($hook_implementations = module_implements($hook)) {
@@ -135,7 +135,7 @@ function drush_devel_fn_hook($hook) {
  */
 function drush_devel_fn_view($function_name) {
   // Get implementations in the .install files as well.
-  include_once './includes/install.inc';
+  include_once './core/includes/install.inc';
   drupal_load_updates();
 
   if (strpos($function_name, '::') === FALSE) {
