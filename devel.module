@@ -758,7 +758,7 @@ function devel_block_configure($delta) {
     );
     $form['include_anon'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Include %anonymous', array('%anonymous' => format_username(drupal_anonymous_user()))),
+      '#title' => t('Include %anonymous', array('%anonymous' => user_format_name(drupal_anonymous_user()))),
       '#default_value' => variable_get('devel_switch_user_include_anon', FALSE),
     );
     $form['show_form'] = array(
@@ -846,7 +846,7 @@ function devel_switch_user_list() {
     foreach ($accounts as $account) {
       $path = 'devel/switch/'. $account->name;
       $links[$account->uid] = array(
-        'title' => drupal_placeholder(format_username($account)),
+        'title' => drupal_placeholder(user_format_name($account)),
         'href' => $path,
         'query' => array($dest, 'token' => drupal_get_token($path . '|' . $dest['destination'])),
         'attributes' => array('title' => t('This user can switch back.')),
@@ -862,7 +862,7 @@ function devel_switch_user_list() {
       foreach ($accounts as $account) {
         $path = 'devel/switch/'. $account->name;
         $links[$account->uid] = array(
-          'title' => format_username($account),
+          'title' => user_format_name($account),
           'href' => $path,
           'query' => array($dest, 'token' => drupal_get_token($path . '|' . $dest['destination'])),
           'attributes' => array('title' => t('Caution: this user will be unable to switch back.')),
@@ -874,7 +874,7 @@ function devel_switch_user_list() {
     if ($include_anon) {
       $path = 'devel/switch';
       $link = array(
-        'title' => format_username(drupal_anonymous_user()),
+        'title' => user_format_name(drupal_anonymous_user()),
         'href' => $path,
         'query' => array($dest, 'token' => drupal_get_token($path . '/|' . $dest['destination'])),
         'attributes' => array('title' => t('Caution: the anonymous user will be unable to switch back.')),
