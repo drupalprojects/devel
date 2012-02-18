@@ -197,7 +197,10 @@ function devel_generate_content_form() {
   unset($options);
   $options[LANGUAGE_NONE] = t('Language neutral');
   if (module_exists('locale')) {
-    $options += locale_language_list();
+    $languages = language_list();
+    foreach ($languages as $langcode => $language) {
+      $options[$langcode] = $language->name;
+    }
   }
   $form['add_language'] = array(
     '#type' => 'select',
