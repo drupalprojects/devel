@@ -1636,10 +1636,10 @@ function dargs($always = TRUE) {
 }
 
 /**
- * Print a SQL string from a DBTNG Query object. Includes quoted arguments.
+ * Print a SQL string from a DBTNG Select object. Includes quoted arguments.
  *
  * @param $query
- *   A Query object.
+ *   An object that implements the SelectInterface interface.
  * @param $return
  *   Whether to return the string. Default is FALSE, meaning to print it
  *   and return $query instead.
