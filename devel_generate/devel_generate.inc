@@ -56,7 +56,7 @@ function devel_create_users($num, $kill, $age = 0, $roles = array()) {
       // Populate all core fields on behalf of field.module
       module_load_include('inc', 'devel_generate', 'devel_generate.fields');
       $edit = (object) $edit;
-      $edit->language = LANGUAGE_NONE;
+      $edit->language = LANGUAGE_NOT_SPECIFIED;
       devel_generate_fields($edit, 'user', 'user');
       $edit = (array) $edit;
 
@@ -167,7 +167,7 @@ function devel_generate_add_comments($node, $users, $max_comments, $title_length
     // See bug: http://drupal.org/node/1024340
     $comment->subject = substr(devel_create_greeking(mt_rand(2, $title_length), TRUE), 0, 63);
     $comment->uid = $users[array_rand($users)];
-    $comment->language = LANGUAGE_NONE;
+    $comment->language = LANGUAGE_NOT_SPECIFIED;
     // Populate all core fields on behalf of field.module
     module_load_include('inc', 'devel_generate', 'devel_generate.fields');
     devel_generate_fields($comment, 'comment', 'comment_node_' . $node->type);
@@ -195,7 +195,7 @@ function devel_generate_vocabs($records, $maxlength = 12, $types = array('page',
     $voc->relations = 1;
     $voc->hierarchy = 1;
     $voc->weight = mt_rand(0,10);
-    $voc->language = LANGUAGE_NONE;
+    $voc->language = LANGUAGE_NOT_SPECIFIED;
 
     taxonomy_vocabulary_save($voc);
     $vocs[] = $voc->name;
@@ -251,7 +251,7 @@ function devel_generate_terms($records, $vocabs, $maxlength = 12) {
     $term->description = "description of ". $term->name;
     $term->format = filter_fallback_format();
     $term->weight = mt_rand(0, 10);
-    $term->language = LANGUAGE_NONE;
+    $term->language = LANGUAGE_NOT_SPECIFIED;
 
     // Populate all core fields on behalf of field.module
     module_load_include('inc', 'devel_generate', 'devel_generate.fields');
@@ -708,5 +708,5 @@ function devel_generate_set_language($results, $object) {
   else {
     $language = language_default()->language;
   }
-  $object->language =  $language == 'en' ? LANGUAGE_NONE : $language;
+  $object->language =  $language == 'en' ? LANGUAGE_NOT_SPECIFIED : $language;
 }
