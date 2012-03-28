@@ -42,6 +42,7 @@ class DevelMailTest extends DrupalWebTestCase {
     $content = $d->composeMessage($message);
     $expected_filename = $d->getOutputDirectory() . '/drupal@example.com-Test_mail-' . date('y-m-d_his') . '.mail.txt';
     $this->assertEqual($filename, $expected_filename);
+    $content = str_replace("\r", '', $content);
     $this->assertEqual($content, 'From: postmaster@example.com
 X-stupid: dumb
 To: drupal@example.com

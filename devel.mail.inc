@@ -16,7 +16,7 @@
  *
  */
 
-class DevelMailLog extends DefaultMailSystem {
+class DevelMailLog extends Drupal\Core\Mail\PhpMail {
 
   public function composeMessage($message) {
     $mimeheaders = array();
