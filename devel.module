@@ -3,8 +3,6 @@
 // This module holds functions useful for Drupal development.
 // Please contribute!
 
-// Suggested profiling and stacktrace library from http://www.xdebug.org/index.php
-
 define('DEVEL_QUERY_SORT_BY_SOURCE', 0);
 define('DEVEL_QUERY_SORT_BY_DURATION', 1);
 
@@ -605,7 +603,7 @@ function devel_boot() {
 
     if (devel_query_enabled()) {
       @include_once DRUPAL_ROOT . '/core/includes/database/log.inc';
-      Database::startLog('devel');;
+      Drupal\Core\Database\Database::startLog('devel');;
     }
   }
 
@@ -1060,7 +1058,7 @@ function devel_shutdown_real() {
     }
 
     if (isset($user) && user_access('access devel information')) {
-      $queries = (devel_query_enabled() ? Database::getLog('devel', 'default') : NULL);
+      $queries = (devel_query_enabled() ? Drupal\Core\Database\Database::getLog('devel', 'default') : NULL);
       $output .= devel_shutdown_summary($queries);
       $output .= devel_shutdown_query($queries);
     }
@@ -1171,7 +1169,7 @@ function devel_query_put_contents($queries) {
 }
 
 function devel_query_enabled() {
-  return method_exists('Database', 'getLog') && variable_get('devel_query_display', FALSE);
+  return method_exists('Drupal\Core\Database\Database', 'getLog') && variable_get('devel_query_display', FALSE);
 }
 
 function devel_query_summary($queries) {
@@ -1653,7 +1651,7 @@ function dpq($query, $return = FALSE, $name = NULL) {
     $query->preExecute();
     $sql = (string) $query;
     $quoted = array();
-    $connection = Database::getConnection();
+    $connection = Drupal\Core\Database\Database::getConnection();
     foreach ((array)$query->arguments() as $key => $val) {
       $quoted[$key] = $connection->quote($val);
     }

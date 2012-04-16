@@ -69,7 +69,7 @@ function devel_querylog_arguments($request_id, $qid) {
   $path = file_stream_wrapper_uri_normalize($path);
   $queries = json_decode(file_get_contents($path));
   $query = $queries[$qid];
-  $conn = Database::getConnection();
+  $conn = Drupal\Core\Database\Database::getConnection();
   $quoted = array();
   foreach ((array)$query->args as $key => $val) {
     $quoted[$key] = $conn->quote($val);
