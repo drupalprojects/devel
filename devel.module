@@ -11,6 +11,7 @@ define('DEVEL_QUERY_SORT_BY_DURATION', 1);
 define('DEVEL_ERROR_HANDLER_NONE', 0);
 define('DEVEL_ERROR_HANDLER_STANDARD', 1);
 define('DEVEL_ERROR_HANDLER_BACKTRACE', 2);
+define('DEVEL_ERROR_HANDLER_BACKTRACE_AND_MESSAGE', 3);
 
 define('DEVEL_MIN_TEXTAREA', 50);
 
@@ -402,6 +403,7 @@ function devel_set_handler($handler) {
       // do nothing
       break;
     case DEVEL_ERROR_HANDLER_BACKTRACE:
+    case DEVEL_ERROR_HANDLER_BACKTRACE_AND_MESSAGE:
       if (has_krumo()) {
         set_error_handler('backtrace_error_handler');
       }
@@ -465,6 +467,20 @@ function devel_start() {
   register_shutdown_function('devel_shutdown');
 }
 
+/**
+ * Display backtrace showing the route of calls to the current error.
+ *
+ * @param $error_level
+ *   The level of the error raised.
+ * @param $message
+ *   The error message.
+ * @param $filename
+ *   The filename that the error was raised in.
+ * @param $line
+ *   The line number the error was raised at.
+ * @param $context
+ *   An array that points to the active symbol table at the point the error occurred.
+ */
 function backtrace_error_handler($error_level, $message, $filename, $line, $context) {
   // Don't respond to the error if it was suppressed with a '@'.
   if (error_reporting() == 0) {
@@ -530,6 +546,12 @@ function backtrace_error_handler($error_level, $message, $filename, $line, $cont
     if (variable_get('error_level', 1) == 1) {
       print t('%error: %message in %function (line %line of %file).', $variables) ." =&gt;\n";
       ddebug_backtrace(1);
+
+      // Also show the standard drupal message if this was requested via the admin option
+      // for both backtrace and message.
+      if (variable_get('devel_error_handler', DEVEL_ERROR_HANDLER_STANDARD) == DEVEL_ERROR_HANDLER_BACKTRACE_AND_MESSAGE) {
+        drupal_set_message(t('%error: %message in %function (line %line of %file).', $variables), ($type[1] <= WATCHDOG_ERROR ? 'error' : 'warning'));
+      }
     }
 
     watchdog('php', '%error: %message in %function (line %line of %file).', $variables, WATCHDOG_ERROR);
@@ -1081,11 +1103,12 @@ function devel_admin_settings() {
   $form['devel_error_handler'] = array('#type' => 'radios',
     '#title' => t('Error handler'),
     '#default_value' => variable_get('devel_error_handler', DEVEL_ERROR_HANDLER_STANDARD),
-    '#options' => array(DEVEL_ERROR_HANDLER_NONE => t('None'), DEVEL_ERROR_HANDLER_STANDARD => t('Standard drupal')),
+    '#options' => array(DEVEL_ERROR_HANDLER_NONE => t('None'), DEVEL_ERROR_HANDLER_STANDARD => t('Standard Drupal')),
     '#description' => t('Choose an error handler for your site. <em>Backtrace</em> prints nice debug information when an error is noticed, and you <a href="@choose">choose to show errors on screen</a>. <strong>Backtrace requires the <a href="@krumo">krumo library</a></strong>. <em>None</em> is a good option when stepping through the site in your debugger.', array('@krumo' => url('http://krumo.sourceforge.net'), '@choose' => url('admin/settings/error-reporting'))),
   );
   if (has_krumo()) {
     $form['devel_error_handler']['#options'][DEVEL_ERROR_HANDLER_BACKTRACE] = t('Backtrace');
+    $form['devel_error_handler']['#options'][DEVEL_ERROR_HANDLER_BACKTRACE_AND_MESSAGE] = t('Backtrace plus standard Drupal');
   }
 
   $options = drupal_map_assoc(array('default', 'blue', 'green', 'orange', 'white', 'disabled'));
