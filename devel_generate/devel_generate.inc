@@ -52,15 +52,12 @@ function devel_create_users($num, $kill, $age = 0, $roles = array()) {
         'roles' => drupal_map_assoc($roles),
         'devel_generate' => TRUE // A flag to let hook_user_* know that this is a generated user.
       );
+      $account = entity_create('user', $edit);
 
       // Populate all core fields on behalf of field.module
       module_load_include('inc', 'devel_generate', 'devel_generate.fields');
-      $edit = (object) $edit;
-      $edit->language = LANGUAGE_NOT_SPECIFIED;
-      devel_generate_fields($edit, 'user', 'user');
-      $edit = (array) $edit;
-
-      $account = user_save(drupal_anonymous_user(), $edit);
+      devel_generate_fields($account, 'user', 'user');
+      $account->save();
 
       if ($pic_config) {
         // Since the image.module should scale the picture just pick an
@@ -101,9 +98,8 @@ function devel_create_users($num, $kill, $age = 0, $roles = array()) {
         $file = file_save($file);
 
         // Save the user record with the new picture.
-        $edit = (array) $account;
-        $edit['picture'] = $file;
-        user_save($account, $edit);
+        $account->picture = $file;
+        $account->save();
       }
     }
   }
@@ -145,33 +141,33 @@ function devel_generate_content($form_state) {
 function devel_generate_add_comments($node, $users, $max_comments, $title_length = 8) {
   $num_comments = mt_rand(1, $max_comments);
   for ($i = 1; $i <= $num_comments; $i++) {
-    $comment = new stdClass;
-    $comment->nid = $node->nid;
-    $comment->cid = NULL;
-    $comment->name = 'devel generate';
-    $comment->mail = 'devel_generate@example.com';
-    $comment->timestamp = mt_rand($node->created, REQUEST_TIME);
-
     switch ($i % 3) {
       case 1:
-        $comment->pid = db_query_range("SELECT cid FROM {comment} WHERE pid = 0 AND nid = :nid ORDER BY RAND()", 0, 1, array(':nid' => $comment->nid))->fetchField();
+        $pid = db_query_range("SELECT cid FROM {comment} WHERE pid = 0 AND nid = :nid ORDER BY RAND()", 0, 1, array(':nid' => $node->nid))->fetchField();
         break;
       case 2:
-        $comment->pid = db_query_range("SELECT cid FROM {comment} WHERE pid > 0 AND nid = :nid ORDER BY RAND()", 0, 1, array(':nid' => $comment->nid))->fetchField();
+        $pid = db_query_range("SELECT cid FROM {comment} WHERE pid > 0 AND nid = :nid ORDER BY RAND()", 0, 1, array(':nid' => $node->nid))->fetchField();
         break;
       default:
-        $comment->pid = 0;
+        $pid = 0;
     }
 
-    // The subject column has a max character length of 64
-    // See bug: http://drupal.org/node/1024340
-    $comment->subject = substr(devel_create_greeking(mt_rand(2, $title_length), TRUE), 0, 63);
-    $comment->uid = $users[array_rand($users)];
-    $comment->language = LANGUAGE_NOT_SPECIFIED;
+    $comment = entity_create('comment', array(
+      'nid' => $node->nid,
+      'cid' => NULL,
+      'name' => 'devel generate',
+      'mail' => 'devel_generate@example.com',
+      'timestamp' => mt_rand($node->created, REQUEST_TIME),
+      'subject' => substr(devel_create_greeking(mt_rand(2, $title_length), TRUE), 0, 63),
+      'uid' => $users[array_rand($users)],
+      'langcode' => LANGUAGE_NOT_SPECIFIED,
+      'pid' => $pid,
+    ));
+
     // Populate all core fields on behalf of field.module
     module_load_include('inc', 'devel_generate', 'devel_generate.fields');
     devel_generate_fields($comment, 'comment', 'comment_node_' . $node->type);
-    comment_save($comment);
+    $comment->save();
   }
 }
 
@@ -180,23 +176,18 @@ function devel_generate_vocabs($records, $maxlength = 12, $types = array('page',
 
   // Insert new data:
   for ($i = 1; $i <= $records; $i++) {
-    $voc = new stdClass();
-    $voc->name = devel_generate_word(mt_rand(2, $maxlength));
-    $voc->machine_name = drupal_strtolower($voc->name);
-    $voc->description = "description of ". $voc->name;
-    // TODO: not working
-    $voc->nodes = array_flip(array($types[array_rand($types)]));
-    foreach ($voc->nodes as $key => $value) {
-      $voc->nodes[$key] = $key;
-    }
-
-    $voc->multiple = 1;
-    $voc->required = 0;
-    $voc->relations = 1;
-    $voc->hierarchy = 1;
-    $voc->weight = mt_rand(0,10);
-    $voc->language = LANGUAGE_NOT_SPECIFIED;
-
+    $name = devel_generate_word(mt_rand(2, $maxlength));
+    $voc = entity_create('taxonomy_vocabulary', array(
+      'name' => $name,
+      'machine_name' => drupal_strtolower($name),
+      'langcode' => LANGUAGE_NOT_SPECIFIED,
+      'description' => "description of $name",
+      'hierarchy' => 1,
+      'weight' => mt_rand(0, 10),
+      'multiple' => 1,
+      'required' => 0,
+      'relations' => 1,
+    ));
     taxonomy_vocabulary_save($voc);
     $vocs[] = $voc->name;
 
@@ -212,15 +203,14 @@ function devel_generate_terms($records, $vocabs, $maxlength = 12) {
   $max = db_query('SELECT MAX(tid) FROM {taxonomy_term_data}')->fetchField();
   $start = time();
   for ($i = 1; $i <= $records; $i++) {
-    $term = new stdClass;
+    $values = array();
     switch ($i % 2) {
       case 1:
         // Set vid and vocabulary_machine_name properties.
         $vocab = $vocabs[array_rand($vocabs)];
-        $term->vid = $vocab->vid;
-        $term->vocabulary_machine_name = $vocab->machine_name;
-        // Don't set a parent. Handled by taxonomy_save_term()
-        // $term->parent = 0;
+        $values['vid'] = $vocab->vid;
+        $values['vocabulary_machine_name'] = $vocab->machine_name;
+        $values['parent'] = array(0);
         break;
       default:
         while (TRUE) {
@@ -240,22 +230,23 @@ function devel_generate_terms($records, $vocabs, $maxlength = 12) {
             break;
           }
         }
-        $term->parent = $parent['tid'];
+        $values['parent'] = array($parent['tid']);
         // Slight speedup due to this property being set.
-        $term->vocabulary_machine_name = $parent['machine_name'];
-        $term->vid = $parent['vid'];
+        $values['vocabulary_machine_name'] = $parent['machine_name'];
+        $values['vid'] = $parent['vid'];
         break;
     }
 
-    $term->name = devel_generate_word(mt_rand(2, $maxlength));
-    $term->description = "description of ". $term->name;
-    $term->format = filter_fallback_format();
-    $term->weight = mt_rand(0, 10);
-    $term->language = LANGUAGE_NOT_SPECIFIED;
+    $values['name'] = devel_generate_word(mt_rand(2, $maxlength));
+    $values['description'] = "description of " . $values['name'];
+    $values['format'] = filter_fallback_format();
+    $values['weight'] = mt_rand(0, 10);
+    $values['langcode'] = LANGUAGE_NOT_SPECIFIED;
+    $term = entity_create('taxonomy_term', $values);
 
     // Populate all core fields on behalf of field.module
     module_load_include('inc', 'devel_generate', 'devel_generate.fields');
-    devel_generate_fields($term, 'term', $term->vocabulary_machine_name);
+    devel_generate_fields($term, 'term', $values['vocabulary_machine_name']);
 
     if ($status = taxonomy_term_save($term)) {
       $max += 1;
@@ -306,7 +297,7 @@ function devel_generate_term_data($vocabs, $num_terms, $title_length, $kill) {
 function devel_generate_vocab_data($num_vocab, $title_length, $kill) {
 
   if ($kill) {
-    foreach (taxonomy_get_vocabularies() as $vid => $vocab) {
+    foreach (taxonomy_vocabulary_load_multiple(FALSE) as $vid => $vocab) {
       taxonomy_vocabulary_delete($vid);
     }
     drupal_set_message(t('Deleted existing vocabularies.'));
@@ -582,20 +573,6 @@ function devel_create_greeking($word_count, $title = FALSE) {
   return trim($greeking);
 }
 
-function devel_generate_add_terms(&$node) {
-  $vocabs = taxonomy_get_vocabularies($node->type);
-  foreach ($vocabs as $vocab) {
-    $sql = "SELECT tid FROM {taxonomy_term_data} WHERE vid = :vid ORDER BY RAND()";
-    $result = db_query_range($sql, 0, 5 , array(':vid' => $vocab->vid));
-    foreach($result as $row) {
-      $node->taxonomy[] = $row->tid;
-      if (!$vocab->multiple) {
-        break;
-      }
-    }
-  }
-}
-
 function devel_get_users() {
   $users = array();
   $result = db_query_range("SELECT uid FROM {users}", 0, 50);
@@ -665,26 +642,26 @@ function devel_generate_content_pre_node(&$results) {
  *   array of options obtained from devel_generate_content_form.
  */
 function devel_generate_content_add_node(&$results) {
-  $node = new stdClass();
-  $node->nid = NULL;
-
-  // Insert new data:
-  $node->type = array_rand($results['node_types']);
-  node_object_prepare($node);
-  $users = $results['users'];
-  $node->uid = $users[array_rand($users)];
-  $type = node_type_get_type($node);
-  $node->title = $type->has_title ? devel_create_greeking(mt_rand(2, $results['title_length']), TRUE) : '';
-  $node->revision = mt_rand(0,1);
-  $node->promote = mt_rand(0, 1);
-  // Avoid NOTICE.
   if (!isset($results['time_range'])) {
     $results['time_range'] = 0;
   }
+  $users = $results['users'];
 
-  devel_generate_set_language($results, $node);
+  $node_type = array_rand($results['node_types']);
+  $type = node_type_load($node_type);
 
-  $node->created = REQUEST_TIME - mt_rand(0, $results['time_range']);
+  $node = entity_create('node', array(
+    'nid' => NULL,
+    'type' => $node_type,
+    'uid' => $users[array_rand($users)],
+    'title' => $type->has_title ? devel_create_greeking(mt_rand(2, $results['title_length']), TRUE) : '',
+    'revision' => mt_rand(0, 1),
+    'promote' => mt_rand(0, 1),
+    'created' => REQUEST_TIME - mt_rand(0, $results['time_range']),
+    'langcode' => devel_generate_get_langcode($results),
+  ));
+
+  node_object_prepare($node);
 
   // A flag to let hook_nodeapi() implementations know that this is a generated node.
   $node->devel_generate = $results;
@@ -698,15 +675,15 @@ function devel_generate_content_add_node(&$results) {
 }
 
 /*
- * Populate $object->language based on $results
+ * Determine language based on $results.
  */
-function devel_generate_set_language($results, $object) {
+function devel_generate_get_langcode($results) {
   if (isset($results['add_language'])) {
-    $languages = $results['add_language'];
-    $language = $languages[array_rand($languages)];
+    $langcodes = $results['add_language'];
+    $langcode = $langcodes[array_rand($langcodes)];
   }
   else {
-    $language = language_default()->language;
+    $langcode = language_default()->langcode;
   }
-  $object->language =  $language == 'en' ? LANGUAGE_NOT_SPECIFIED : $language;
+  return $langcode == 'en' ? LANGUAGE_NOT_SPECIFIED : $langcode;
 }

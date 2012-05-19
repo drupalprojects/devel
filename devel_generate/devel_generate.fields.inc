@@ -61,7 +61,7 @@ function devel_generate_fields(&$object, $obj_type, $bundle) {
       }
     }
     $field_name = $field['field_name'];
-    $object->{$field_name}{$object->language} = $object_field;
+    $object->{$field_name}[$object->langcode] = $object_field;
   }
 }
 
