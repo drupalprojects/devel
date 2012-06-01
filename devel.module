@@ -431,9 +431,9 @@ function devel_silent() {
 
 function devel_xhprof_enable() {
   if (extension_loaded('xhprof') && variable_get('devel_xhprof_enabled', FALSE)) {
-    if ($path = variable_get('devel_xhprof_directory', '')) {
-      include_once $path . '/xhprof_lib/utils/xhprof_lib.php';
-      include_once $path . '/xhprof_lib/utils/xhprof_runs.php';
+    if (($path = variable_get('devel_xhprof_directory', '')) &&
+        (include_once $path . '/xhprof_lib/utils/xhprof_lib.php') &&
+        (include_once $path . '/xhprof_lib/utils/xhprof_runs.php')) {
       // @todo: consider a variable per-flag instead.
       xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
 
@@ -1146,6 +1146,19 @@ function devel_admin_settings() {
   );
 
   return system_settings_form($form);
+}
+
+/**
+ * Validate callback for the settings form.
+ */
+function devel_admin_settings_validate(&$form, &$form_state) {
+  if ($form_state['values']['devel_xhprof_enabled']) {
+    $path = $form_state['values']['devel_xhprof_directory'];
+    $path = (empty($path) ? '' : $path . '/xhprof_lib/utils');
+    if (!is_dir($path)) {
+      form_set_error('devel_xhprof_directory', t('XHProf directory %path not found.', array('%path' => $path)));
+    }
+  }
 }
 
 /**
