@@ -876,8 +876,12 @@ function devel_shutdown_real() {
   devel_store_queries();
 }
 
+function devel_xhprof_get_namespace() {
+  return str_replace(array(' ', '\''), '', variable_get('site_name', 'devel'));
+}
+
 function devel_shutdown_xhprof() {
-  $namespace = variable_get('site_name', '');  // namespace for your application
+  $namespace = devel_xhprof_get_namespace();  // namespace for your application
   $xhprof_data = xhprof_disable();
   $xhprof_runs = new XHProfRuns_Default();
   return $xhprof_runs->save_run($xhprof_data, $namespace);
@@ -1749,7 +1753,7 @@ function devel_xhprof_link_show() {
 function devel_xhprof_link($run_id, $type = 'link') {
   // @todo: render results from within Drupal.
   $xhprof_url = variable_get('devel_xhprof_url', '');
-  $namespace = variable_get('site_name', '');  // namespace for your application
+  $namespace = devel_xhprof_get_namespace();  // namespace for your application
   if ($xhprof_url) {
     $url  = $xhprof_url . "/index.php?run=$run_id&source=$namespace";
     return $type == 'url' ? $url : t('<a href="@xhprof">XHProf output</a>. ', array('@xhprof' => $url));
