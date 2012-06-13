@@ -1843,7 +1843,9 @@ function ddebug_backtrace($return = FALSE, $pop = 0) {
           else {
             $function = $backtrace[1]['function'] . '()';
           }
-          $call['args'] = $backtrace[1]['args'];
+          foreach ($backtrace[1]['args'] as $key => $value) {
+            $call['args'][$key] = is_object($value) ? print_r($value, TRUE) : $value;
+          }
         }
         else {
           $function = 'main()';
