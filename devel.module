@@ -366,7 +366,7 @@ function devel_translated_menu_link_alter(&$item) {
     $item['localized_options']['query'] = drupal_get_destination();
   }
   elseif ($item['href'] == 'devel/menu/item') {
-    $item['localized_options']['query'] = array('path' => $_GET['q']);
+    $item['localized_options']['query'] = array('path' => current_path());
   }
 }
 
