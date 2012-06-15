@@ -1842,7 +1842,7 @@ function ddebug_backtrace($return = FALSE, $pop = 0) {
             $function = $backtrace[1]['function'] . '()';
           }
           foreach ($backtrace[1]['args'] as $key => $value) {
-            $call['args'][$key] = is_object($value) ? print_r($value, TRUE) : $value;
+            $call['args'][$key] = (is_object($value) && get_class($value) != 'stdClass') ? print_r($value, TRUE) : $value;
           }
         }
         else {

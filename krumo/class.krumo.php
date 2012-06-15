@@ -1067,7 +1067,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
         <span class="krumo-callback"> |
           (<em class="krumo-type">Callback</em>)
           <strong class="krumo-string"><?php
-            echo htmlSpecialChars($_[0]);?>::<?php
+            echo htmlSpecialChars((is_object($_[0]) ? get_class($_[0]) . '->' : $_[0] . '::'));?><?php
             echo htmlSpecialChars($_[1]);?>();</strong></span>
         <?php
         }
