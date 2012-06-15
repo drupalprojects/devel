@@ -16,7 +16,11 @@
  *
  */
 
-class DevelMailLog extends Drupal\Core\Mail\PhpMail {
+namespace Drupal\devel;
+
+use Drupal\Core\Mail\PhpMail;
+
+class DevelMailLog extends PhpMail {
 
   public function composeMessage($message) {
     $mimeheaders = array();
@@ -76,4 +80,3 @@ class DevelMailLog extends Drupal\Core\Mail\PhpMail {
     return variable_get('devel_debug_mail_directory', 'temporary://devel-mails');
   }
 }
-?>

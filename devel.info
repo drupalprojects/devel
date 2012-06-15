@@ -4,5 +4,3 @@ package = Development
 core = 8.x
 configure = admin/config/development/devel
 tags[] = developer
-files[] = devel.test
-files[] = devel.mail.inc

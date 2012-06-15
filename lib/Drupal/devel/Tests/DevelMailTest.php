@@ -5,10 +5,15 @@
  * Tests for devel module.
  */
 
+namespace Drupal\devel\Tests;
+
+use Drupal\simpletest\WebTestBase;
+use Drupal\devel\DevelMailLog;
+
 /**
  * Test devel mail functionality.
  */
-class DevelMailTest extends DrupalWebTestCase {
+class DevelMailTest extends WebTestBase {
   protected $profile = 'testing';
 
   public static function getInfo() {
@@ -27,7 +32,6 @@ class DevelMailTest extends DrupalWebTestCase {
    * Test mail logging functionality.
    */
   function testMail() {
-    require_once ('devel.mail.inc');
     $message = array();
     $message['to'] = 'drupal@example.com';
     $message['subject'] = 'Test mail';
@@ -49,5 +53,4 @@ To: drupal@example.com
 Test mail
 I am the body of this message');
   }
-
 }
