@@ -95,7 +95,7 @@ function devel_create_users($num, $kill, $age = 0, $roles = array()) {
         clearstatcache();
         $file->uid = $account->uid;
         $file->filemime = 'image/png';
-        $file = file_save($file);
+        $file->save();
 
         // Save the user record with the new picture.
         $account->picture = $file;
