@@ -889,9 +889,9 @@ function devel_shutdown_xhprof() {
 
 
 function devel_store_queries() {
-  if (variable_get('devel_store_queries', 0) && rand(1, variable_get('devel_store_random', 1)) == 1) {
-    global $active_db, $queries, $db_type;
+  global $queries;
 
+  if (is_array($queries) && variable_get('devel_store_queries', 0) && rand(1, variable_get('devel_store_random', 1)) == 1) {
     $qids = array();
     $values = array();
     $fields = array();
