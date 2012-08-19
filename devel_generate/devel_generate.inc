@@ -661,8 +661,6 @@ function devel_generate_content_add_node(&$results) {
     'langcode' => devel_generate_get_langcode($results),
   ));
 
-  node_object_prepare($node);
-
   // A flag to let hook_nodeapi() implementations know that this is a generated node.
   $node->devel_generate = $results;
 
