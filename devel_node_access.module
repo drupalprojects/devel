@@ -108,7 +108,7 @@ function devel_node_access_form_alter(&$form, $form_state, $form_id) {
     $form['devel_node_access']['devel_node_access_debug_mode'] = array(
       '#type'          => 'checkbox',
       '#title'         => t('Debug mode'),
-      '#default_value' => variable_get('devel_node_access_debug_mode', FALSE),
+      '#default_value' => variable_get('devel_node_access_debug_mode', TRUE),
       '#description'   => t('Debug mode verifies the grant records in the node_access table against those that would be set by running !Rebuild_permissions, and displays them all; this can cause considerable overhead.<br />For even more information enable the <a href="@link">%DNAbU block</a>, too.', array(
         '!Rebuild_permissions' => l('[' . $tr('Rebuild permissions') . ']', 'admin/reports/status/rebuild'),
         '%DNAbU' => t('Devel Node Access by User'),
@@ -496,6 +496,7 @@ function devel_node_access_block_info() {
   $blocks['dna_user'] = array(
     'info'   => t('Devel Node Access by User'),
     'region' => 'footer',
+    'status' => 1,
     'cache'  => DRUPAL_NO_CACHE,
   );
   return $blocks;
@@ -540,7 +541,7 @@ function devel_node_access_block_view($delta) {
         ->orderBy('na.gid');
       $nodes = node_load_multiple($nids);
 
-      if (!variable_get('devel_node_access_debug_mode', FALSE)) {
+      if (!variable_get('devel_node_access_debug_mode', TRUE)) {
         $headers = array(t('node'), t('realm'), t('gid'), t('view'), t('update'), t('delete'), t('explained'));
         $rows = array();
         foreach ($query->execute() as $row) {
