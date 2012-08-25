@@ -926,7 +926,7 @@ function devel_node_access_block_view($delta) {
             foreach ($nids as $nid) {
               $op_items = array();
               foreach (array('create', 'view', 'update', 'delete') as $op) {
-                $explain = _devel_node_access_explain_access($op, $nid, $account);
+                $explain = _devel_node_access_explain_access($op, node_load($nid), $account);
                 $op_items[] = "<div style='width: 5em; display: inline-block'>" . t('%op:', array('%op' => $op)) . ' </div>' . $explain[2];
               }
               $nid_items[] = array(
@@ -988,8 +988,10 @@ function devel_node_access_block_view($delta) {
       }
       if (isset($node)) {
         $nid = $node->nid;
+        $langcode = $node->langcode;
+        $language = language_load($langcode);
         $node_type = node_type_load($node->type);
-        $headers = array(t('username'), '<span title="' . t("Create nodes of the '@Node_type' type.", array('@Node_type' => $node_type->name)) . '">' . t('create') . '</span>', t('view'), t('update'), t('delete'));
+        $headers = array(t('username'), '<span title="' . t("Create '@langname'-language nodes of the '@Node_type' type.", array('@langname' => $language->name, '@Node_type' => $node_type->name)) . '">' . t('create') . '</span>', t('view'), t('update'), t('delete'));
         $rows = array();
         // Determine whether to use Ajax or prepopulate the tables.
         if ($ajax = variable_get('devel_node_access_user_ajax', FALSE)) {
@@ -1016,22 +1018,22 @@ function devel_node_access_block_view($delta) {
             array(
               'id' => 'create-' . $nid . '-' . $account->uid,
               'class' => 'dna-permission',
-              'data' => $ajax ? NULL : theme('dna_permission', array('permission' => _devel_node_access_explain_access('create', $nid, $account))),
+              'data' => $ajax ? NULL : theme('dna_permission', array('permission' => _devel_node_access_explain_access('create', $node, $account, $langcode))),
             ),
             array(
               'id' => 'view-' . $nid . '-' . $account->uid,
               'class' => 'dna-permission',
-              'data' => $ajax ? NULL : theme('dna_permission', array('permission' => _devel_node_access_explain_access('view', $nid, $account))),
+              'data' => $ajax ? NULL : theme('dna_permission', array('permission' => _devel_node_access_explain_access('view', $node, $account, $langcode))),
             ),
             array(
               'id' => 'update-' . $nid . '-' . $account->uid,
               'class' => 'dna-permission',
-              'data' => $ajax ? NULL : theme('dna_permission', array('permission' => _devel_node_access_explain_access('update', $nid, $account))),
+              'data' => $ajax ? NULL : theme('dna_permission', array('permission' => _devel_node_access_explain_access('update', $node, $account, $langcode))),
             ),
             array(
               'id' => 'delete-' . $nid . '-' . $account->uid,
               'class' => 'dna-permission',
-              'data' => $ajax ? NULL : theme('dna_permission', array('permission' => _devel_node_access_explain_access('delete', $nid, $account))),
+              'data' => $ajax ? NULL : theme('dna_permission', array('permission' => _devel_node_access_explain_access('delete', $node, $account, $langcode))),
             ),
           );
         }
@@ -1048,7 +1050,7 @@ function devel_node_access_block_view($delta) {
           );
 
           return array(
-            'subject' => t('Access permissions by user'),
+            'subject' => t('Access permissions by user for the %langname language', array('%langname' => $language->name)),
             'content' => $output,
           );
         }
@@ -1062,10 +1064,11 @@ function devel_node_access_block_view($delta) {
  */
 function devel_node_access_user_ajax($data_type, $cell) {
   list($op, $nid, $uid) = explode('-', $cell);
+  $node = node_load($nid);
   $account = user_load($uid);
   $output = array(
     '#theme' => 'dna_permission',
-    '#permission' => _devel_node_access_explain_access($op, $nid, $account),
+    '#permission' => _devel_node_access_explain_access($op, $node, $account),
   );
   // JSON output for Ajax callbacks.
   if ($data_type == 'json') {
@@ -1073,7 +1076,7 @@ function devel_node_access_user_ajax($data_type, $cell) {
     exit;
   }
   // HTML output for error message click-throughs.
-  if ($node = node_load($nid)) {
+  if ($node) {
     $node_title = l($node->title, 'node/' . $node->nid);
   }
   else {
@@ -1101,14 +1104,14 @@ function devel_node_access_user_ajax($data_type, $cell) {
  * @return
  *   An array suitable for theming with theme_dna_permission().
  */
-function _devel_node_access_explain_access($op, $node, $account = NULL) {
+function _devel_node_access_explain_access($op, $node, $account = NULL, $langcode = NULL) {
   global $user;
 
-  if (is_numeric($node) && !($node = node_load($node))) {
+  if (!$node) {
     return array(
       FALSE,
       '???',
-      t('Unable to load the node &ndash; this should never happen!'),
+      t('No node passed to node_access(); this should never happen!'),
     );
   }
   if (!in_array($op, array('view', 'update', 'delete', 'create'), TRUE)) {
@@ -1129,7 +1132,7 @@ function _devel_node_access_explain_access($op, $node, $account = NULL) {
     $saved_user = $user;
     drupal_save_session(FALSE);
     $user = $account;
-    $result = _devel_node_access_explain_access($op, $node, NULL);
+    $result = _devel_node_access_explain_access($op, $node, NULL, $langcode);
     $user = $saved_user;
     drupal_save_session(TRUE);
     $second_opinion = node_access($op, $node, $account);
@@ -1137,6 +1140,10 @@ function _devel_node_access_explain_access($op, $node, $account = NULL) {
       $result[1] .= '<span class="' . ($second_opinion ? 'ok' : 'error') . '" title="Core seems to disagree on this item. This is a bug in either DNA or Core and should be fixed! Try to look at this node as this user and check whether there is still disagreement.">*</span>';
     }
     return $result;
+  }
+
+  if (empty($langcode)) {
+    $langcode = (is_object($node) && isset($node->nid)) ? $node->langcode : '';
   }
 
   $variables = array(
@@ -1165,7 +1172,7 @@ function _devel_node_access_explain_access($op, $node, $account = NULL) {
   foreach (module_implements('node_access') as $module) {
     $function = $module . '_node_access';
     if (function_exists($function)) {
-      $result = $function($node, $op, $user);
+      $result = $function($node, $op, $user, $langcode);
       if ($module == 'node') {
         $module = 'node (permissions)';
       }
@@ -1208,7 +1215,7 @@ function _devel_node_access_explain_access($op, $node, $account = NULL) {
     );
   }
 
-  if ($op == 'view' && !$node->status && user_access('view own unpublished content') && $user->uid == $node->uid && $user->uid != 0) {
+  if ($op == 'view' && !$node->get('status', $langcode) && user_access('view own unpublished content') && $user->uid == $node->get('uid', $langcode) && $user->uid != 0) {
     return array(
       TRUE,
       t('!YES: view own unpublished content', $variables),
@@ -1217,7 +1224,7 @@ function _devel_node_access_explain_access($op, $node, $account = NULL) {
   }
 
   if ($op != 'create' && $node->nid) {
-    if (node_access($op, $node)) {  // delegate this part
+    if (node_access($op, $node, $user, $langcode)) {  // delegate this part
       $variables['@node_access_table'] = '{node_access}';
       return array(
         TRUE,
