@@ -297,7 +297,7 @@ function devel_generate_term_data($vocabs, $num_terms, $title_length, $kill) {
 function devel_generate_vocab_data($num_vocab, $title_length, $kill) {
 
   if ($kill) {
-    foreach (taxonomy_vocabulary_load_multiple(FALSE) as $vid => $vocab) {
+    foreach (taxonomy_vocabulary_load_multiple() as $vid => $vocab) {
       taxonomy_vocabulary_delete($vid);
     }
     drupal_set_message(t('Deleted existing vocabularies.'));
