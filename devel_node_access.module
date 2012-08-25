@@ -598,21 +598,6 @@ function devel_node_access_block_view($delta) {
             $grants = _devel_node_access_module_invoke_all('node_access_records', $node);
             // check drupal_alter('node_access_records')
             $data = _devel_node_access_nar_alter($grants, $node);
-            /* (This was the D6 implementation that didn't analyze the hook_node_access_records_alter() details.)
-            if (!empty($grants)) {
-              $top_priority = NULL;
-              foreach ($grants as $grant) {
-                $priority = intval($grant['priority']);
-                $top_priority = (isset($top_priority) ? max($top_priority, $priority) : $priority);
-                $grant['priority'] = (isset($grant['priority']) ? $priority : '&ndash;&nbsp;');
-                $acquired_grants_nid[$priority][$grant['realm']][$grant['gid']] = $grant + array(
-                  '#title'  => _devel_node_access_get_node_title($node, TRUE),
-                  '#module' => (isset($grant['#module']) ? $grant['#module'] : ''),
-                );
-              }
-              krsort($acquired_grants_nid);
-            }
-            /*/
             // (This is the new D7 implementation; it retains backward compatibility.)
             if (!empty($data)) {
               foreach ($data as $data_by_realm) {
@@ -639,8 +624,8 @@ function devel_node_access_block_view($delta) {
               }
               krsort($acquired_grants_nid);
             }
-            /**/
             //dpm($acquired_grants_nid, "acquired_grants_nid =");
+
             // check node_access_grants()
             $published_nid[$nid] = $node->status;
             if ($node->nid) {
