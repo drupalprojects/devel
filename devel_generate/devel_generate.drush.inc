@@ -109,7 +109,7 @@ function drush_devel_generate_terms($vname = NULL, $num_terms = 10) {
   }
   $new_terms = devel_generate_terms($num_terms, array($vocab->vid => $vocab), '12');
   if (!empty($new_terms)) {
-    drush_log(dt('Created the following new terms: !terms', array('!terms' => implode("\n", $new_terms))), 'success');
+    drush_log(dt("Created the following new terms:\n!terms", array('!terms' => implode("\n", $new_terms))), 'success');
   }
 }
 
@@ -127,7 +127,7 @@ function drush_devel_generate_vocabs($num_vocab = 1) {
   }
   $new_vocs = devel_generate_vocabs($num_vocab, '12');
   if (!empty($new_vocs)) {
-    drush_log(dt('Created the following new vocabularies: !vocs', array('!vocs' => implode("\n", $new_vocs))), 'success');
+    drush_log(dt("Created the following new vocabularies:\n!vocs", array('!vocs' => implode("\n", $new_vocs))), 'success');
   }
 }
 
@@ -201,7 +201,7 @@ function drush_devel_generate_menus($number_menus = 2, $number_links = 50, $max_
   // Generate new menus.
   $new_menus = devel_generate_menus($number_menus, '12');
   if (!empty($new_menus)) {
-    drush_log(dt('Created the following new menus: !menus', array('!menus' => implode("\n", $new_menus))), 'success');
+    drush_log(dt("Created the following new menus:\n!menus", array('!menus' => implode("\n", $new_menus))), 'success');
   }
 
   // Generate new menu links.
