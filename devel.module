@@ -1922,6 +1922,7 @@ function ddebug_backtrace($pop = 0) {
           else {
             $function = $backtrace[1]['function'] . '()';
           }
+          $backtrace[1] += array('args' => array());
           $call['args'] = $backtrace[1]['args'];
         }
         else {
