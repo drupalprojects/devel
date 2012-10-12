@@ -608,7 +608,7 @@ function devel_boot() {
   // We need user_access() in the shutdown function. make sure it gets loaded.
   // Also prime the drupal_get_filename() static with user.module's location to
   // avoid a stray query.
-  drupal_get_filename('module', 'user', 'modules/user/user.module');
+  drupal_get_filename('module', 'user', 'core/modules/user/user.module');
   drupal_load('module', 'user');
   drupal_register_shutdown_function('devel_shutdown');
 }
