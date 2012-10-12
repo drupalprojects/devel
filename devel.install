@@ -7,13 +7,7 @@ function devel_enable() {
   $t = get_t();
 
   // New module weights in core: put devel as the very last in the chain.
-  db_update('system')
-    ->fields(array(
-      'weight' => 88,
-    ))
-    ->condition('type', 'module')
-    ->condition('name', 'devel')
-    ->execute();
+  module_set_weight('devel', 88);
 
   // Create a custom menu, if Menu module is enabled.
   // @see devel_modules_installed()
