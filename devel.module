@@ -454,8 +454,12 @@ function devel_init() {
  * Sets message.
  */
 function devel_set_message($msg, $type = NULL) {
-  $function  = function_exists('drush_log') ? 'drush_log' : 'drupal_set_message';
-  $function($msg, $type);
+  if (function_exists('drush_log')) {
+    drush_log($msg, $type);
+  }
+  else {
+    drupal_set_message($msg, $type, TRUE);
+  }
 }
 
 /**
@@ -729,7 +733,7 @@ function backtrace_error_handler($error_level, $message, $filename, $line, $cont
     if (variable_get('error_level', 1) >= 1) {
       $error_handlers = devel_get_handlers();
       if (!empty($error_handlers[DEVEL_ERROR_HANDLER_STANDARD])) {
-        drupal_set_message($msg, ($type[1] <= WATCHDOG_ERROR ? 'error' : 'warning'));
+        drupal_set_message($msg, ($type[1] <= WATCHDOG_ERROR ? 'error' : 'warning'), TRUE);
       }
       if (!empty($error_handlers[DEVEL_ERROR_HANDLER_BACKTRACE_KRUMO])) {
         print $msg . " =&gt;\n";
@@ -1856,7 +1860,7 @@ function dpq($query, $return = FALSE, $name = NULL) {
 function dpm($input, $name = NULL, $type = 'status') {
   if (user_access('access devel information')) {
     $export = kprint_r($input, TRUE, $name);
-    drupal_set_message($export, $type);
+    drupal_set_message($export, $type, TRUE);
   }
   return $input;
 }
@@ -1877,7 +1881,7 @@ function dpm($input, $name = NULL, $type = 'status') {
 function dvm($input, $name = NULL) {
   if (user_access('access devel information')) {
     $export = dprint_r($input, TRUE, $name, 'drupal_var_export', FALSE);
-    drupal_set_message($export);
+    drupal_set_message($export, 'status', TRUE);
   }
   return $input;
 }
