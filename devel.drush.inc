@@ -35,6 +35,18 @@ function devel_drush_command() {
     'required-arguments' => 1,
     'aliases' => array('fnh', 'hook'),
   );
+  $items['fn-event'] = array(
+    'description' => 'List implementations of a given event and explore source of specified one.',
+    'arguments' => array(
+      'event' => 'The name of the event to explore.'
+    ),
+    'examples' => array(
+      'fn-event kernel.terminate' => 'Pick a terminate subscribers and view its source code.',
+    ),
+    'allow-additional-options' => array('fn-view'),
+    'required-arguments' => 1,
+    'aliases' => array('fne', 'event'),
+  );
   $items['fn-view'] = array(
     'description' => 'Show the source of specified function or method.',
     'arguments' => array(
@@ -139,6 +151,24 @@ function drush_devel_fn_hook($hook) {
   }
 }
 
+/**
+ * Command handler. Show hook implementations.
+ */
+function drush_devel_fn_event($event) {
+  $dispatcher = drupal_container()->get('dispatcher');
+  if ($implementations = $dispatcher->getListeners($event)) {
+    foreach ($implementations as $implementation) {
+      $callable = get_class($implementation[0]) . '::' . $implementation[1];
+      $choices[$callable] = $callable;
+    }
+    if ($choice = drush_choice($choices, 'Enter the number of the implementation you wish to view.')) {
+      return drush_devel_fn_view($choice);
+    }
+  }
+  else {
+    drush_log(dt('No implementations.'), 'ok');
+  }
+}
 /**
  * Command handler.  Show source code of specified function or method.
  */
