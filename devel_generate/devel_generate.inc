@@ -653,6 +653,7 @@ function devel_generate_content_add_node(&$results) {
     'uid' => $users[array_rand($users)],
     'title' => $type->has_title ? devel_create_greeking(mt_rand(2, $results['title_length']), TRUE) : '',
     'revision' => mt_rand(0, 1),
+    'status' => TRUE,
     'promote' => mt_rand(0, 1),
     'created' => REQUEST_TIME - mt_rand(0, $results['time_range']),
     'langcode' => devel_generate_get_langcode($results),
