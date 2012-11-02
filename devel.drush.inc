@@ -38,13 +38,13 @@ function devel_drush_command() {
   $items['fn-event'] = array(
     'description' => 'List implementations of a given event and explore source of specified one.',
     'arguments' => array(
-      'event' => 'The name of the event to explore.'
+      'event' => 'The name of the event to explore. If omitted, a list of events is shown.'
     ),
     'examples' => array(
+      'fn-event' => 'Pick a Kernel event, then pick an implementation, and then view its source code.',
       'fn-event kernel.terminate' => 'Pick a terminate subscribers and view its source code.',
     ),
     'allow-additional-options' => array('fn-view'),
-    'required-arguments' => 1,
     'aliases' => array('fne', 'event'),
   );
   $items['fn-view'] = array(
@@ -154,8 +154,15 @@ function drush_devel_fn_hook($hook) {
 /**
  * Command handler. Show hook implementations.
  */
-function drush_devel_fn_event($event) {
+function drush_devel_fn_event($event = NULL) {
   $dispatcher = drupal_container()->get('dispatcher');
+  if (empty($event)) {
+    $events = array('kernel.controller', 'kernel.exception', 'kernel.request', 'kernel.response', 'kernel.terminate', 'kernel.view');
+    $events = array_combine($events, $events);
+    if (!$event = drush_choice($events, 'Enter the event you wish to explore.')) {
+      return drush_user_abort();
+    }
+  }
   if ($implementations = $dispatcher->getListeners($event)) {
     foreach ($implementations as $implementation) {
       $callable = get_class($implementation[0]) . '::' . $implementation[1];
