@@ -53,7 +53,7 @@ function devel_drush_command() {
       'function' => 'The name of the function or method to view.',
     ),
     'options' => array(
-      'pipe' => 'Output just the filename of the function',
+      'pipe' => 'Output just the filename of the function or method',
       'format' => 'Specify how the filename should be printed. Available placeholders are !startline, !endline and !file',
     ),
     'examples' => array(
