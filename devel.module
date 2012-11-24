@@ -1412,7 +1412,7 @@ function devel_execute_form_submit($form, &$form_state) {
   ob_start();
   print eval($form_state['values']['code']);
   $_SESSION['devel_execute_code'] = $form_state['values']['code'];
-  dsm(ob_get_clean());
+  dpm(ob_get_clean());
 }
 
 /**
@@ -1884,15 +1884,6 @@ function dvm($input, $name = NULL) {
     drupal_set_message($export, 'status', TRUE);
   }
   return $input;
-}
-
-/**
- * Legacy function that was poorly named.
- *
- * Use dpm() instead, since the 'p' maps to 'print_r'.
- */
-function dsm($input, $name = NULL) {
-  return dpm($input, $name);
 }
 
 /**
