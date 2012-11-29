@@ -1889,6 +1889,13 @@ function dvm($input, $name = NULL) {
 }
 
 /**
+ * An alias for dpm(), for historic reasons.
+ */
+function dsm($input, $name = NULL) {
+  return dpm($input, $name);
+}
+
+/**
  * An alias for dprint_r(). Saves carpal tunnel syndrome.
  */
 function dpr($input, $return = FALSE, $name = NULL) {
