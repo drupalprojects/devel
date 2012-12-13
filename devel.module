@@ -16,6 +16,8 @@ define('DEVEL_ERROR_HANDLER_BACKTRACE_DPM', 4);
 
 define('DEVEL_MIN_TEXTAREA', 50);
 
+use Drupal\Core\Template\Attribute;
+
 /**
  * Implements hook_help().
  */
@@ -1709,7 +1711,7 @@ function theme_devel_querylog_row($variables) {
     else {
       $attr['class'] = "cell cell-$i";
     }
-    $attr = drupal_attributes($attr);
+    $attributes = new Attribute($attributes);
 
     $output .= "<div $attr>$data</div>";
   }
