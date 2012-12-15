@@ -29,6 +29,7 @@ function devel_generate_drush_command() {
     'options' => array(
       'kill' => 'Delete all terms in specified vocabulary before generating.',
       'feedback' => 'An integer representing interval for insertion rate logging. Defaults to 1000',
+      'pipe' => 'Returns the list of generated terms, one per line.',
     ),
     'aliases' => array('gent'),
 
@@ -40,6 +41,7 @@ function devel_generate_drush_command() {
     ),
     'options' => array(
       'kill' => 'Delete all vocabularies before generating.',
+      'pipe' => 'Returns the list of generated vocabularies, one per line.',
     ),
     'aliases' => array('genv'),
   );
@@ -70,6 +72,7 @@ function devel_generate_drush_command() {
     ),
     'options' => array(
       'kill' => 'Delete all previously generated menus and links before generating new menus and links.',
+      'pipe' => 'Returns the list of generated menus, one per line.',
     ),
     'aliases' => array('genm'),
   );
@@ -110,6 +113,7 @@ function drush_devel_generate_terms($vname = NULL, $num_terms = 10) {
   $new_terms = devel_generate_terms($num_terms, array($vocab->vid => $vocab), '12');
   if (!empty($new_terms)) {
     drush_log(dt("Created the following new terms:\n!terms", array('!terms' => implode("\n", $new_terms))), 'success');
+    drush_print_pipe($new_terms);
   }
 }
 
@@ -128,6 +132,7 @@ function drush_devel_generate_vocabs($num_vocab = 1) {
   $new_vocs = devel_generate_vocabs($num_vocab, '12');
   if (!empty($new_vocs)) {
     drush_log(dt("Created the following new vocabularies:\n!vocs", array('!vocs' => implode("\n", $new_vocs))), 'success');
+    drush_print_pipe($new_vocs);
   }
 }
 
@@ -206,6 +211,7 @@ function drush_devel_generate_menus($number_menus = 2, $number_links = 50, $max_
   $new_menus = devel_generate_menus($number_menus, '12');
   if (!empty($new_menus)) {
     drush_log(dt("Created the following new menus:\n!menus", array('!menus' => implode("\n", $new_menus))), 'success');
+    drush_print_pipe($new_menus);
   }
 
   // Generate new menu links.
