@@ -417,7 +417,7 @@ function devel_init() {
         $chromephp_path = libraries_get_path('chromephp');
       }
       else {
-        $firephp_path = './' . drupal_get_path('module', 'devel') . '/FirePHPCore/lib/FirePHPCore/';
+        $firephp_path = DRUPAL_ROOT . '/libraries/FirePHPCore/lib/FirePHPCore/';
         $chromephp_path = './' . drupal_get_path('module', 'devel') . '/chromephp';
       }
 
