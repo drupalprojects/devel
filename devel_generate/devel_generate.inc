@@ -23,13 +23,6 @@ function devel_create_users($num, $kill, $age = 0, $roles = array()) {
     user_delete_multiple(array_keys($uids));
     drupal_set_message(format_plural(count($uids), '1 user deleted', '@count users deleted.'));
   }
-  // Determine if we should create user pictures.
-  $pic_config = FALSE;
-  module_load_include('inc', 'system', 'image.gd');
-  if (variable_get('user_pictures', 0) && function_exists('image_gd_check_settings') && image_gd_check_settings()) {
-    $pic_config['path'] = variable_get('user_picture_path', 'pictures');
-    list($pic_config['width'], $pic_config['height']) = explode('x', variable_get('user_picture_dimensions', '85x85'));
-  }
 
   if ($num > 0) {
     $names = array();
@@ -58,49 +51,6 @@ function devel_create_users($num, $kill, $age = 0, $roles = array()) {
       module_load_include('inc', 'devel_generate', 'devel_generate.fields');
       devel_generate_fields($account, 'user', 'user');
       $account->save();
-
-      if ($pic_config) {
-        // Since the image.module should scale the picture just pick an
-        // arbitrary size that it's too big for our font.
-        $im = imagecreatetruecolor(200, 200);
-
-        // Randomize the foreground using the md5 of the user id, then invert it
-        // for the background color so there's enough contrast to read the text.
-        $parts = array_map('hexdec', str_split(md5($account->uid), 2));
-        $fg = imagecolorallocate($im, $parts[1], $parts[3], $parts[5]);
-        $bg = imagecolorallocate($im, 255 - $parts[0], 255 - $parts[1], 255 - $parts[2]);
-
-        // Fill the background then print their user info.
-        imagefill($im, 0, 0, $bg);
-        imagestring($im, 5, 5, 5, "#" . $account->uid, $fg);
-        imagestring($im, 5, 5, 25, $account->name, $fg);
-
-
-        // Create an empty, managed file where we want the user's picture to
-        // be so we can have GD overwrite it with the image.
-        $picture_directory =  variable_get('file_default_scheme', 'public') . '://' . variable_get('user_picture_path', 'pictures');
-        file_prepare_directory($picture_directory, FILE_CREATE_DIRECTORY);
-        $destination = file_stream_wrapper_uri_normalize($picture_directory . '/picture-' . $account->uid . '.png');
-        $file = file_save_data('', $destination);
-
-        // GD doesn't like stream wrapped paths so convert the URI to a normal
-        // file system path.
-        if (isset($file) && $wrapper = file_stream_wrapper_get_instance_by_uri($file->uri)) {
-          imagepng($im, $wrapper->realpath());
-        }
-        imagedestroy($im);
-
-        // Clear the cached filesize, set the owner and MIME-type then re-save
-        // the file.
-        clearstatcache();
-        $file->uid = $account->uid;
-        $file->filemime = 'image/png';
-        $file->save();
-
-        // Save the user record with the new picture.
-        $account->picture = $file;
-        $account->save();
-      }
     }
   }
   drupal_set_message(t('!num_users created.', array('!num_users' => format_plural($num, '1 user', '@count users'))));
