@@ -647,17 +647,29 @@ function devel_generate_content_add_node(&$results) {
   $node_type = array_rand($results['node_types']);
   $type = node_type_load($node_type);
 
-  $node = entity_create('node', array(
+  $edit_node = array(
     'nid' => NULL,
     'type' => $node_type,
     'uid' => $users[array_rand($users)],
-    'title' => $type->has_title ? devel_create_greeking(mt_rand(2, $results['title_length']), TRUE) : '',
     'revision' => mt_rand(0, 1),
     'status' => TRUE,
     'promote' => mt_rand(0, 1),
     'created' => REQUEST_TIME - mt_rand(0, $results['time_range']),
     'langcode' => devel_generate_get_langcode($results),
-  ));
+  );
+  if ($type->has_title) {
+    // We should not use the random function if the value is not random
+    if ($results['title_length'] < 2) {
+      $edit_node['title'] = devel_create_greeking(1, TRUE);
+    }
+    else {
+      $edit_node['title'] = devel_create_greeking(mt_rand(1, $results['title_length']), TRUE);
+    }
+  }
+  else {
+    $edit_node['title'] = '';
+  }
+  $node = entity_create('node', $edit_node);
 
   // A flag to let hook_node_insert() implementations know that this is a
   // generated node.
