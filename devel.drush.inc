@@ -92,12 +92,14 @@ function drush_devel_reinstall() {
  * A command callback.
  */
 function drush_devel_download($path = 'libraries') {
-  $path = drush_get_context('DRUSH_DRUPAL_ROOT') . '/' . $path . '/FirePHPCore';
-
-  if (is_dir($path)) {
-    drush_log('FirePHP already present. No download required.', 'ok');
+  $path = $path . '/FirePHPCore';
+  if (module_exists('libraries')) {
+    $path = libraries_get_path('FirePHPCore');
   }
-  elseif (drush_shell_exec('svn export http://firephp.googlecode.com/svn/branches/Library-FirePHPCore-0.3 ' . $path)) {
+  if (is_dir($path)) {
+    drush_log(dt('FirePHP already present at @path. No download required.', array('@path' => $path)), 'ok');
+  }
+  elseif (drush_shell_exec('svn export http://firephp.googlecode.com/svn/branches/Library-FirePHPCore-0.3 %s', $path)) {
     drush_log(dt('FirePHP has been exported via svn to @path.', array('@path' => $path)), 'success');
   }
   else {
