@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  *  Generate content, taxonomy, menu, and users via drush framework.
@@ -17,6 +16,7 @@ function devel_generate_drush_command() {
     'options' => array(
       'kill' => 'Delete all users before generating new ones.',
       'roles' => 'A comma delimited list of role IDs which should be granted to the new users. No need to specify authenticated user role.',
+      'pass' => 'Specify a password to be set for all generated users.',
     ),
     'aliases' => array('genu'),
   );
@@ -89,7 +89,8 @@ function drush_devel_generate_users($num_users = NULL) {
   }
   drush_generate_include_devel();
   $roles = drush_get_option('roles') ? explode(',', drush_get_option('roles')) : array();
-  devel_create_users($num_users, drush_get_option('kill'), 0, $roles);
+  $pass = drush_get_option('pass', NULL);
+  devel_create_users($num_users, drush_get_option('kill'), 0, $roles, $pass);
   drush_log(t('Generated @number users.', array('@number' => $num_users)), 'success');
 }
 

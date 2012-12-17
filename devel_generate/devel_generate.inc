@@ -11,8 +11,10 @@
  *  The max age of each randomly-generated user, in seconds.
  * @param $roles
  *  An array of role IDs that the users should receive.
+ * @param $pass
+ *  A string to be used as the password for the generated users.
  */
-function devel_create_users($num, $kill, $age = 0, $roles = array()) {
+function devel_create_users($num, $kill, $age = 0, $roles = array(), $pass = NULL) {
   $url = parse_url($GLOBALS['base_url']);
   if ($kill) {
     $uids = db_select('users', 'u')
@@ -38,7 +40,7 @@ function devel_create_users($num, $kill, $age = 0, $roles = array()) {
       $edit = array(
         'uid'     => NULL,
         'name'    => $name,
-        'pass'    => NULL, // No password avoids user_hash_password() which is expensive.
+        'pass'    => $pass,
         'mail'    => $name . '@' . $url['host'],
         'status'  => 1,
         'created' => REQUEST_TIME - mt_rand(0, $age),
