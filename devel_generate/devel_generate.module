@@ -119,19 +119,19 @@ function devel_generate_content_form() {
       if (count($type['fields'])) {
         $warn = t('. This type contains CCK fields which will only be populated by fields that implement the content_generate hook.');
       }
-      $options[$type['type']] = t($type['name']). $warn;
+      $options[$type['type']] = array('#markup' => t($type['name']). $warn);
     }
   }
   else {
     $types = node_type_get_types();
     foreach ($types as $type) {
       $options[$type->type] = array(
-        'type' => t($type->name),
+        'type' => array('#markup' => t($type->name)),
       );
       if (module_exists('comment')) {
         $default = variable_get('comment_' . $type->type, COMMENT_NODE_OPEN);
         $map = array(t('Hidden'), t('Closed'), t('Open'));
-        $options[$type->type]['comments'] = '<small>'. $map[$default]. '</small>';
+        $options[$type->type]['comments'] = array('#markup' => '<small>'. $map[$default]. '</small>');
       }
     }
   }
@@ -151,11 +151,13 @@ function devel_generate_content_form() {
   }
 
   $form['node_types'] = array(
-    '#type' => 'tableselect',
+    '#type' => 'table',
     '#header' => $header,
-    '#options' => $options,
-    '#required' => TRUE,
+    '#tableselect' => TRUE,
   );
+
+  $form['node_types'] += $options;
+
   if (module_exists('checkall')) $form['node_types']['#checkall'] = TRUE;
   $form['kill_content'] = array(
     '#type' => 'checkbox',
@@ -230,20 +232,11 @@ function devel_generate_content_form() {
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Generate'),
+    '#tableselect' => TRUE,
   );
   $form['#redirect'] = FALSE;
 
   return $form;
-}
-
-/**
- * FormAPI validation before generate nodes.
- */
-function devel_generate_content_form_validate($form, &$form_state) {
-  form_set_value($form['node_types'], array_filter($form_state['values']['node_types']) , $form_state);
-  if (!empty($form_state['values']['kill_content']) && empty($form_state['values']['node_types'])) {
-    form_set_error('', t('Please select at least one content type to delete the content.'));
-  }
 }
 
 /**

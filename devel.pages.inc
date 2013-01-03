@@ -174,8 +174,16 @@ function devel_variable_form() {
     'length' => array('data' => t('Length'), 'field' => 'length'),
     'edit' => array('data' => t('Operations')),
   );
+
+  $form['variables'] = array(
+    '#type' => 'table',
+    '#header' => $header,
+    '#empty' => t('No variables.'),
+    '#tableselect' => TRUE,
+  );
+
   // TODO: we could get variables out of $conf but that would include hard coded ones too. ideally i would highlight overrridden/hard coded variables
-  $query = db_select('variable', 'v')->extend('TableSort');
+  $query = db_select('variable', 'v')->extend('Drupal\Core\Database\Query\TableSortExtender');
   $query->fields('v', array('name', 'value'));
   switch (db_driver()) {
     case 'mssql':
@@ -191,7 +199,7 @@ function devel_variable_form() {
 
   foreach ($result as $row) {
     // $variables[$row->name] = '';
-    $options[$row->name]['name'] = check_plain($row->name);
+    $form['variables'][$row->name]['name'] = array('#markup' => check_plain($row->name));
     if (merits_krumo($row->value)) {
       $value = krumo_ob(variable_get($row->name, NULL));
     }
@@ -203,19 +211,15 @@ function devel_variable_form() {
         $value = check_plain($row->value);
       }
     }
-    $options[$row->name]['value'] = $value;
-    $options[$row->name]['length'] = $row->length;
-    $options[$row->name]['edit'] = l(t('Edit'), "devel/variable/edit/$row->name");
+    $form['variables'][$row->name]['value'] = array('#markup' => $value);
+    $form['variables'][$row->name]['length'] = array('#markup' => $row->length);
+    $form['variables'][$row->name]['edit'] = array('#markup' => l(t('Edit'), "devel/variable/edit/$row->name"));
   }
-  $form['variables'] = array(
-    '#type' => 'tableselect',
-    '#header' => $header,
-    '#options' => $options,
-    '#empty' => t('No variables.'),
-  );
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Delete'),
+    '#tableselect' => TRUE,
   );
 
     // krumo($form);

@@ -594,7 +594,7 @@ function devel_generate_content_add_node(&$results) {
   }
   $users = $results['users'];
 
-  $node_type = array_rand($results['node_types']);
+  $node_type = array_rand(array_filter($results['node_types']));
   $type = node_type_load($node_type);
 
   $edit_node = array(
