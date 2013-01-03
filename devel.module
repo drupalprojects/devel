@@ -1441,7 +1441,7 @@ function devel_switch_user($name = NULL) {
       drupal_session_regenerate();
     }
     $edit = array();
-    user_module_invoke('login', $edit, $user);
+    module_invoke_all('user_login', $edit, $user);
   }
   elseif ($user->uid) {
     session_destroy();
