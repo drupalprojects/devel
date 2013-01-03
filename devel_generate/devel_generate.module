@@ -267,7 +267,7 @@ function devel_generate_content_form_submit($form, &$form_state) {
 function devel_generate_term_form() {
   $options = array();
   foreach (taxonomy_vocabulary_load_multiple() as $vid => $vocab) {
-    $options[$vid] = $vocab->machine_name;
+    $options[$vid] = $vocab->vid;
   }
   $form['vids'] = array(
     '#type' => 'select',

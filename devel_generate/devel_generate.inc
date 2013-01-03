@@ -134,7 +134,7 @@ function devel_generate_vocabs($records, $maxlength = 12, $types = array('page',
     $name = devel_generate_word(mt_rand(2, $maxlength));
     $voc = entity_create('taxonomy_vocabulary', array(
       'name' => $name,
-      'machine_name' => drupal_strtolower($name),
+      'vid' => drupal_strtolower($name),
       'langcode' => LANGUAGE_NOT_SPECIFIED,
       'description' => "description of $name",
       'hierarchy' => 1,
@@ -176,7 +176,7 @@ function devel_generate_terms($records, $vocabs, $maxlength = 12) {
         // Set vid and vocabulary_machine_name properties.
         $vocab = $vocabs[array_rand($vocabs)];
         $values['vid'] = $vocab->vid;
-        $values['vocabulary_machine_name'] = $vocab->machine_name;
+        $values['vocabulary_machine_name'] = $vocab->vid;
         $values['parent'] = array(0);
         break;
       default:
@@ -184,11 +184,9 @@ function devel_generate_terms($records, $vocabs, $maxlength = 12) {
           // Keep trying to find a random parent.
           $candidate = mt_rand(1, $max);
           $query = db_select('taxonomy_term_data', 't');
-          $query->innerJoin('taxonomy_vocabulary', 'v', 't.vid = v.vid');
           $parent = $query
                     ->fields('t', array('tid', 'vid'))
-                    ->fields('v', array('machine_name'))
-                    ->condition('v.vid', array_keys($vocabs), 'IN')
+                    ->condition('t.vid', array_keys($vocabs), 'IN')
                     ->condition('t.tid', $candidate, '>=')
                     ->range(0,1)
                     ->execute()
@@ -199,7 +197,7 @@ function devel_generate_terms($records, $vocabs, $maxlength = 12) {
         }
         $values['parent'] = array($parent['tid']);
         // Slight speedup due to this property being set.
-        $values['vocabulary_machine_name'] = $parent['machine_name'];
+        $values['vocabulary_machine_name'] = $parent['vid'];
         $values['vid'] = $parent['vid'];
         break;
     }
