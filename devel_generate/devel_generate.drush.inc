@@ -99,7 +99,7 @@ function drush_devel_generate_users($num_users = NULL) {
  */
 function drush_devel_generate_terms($vname = NULL, $num_terms = 10) {
   // Try to convert machine name to a vocab ID
-  if (!$vocab = entity_load('taxonomy_vocabulary', $vname);) {
+  if (!$vocab = entity_load('taxonomy_vocabulary', $vname)) {
     return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid vocabulary name: !name', array('!name' => $vname)));
   }
   if (drush_generate_is_number($num_terms) == FALSE) {
