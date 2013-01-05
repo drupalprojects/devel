@@ -436,8 +436,8 @@ function devel_init() {
 
       // Add CSS for query log if should be displayed.
       if (variable_get('devel_query_display', 0)) {
-        drupal_add_css(drupal_get_path('module', 'devel') . '/devel.css');
-        drupal_add_js(drupal_get_path('module', 'devel') . '/devel.js');
+        drupal_add_css(drupal_get_path('module', 'devel') . '/css/devel.css');
+        drupal_add_js(drupal_get_path('module', 'devel') . '/js/devel.js');
       }
     }
   }
@@ -470,7 +470,7 @@ function devel_set_message($msg, $type = NULL) {
 function has_krumo() {
   @include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'devel') . '/krumo/class.krumo.php';
   if (function_exists('krumo') && !drupal_is_cli()) {
-    drupal_add_js(drupal_get_path('module', 'devel') . '/devel_krumo_path.js');
+    drupal_add_js(drupal_get_path('module', 'devel') . '/js/devel_krumo_path.js');
     return TRUE;
   }
   return FALSE;
@@ -1063,7 +1063,7 @@ function devel_library_alter(&$libraries, $module) {
     // Make sure we're not changing the jQuery version used on the site.
     if (version_compare($libraries['jquery']['version'], '1.4.4', '=')) {
       $libraries['jquery']['js'] = array(
-        drupal_get_path('module', 'devel') . '/jquery-1.4.4-uncompressed.js' => array('weight' => JS_LIBRARY - 20),
+        drupal_get_path('module', 'devel') . '/js/jquery-1.4.4-uncompressed.js' => array('weight' => JS_LIBRARY - 20),
       );
     }
     else {
