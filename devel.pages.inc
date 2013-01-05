@@ -85,7 +85,7 @@ function devel_querylog_arguments($request_id, $qid) {
  * Menu callback; clear the database, resetting the menu to factory defaults.
  */
 function devel_menu_rebuild() {
-  menu_rebuild();
+  menu_router_rebuild();
   drupal_set_message(t('The menu router has been rebuilt.'));
   drupal_goto();
 }
