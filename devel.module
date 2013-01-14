@@ -1441,8 +1441,7 @@ function devel_switch_user($name = NULL) {
       // Switch from anonymous to authorized.
       drupal_session_regenerate();
     }
-    $edit = array();
-    module_invoke_all('user_login', $edit, $user);
+    module_invoke_all('user_login', $user);
   }
   elseif ($user->uid) {
     session_destroy();
