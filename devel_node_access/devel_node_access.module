@@ -50,16 +50,6 @@ function devel_node_access_menu() {
   $items = array();
 
   if (!module_exists('devel')) {
-    if (!menu_load('devel')) {
-      // we have to create the 'devel' menu ourselves
-      $menu = array(
-        'menu_name'   => 'devel',
-        'title'       => 'Development',
-        'description' => 'Development link',
-      );
-      menu_save($menu);
-    }
-
     // we have to create the 'Devel settings' menu item ourselves
     $items['admin/config/development/devel'] = array(
       'title'            => 'Devel settings',

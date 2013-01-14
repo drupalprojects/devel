@@ -275,8 +275,7 @@ function devel_generate_delete_menus() {
   if (module_exists('menu')) {
     foreach (menu_get_menus(FALSE) as $menu => $menu_title) {
       if (strpos($menu, 'devel-') === 0) {
-        $menu = menu_load($menu);
-        menu_delete($menu);
+        menu_load($menu)->delete();
       }
     }
   }
@@ -304,11 +303,12 @@ function devel_generate_menus($num_menus, $title_length = 12) {
 
   for ($i = 1; $i <= $num_menus; $i++) {
     $menu = array();
-    $menu['title'] = devel_generate_word(mt_rand(2, max(2, $title_length)));
-    $menu['menu_name'] = 'devel-' . drupal_strtolower($menu['title']);
-    $menu['description'] = t('Description of @name', array('@name' => $menu['title']));
-    menu_save($menu);
-    $menus[$menu['menu_name']] = $menu['title'];
+    $menu['label'] = devel_generate_word(mt_rand(2, max(2, $title_length)));
+    $menu['id'] = 'devel-' . drupal_strtolower($menu['label']);
+    $menu['description'] = t('Description of @name', array('@name' => $menu['label']));
+    $new_menu = entity_create('menu', $menu);
+    $new_menu->save();
+    $menus[$new_menu->id()] = $new_menu->label();
   }
 
   return $menus;

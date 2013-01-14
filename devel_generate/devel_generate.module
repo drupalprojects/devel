@@ -497,6 +497,10 @@ function devel_generate_menu_form_submit($form, &$form_state) {
   if (!isset($form_state['values']['existing_menus']['__new-menu__']) || !$form_state['values']['existing_menus']['__new-menu__']) {
     $form_state['values']['num_menus'] = 0;
   }
+  else {
+    // Unset the aux menu to avoid attach menu new items.
+    unset($form_state['values']['existing_menus']['__new-menu__']);
+  }
   module_load_include('inc', 'devel_generate');
   // Delete custom menus.
   if ($form_state['values']['kill']) {

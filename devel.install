@@ -4,21 +4,8 @@
  * Implements hook_enable().
  */
 function devel_enable() {
-  $t = get_t();
-
   // New module weights in core: put devel as the very last in the chain.
   module_set_weight('devel', 88);
-
-  // Create a custom menu, if Menu module is enabled.
-  // @see devel_modules_installed()
-  if (module_exists('menu')) {
-    $menu = array(
-      'menu_name' => 'devel',
-      'title' => $t('Development'),
-      'description' => $t('Development link'),
-    );
-    menu_save($menu);
-  }
 }
 
 /**
@@ -41,7 +28,7 @@ function devel_uninstall() {
   // Delete the development menu.
   if (module_exists('menu')) {
     if ($devel_menu = menu_load('devel')) {
-      menu_delete($devel_menu);
+      $devel_menu->delete();
     }
   }
 }
