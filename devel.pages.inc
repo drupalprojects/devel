@@ -15,7 +15,7 @@ function devel_function_reference() {
   $version = devel_get_core_version(VERSION);
   $ufunctions = $functions['user'];
   sort($ufunctions);
-  $api = variable_get('devel_api_url', 'api.drupal.org');
+  $api = config('devel.settings')->get('api_url');
   foreach ($ufunctions as $function) {
     $links[] = l($function, "http://$api/api/$version/function/$function");
   }
@@ -246,7 +246,7 @@ function devel_variable_edit($form, &$form_state, $name) {
     );
   }
   else {
-    $api = variable_get('devel_api_url', 'api.drupal.org');
+    $api = config('devel.settings')->get('api_url', 'api.drupal.org');
     $form['new'] = array(
       '#type' => 'item',
       '#title' => t('New value'),

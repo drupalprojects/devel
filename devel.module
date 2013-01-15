@@ -28,7 +28,7 @@ function devel_help($section) {
     case 'devel/session':
       return '<p>' . t('Here are the contents of your <code>$_SESSION</code> variable.') . '</p>';
     case 'devel/variable':
-      $api = variable_get('devel_api_url', 'api.drupal.org');
+      $api = config('devel.settings')->get('api_url');
       return '<p>' . t('This is a list of the variables and their values currently stored in variables table and the <code>$conf</code> array of your settings.php file. These variables are usually accessed with <a href="@variable-get-doc">variable_get()</a> and <a href="@variable-set-doc">variable_set()</a>. Variables that are too long can slow down your pages.', array('@variable-get-doc' => "http://$api/api/HEAD/function/variable_get", '@variable-set-doc' => "http://$api/api/HEAD/function/variable_set")) . '</p>';
     case 'devel/reinstall':
       return t('Warning - will delete your module tables and variables.');
@@ -420,13 +420,13 @@ function devel_init() {
       }
 
       // Add CSS for query log if should be displayed.
-      if (variable_get('devel_query_display', 0)) {
+      if (config('devel.settings')->get('query_display')) {
         drupal_add_css(drupal_get_path('module', 'devel') . '/css/devel.css');
         drupal_add_js(drupal_get_path('module', 'devel') . '/js/devel.js');
       }
     }
   }
-  if (variable_get('devel_rebuild_theme_registry', FALSE)) {
+  if (config('devel.settings')->get('rebuild_theme_registry')) {
     drupal_theme_rebuild();
     if (flood_is_allowed('devel_rebuild_registry_warning', 1)) {
       flood_register_event('devel_rebuild_registry_warning');
@@ -470,7 +470,7 @@ function has_krumo() {
  * @return boolean
  */
 function merits_krumo($input) {
-  return (is_object($input) || is_array($input)) && has_krumo() && variable_get('devel_krumo_skin', '') != 'disabled';
+  return (is_object($input) || is_array($input)) && has_krumo() && config('devel.settings')->get('krumo_skin') != 'disabled';
 }
 
 /**
@@ -545,7 +545,7 @@ function devel_watchdog(array $log_entry) {
  * Gets error handlers.
  */
 function devel_get_handlers() {
-  $error_handlers = variable_get('devel_error_handlers', array(DEVEL_ERROR_HANDLER_STANDARD => DEVEL_ERROR_HANDLER_STANDARD));
+  $error_handlers = config('devel.settings')->get('error_handlers');
   if (!empty($error_handlers)) {
     unset($error_handlers[DEVEL_ERROR_HANDLER_NONE]);
   }
@@ -592,7 +592,7 @@ function devel_silent() {
  */
 function devel_xhprof_enable() {
   if (devel_xhprof_is_enabled()) {
-    if ($path = variable_get('devel_xhprof_directory', '')) {
+    if ($path = config('devel.settings')->get('xhprof_directory')) {
       include_once $path . '/xhprof_lib/utils/xhprof_lib.php';
       include_once $path . '/xhprof_lib/utils/xhprof_runs.php';
       // @todo: consider a variable per-flag instead.
@@ -605,7 +605,7 @@ function devel_xhprof_enable() {
  * Checks if xhprof is enabled.
  */
 function devel_xhprof_is_enabled() {
-  return extension_loaded('xhprof') && variable_get('devel_xhprof_enabled', FALSE);
+  return extension_loaded('xhprof') && config('devel.settings')->get('xhprof_enabled');
 }
 
 /**
@@ -618,7 +618,7 @@ function devel_boot() {
   devel_xhprof_enable();
 
   if (!devel_silent()) {
-    if (variable_get('dev_mem', 0)) {
+    if (config('devel.settings')->get('memory')) {
       global $memory_init;
       $memory_init = memory_get_usage();
     }
@@ -779,22 +779,23 @@ function devel_block_info() {
  */
 function devel_block_configure($delta) {
   if ($delta == 'switch_user') {
+    $devel_config = config('devel.settings');
     $form['list_size'] = array(
       '#type' => 'textfield',
       '#title' => t('Number of users to display in the list'),
-      '#default_value' => variable_get('devel_switch_user_list_size', 10),
+      '#default_value' => $config_devel->get('switch_user_list_size'),
       '#size' => '3',
       '#maxlength' => '4',
     );
     $form['include_anon'] = array(
       '#type' => 'checkbox',
       '#title' => t('Include %anonymous', array('%anonymous' => user_format_name(drupal_anonymous_user()))),
-      '#default_value' => variable_get('devel_switch_user_include_anon', FALSE),
+      '#default_value' => $config_devel->get('switch_user_include_anon'),
     );
     $form['show_form'] = array(
       '#type' => 'checkbox',
       '#title' => t('Allow entering any user name'),
-      '#default_value' => variable_get('devel_switch_user_show_form', TRUE),
+      '#default_value' => $config_devel->get('switch_user_show_form'),
     );
     return $form;
   }
@@ -839,7 +840,7 @@ function devel_block_switch_user() {
     drupal_add_css(drupal_get_path('module', 'devel') . '/devel.css');
     $block['subject'] = t('Switch user');
     $build['devel_links'] = array('#theme' => 'links', '#links' => $links);
-    if (variable_get('devel_switch_user_show_form', TRUE)) {
+    if (config('devel.settings')->get('switch_user_show_form')) {
       $build['devel_form'] = drupal_get_form('devel_switch_user_form');
     }
     $block['content'] = $build;
@@ -855,8 +856,9 @@ function devel_switch_user_list() {
 
   $links = array();
   if (user_access('switch users')) {
-    $list_size = variable_get('devel_switch_user_list_size', 10);
-    if ($include_anon = ($user->uid && variable_get('devel_switch_user_include_anon', FALSE))) {
+    $config_devel = config('devel.settings');
+    $list_size = $config_devel->get('switch_user_list_size');
+    if ($include_anon = ($user->uid && $config_devel->get('switch_user_include_anon', FALSE))) {
       --$list_size;
     }
     $dest = drupal_get_destination();
@@ -988,7 +990,7 @@ function devel_doc_function_form() {
 function devel_doc_function_form_submit($form, &$form_state) {
   $version = $form_state['values']['version'];
   $function = $form_state['values']['function'];
-  $api = variable_get('devel_api_url', 'api.drupal.org');
+  $api = config('devel.settings')->get('api_url');
   $form_state['redirect'] = "http://$api/api/function/$function/$version";
 }
 
@@ -1025,7 +1027,7 @@ function devel_drupal_goto_alter($path, $options, $http_response_code) {
     // The page we are leaving is a drupal_goto(). Present a redirection page
     // so that the developer can see the intermediate query log.
     // We don't want to load user module here, so keep function_exists() call.
-    if (isset($user) && function_exists('user_access') && user_access('access devel information') && variable_get('devel_redirect_page', 0)) {
+    if (isset($user) && function_exists('user_access') && user_access('access devel information') && config('devel.settings')->get('redirect_page')) {
       $destination = function_exists('url') ? url($path, $options) : $path;
       $output = t_safe('<p>The user is being redirected to <a href="@destination">@destination</a>.</p>', array('@destination' => $destination));
       drupal_deliver_page($output);
@@ -1044,7 +1046,7 @@ function devel_drupal_goto_alter($path, $options, $http_response_code) {
  */
 function devel_library_alter(&$libraries, $module) {
   // Use an uncompressed version of jQuery for debugging.
-  if ($module === 'system' && variable_get('devel_use_uncompressed_jquery', FALSE) && isset($libraries['jquery'])) {
+  if ($module === 'system' && config('devel.settings')->get('use_uncompressed_jquery') && isset($libraries['jquery'])) {
     // Make sure we're not changing the jQuery version used on the site.
     if (version_compare($libraries['jquery']['version'], '1.4.4', '=')) {
       $libraries['jquery']['js'] = array(
@@ -1082,7 +1084,7 @@ function devel_shutdown() {
  * Implements hook_page_alter().
  */
 function devel_page_alter($page) {
-  if (variable_get('devel_page_alter', FALSE) && user_access('access devel information')) {
+  if (config('devel.settings')->get('page_alter') && user_access('access devel information')) {
     dpm($page, 'page');
   }
 }
@@ -1150,14 +1152,15 @@ function devel_shutdown_summary($queries) {
   $sum = 0;
   $output = '';
   list($counts, $query_summary) = devel_query_summary($queries);
+  $config_devel = config('devel.settings');
 
-  if (variable_get('devel_query_display', FALSE)) {
+  if ($config_devel->get('query_display')) {
     // Query log on.
     $output .= $query_summary;
-    $output .= t_safe(' Queries exceeding @threshold ms are <span class="marker">highlighted</span>.', array('@threshold' => variable_get('devel_execution', 5)));
+    $output .= t_safe(' Queries exceeding @threshold ms are <span class="marker">highlighted</span>.', array('@threshold' => $config_devel->get('execution')));
   }
 
-  if (variable_get('dev_timer', 0)) {
+  if ($config_devel->get('timer')) {
     $output .= devel_timer();
   }
 
@@ -1177,7 +1180,7 @@ function devel_shutdown_summary($queries) {
  */
 function devel_shutdown_xhprof() {
   // Namespace for your application.
-  $namespace = variable_get('site_name', '');
+  $namespace = config('system.site')->get('name');
   $xhprof_data = xhprof_disable();
   $xhprof_runs = new XHProfRuns_Default();
   return $xhprof_runs->save_run($xhprof_data, $namespace);
@@ -1188,9 +1191,9 @@ function devel_shutdown_xhprof() {
  */
 function devel_xhprof_link($run_id, $type = 'link') {
   // @todo: render results from within Drupal.
-  $xhprof_url = variable_get('devel_xhprof_url', '');
+  $xhprof_url = config('devel.settings')->get('xhprof_url');
   // Namespace for your application.
-  $namespace = variable_get('site_name', '');
+  $namespace = config('system.site')->get('name');
   if ($xhprof_url) {
     $url = $xhprof_url . '/index.php?run=' . urlencode($run_id) . '&source=' . urlencode($namespace);
     return $type == 'url' ? $url : t('<a href="@xhprof">XHProf output</a>. ', array('@xhprof' => $url));
@@ -1203,7 +1206,7 @@ function devel_xhprof_link($run_id, $type = 'link') {
 function devel_shutdown_memory() {
   global $memory_init;
 
-  if (variable_get('dev_mem', FALSE)) {
+  if (config('devel.settings')->get('memory')) {
     $memory_shutdown = memory_get_usage();
     $args = array(
       '@memory_boot' => round($memory_init / 1024 / 1024, 2),
@@ -1269,14 +1272,14 @@ function devel_query_put_contents($queries) {
  * Returns whether query logging is enabled.
  */
 function devel_query_enabled() {
-  return method_exists('Drupal\Core\Database\Database', 'getLog') && variable_get('devel_query_display', FALSE);
+  return method_exists('Drupal\Core\Database\Database', 'getLog') && config('devel.settings')->get('query_display');
 }
 
 /**
  * Returns the query summary.
  */
 function devel_query_summary($queries) {
-  if (variable_get('devel_query_display', FALSE) && is_array($queries)) {
+  if (config('devel.settings')->get('query_display') && is_array($queries)) {
     $sum = 0;
     foreach ($queries as $query) {
       $text[] = $query['query'];
@@ -1614,14 +1617,15 @@ function devel_query_table($queries, $counts) {
   $version = devel_get_core_version(VERSION);
   $header = array('ms', '#', 'where', 'ops', 'query', 'target');
   $i = 0;
-  $api = variable_get('devel_api_url', 'api.drupal.org');
+  $config_devel = config('devel.settings');
+  $api = $config_devel->get('api_url');
   foreach ($queries as $query) {
     $function = !empty($query['caller']['class']) ? $query['caller']['class'] . '::' : '';
     $function .= $query['caller']['function'];
     $count = isset($counts[$query['query']]) ? $counts[$query['query']] : 0;
 
     $diff = round($query['time'] * 1000, 2);
-    if ($diff > variable_get('devel_execution', 5)) {
+    if ($diff > $config_devel->get('execution')) {
       $cell[$i][] = array('data' => $diff, 'class' => array('marker'));
     }
     else {
@@ -1663,7 +1667,7 @@ function devel_query_table($queries, $counts) {
     $i++;
     unset($diff, $count, $ops);
   }
-  if (variable_get('devel_query_sort', DEVEL_QUERY_SORT_BY_SOURCE)) {
+  if (config('devel.settings')->get('query_sort')) {
     usort($cell, '_devel_table_sort');
   }
   return theme('devel_querylog', array('header' => $header, 'rows' => $cell));
@@ -2089,7 +2093,7 @@ function devel_rebuild_node_comment_statistics() {
  * language-independent machine names and module base names.
  */
 function devel_form_user_admin_permissions_alter(&$form, &$form_state) {
-  if (user_access('access devel information') && variable_get('devel_raw_names', FALSE)) {
+  if (user_access('access devel information') && config('devel.settings')->get('raw_names')) {
     foreach ($form['permission'] as $perm => $data) {
       if (is_numeric($perm)) {
         $form['permission'][$perm]['#markup'] = '<span title="' . $form['permission'][$perm]['#id'] . '">' . $form['permission'][$perm]['#markup'] . '</span>';
@@ -2107,7 +2111,7 @@ function devel_form_user_admin_permissions_alter(&$form, &$form_state) {
  * Adds mouse-over hints on the Modules page to display module base names.
  */
 function devel_form_system_modules_alter(&$form, &$form_state) {
-  if (user_access('access devel information') && variable_get('devel_raw_names', FALSE) && isset($form['modules']) && is_array($form['modules'])) {
+  if (user_access('access devel information') && config('devel.settings')->get('raw_names', FALSE) && isset($form['modules']) && is_array($form['modules'])) {
     foreach (element_children($form['modules']) as $key) {
       if (isset($form['modules'][$key]['name']['#markup'])) {
         $form['modules'][$key]['name']['#markup'] = '<span title="' . $key . '">' . $form['modules'][$key]['name']['#markup'] . '</span>';

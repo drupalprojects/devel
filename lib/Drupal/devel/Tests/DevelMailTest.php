@@ -14,6 +14,12 @@ use Drupal\devel\DevelMailLog;
  * Test devel mail functionality.
  */
 class DevelMailTest extends WebTestBase {
+  /**
+   * Modules to enable.
+   *
+   * @var array
+   */
+  public static $modules = array('devel');
   protected $profile = 'testing';
 
   public static function getInfo() {

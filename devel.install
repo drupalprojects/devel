@@ -12,19 +12,6 @@ function devel_enable() {
  * Implements hook_uninstall().
  */
 function devel_uninstall() {
-  variable_del('devel_form_weights');
-  variable_del('devel_execution');
-  variable_del('dev_timer');
-  variable_del('devel_query_display');
-  variable_del('devel_redirect_page');
-  variable_del('devel_api_url');
-  variable_del('dev_mem');
-  variable_del('devel_error_handlers');
-  variable_del('devel_raw_names');
-  variable_del('devel_switch_user_list_size');
-  variable_del('devel_switch_user_include_anon');
-  variable_del('devel_switch_user_show_form');
-
   // Delete the development menu.
   if (module_exists('menu')) {
     if ($devel_menu = menu_load('devel')) {
@@ -86,4 +73,32 @@ function devel_update_7004() {
     variable_del('devel_error_handler');
     variable_set('devel_error_handlers', drupal_map_assoc($error_handlers));
   }
+}
+
+/**
+ * Moves devel settings from variable to config.
+ *
+ * @ingroup config_upgrade
+ */
+function devel_update_8001() {
+  update_variables_to_config('devel.settings',array(
+    'devel_query_display' => 'query_display',
+    'devel_query_sort' => 'query_sort',
+    'devel_execution' => 'execution',
+    'devel_xhprof_enabled' => 'xhprof_enabled',
+    'devel_xhprof_directory' => 'xhprof_directory',
+    'devel_xhprof_url' => 'xhprof_url',
+    'devel_api_url' => 'api_url',
+    'dev_timer' => 'timer',
+    'dev_mem' => 'memory',
+    'devel_redirect_page' => 'redirect_page',
+    'devel_page_alter' => 'page_alter',
+    'devel_raw_names' => 'raw_names',
+    'devel_error_handlers' => 'error_handlers',
+    'devel_krumo_skin' => 'krumo_skin',
+    'devel_rebuild_theme_registry' => 'rebuild_theme_registry',
+    'devel_use_uncompressed_jquery' => 'use_uncompressed_jquery',
+    'devel_debug_mail_file_format' => 'debug_mail_file_format',
+    'devel_debug_mail_directory' => 'debug_mail_directory'
+  ));
 }

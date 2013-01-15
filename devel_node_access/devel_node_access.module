@@ -82,37 +82,46 @@ function devel_node_access_menu() {
   return $items;
 }
 
-function devel_node_access_admin_settings() {
+function devel_node_access_admin_settings($form, &$form_state) {
   $form = array();
-  return system_settings_form($form);
+  return config_settings_form($form);
+}
+
+function devel_node_access_admin_settings_submit($form, &$form_state) {
+  config('devel_node_access.settings')
+    ->set('debug_mode', $form_state['values']['debug_mode'])
+    ->set('user_ajax', $form_state['values']['user_ajax'])
+    ->save();
 }
 
 function devel_node_access_form_alter(&$form, $form_state, $form_id) {
   $tr = 't';
+  $config_devel_node_access = config('devel_node_access.settings');
   if ($form_id == 'devel_admin_settings' || $form_id == 'devel_node_access_admin_settings') {
     $form['devel_node_access'] = array(
       '#type'        => 'fieldset',
       '#title'       => t('Devel Node Access'),
       '#collapsible' => TRUE,
     );
-    $form['devel_node_access']['devel_node_access_debug_mode'] = array(
+    $form['devel_node_access']['debug_mode'] = array(
       '#type'          => 'checkbox',
       '#title'         => t('Debug mode'),
-      '#default_value' => variable_get('devel_node_access_debug_mode', TRUE),
+      '#default_value' => $config_devel_node_access->get('debug_mode'),
       '#description'   => t('Debug mode verifies the grant records in the node_access table against those that would be set by running !Rebuild_permissions, and displays them all; this can cause considerable overhead.<br />For even more information enable the <a href="@link">%DNAbU block</a>, too.', array(
         '!Rebuild_permissions' => l('[' . $tr('Rebuild permissions') . ']', 'admin/reports/status/rebuild'),
         '%DNAbU' => t('Devel Node Access by User'),
         '@link' => url('admin/structure/block/list'),
       )),
     );
-    $form['devel_node_access']['devel_node_access_user_ajax'] = array(
+    $form['devel_node_access']['user_ajax'] = array(
       '#type'          => 'checkbox',
       '#title'         => t('Asynchronously populate the <em>Devel Node Access by User</em> block'),
-      '#default_value' => variable_get('devel_node_access_user_ajax', FALSE),
+      '#default_value' => $config_devel_node_access->get('user_ajax'),
       '#description'   => t("Use Ajax to populate the second DNA block. This loads the initial page faster and uses dynamic calls to build the data in the table, one request at a time. It's especially useful during development, if some of the calls are failing.") . '<br />' . t('JavaScript must be enabled in your browser.'),
     );
     // push the Save button down
     $form['actions']['#weight'] = 10;
+    $form['#submit'][] = 'devel_node_access_admin_settings_submit';
   }
 }
 
@@ -536,7 +545,7 @@ function devel_node_access_block_view($delta) {
         ->orderBy('na.gid');
       $nodes = node_load_multiple($nids);
 
-      if (!variable_get('devel_node_access_debug_mode', TRUE)) {
+      if (!config('devel_node_access.settings')->get('debug_mode')) {
         $headers = array(t('node'), t('realm'), t('gid'), t('view'), t('update'), t('delete'), t('explained'));
         $rows = array();
         foreach ($query->execute() as $row) {
@@ -984,7 +993,7 @@ function devel_node_access_block_view($delta) {
         $headers = array(t('username'), '<span title="' . t("Create '@langname'-language nodes of the '@Node_type' type.", array('@langname' => $language->name, '@Node_type' => $node_type->name)) . '">' . t('create') . '</span>', t('view'), t('update'), t('delete'));
         $rows = array();
         // Determine whether to use Ajax or prepopulate the tables.
-        if ($ajax = variable_get('devel_node_access_user_ajax', FALSE)) {
+        if ($ajax = config('devel_node_access.settings')->get('user_ajax')) {
           drupal_add_js(drupal_get_path('module', 'devel_node_access') . '/devel_node_access.js');
         }
         // Find all users. The following operations are very inefficient, so we

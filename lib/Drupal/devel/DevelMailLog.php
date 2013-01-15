@@ -11,8 +11,8 @@
  *);
  *
  * Saves to temporary://devel-mails dir by default. Can be changed using
- * 'devel_debug_mail_directory' variable. Filename pattern controlled by
- * 'devel_debug_mail_file_format' variable.
+ * 'debug_mail_directory' config setting. Filename pattern controlled by
+ * 'debug_mail_file_format' config setting.
  *
  */
 
@@ -39,8 +39,8 @@ class DevelMailLog extends PhpMail {
   public function getFileName($message) {
     $output_directory = $this->getOutputDirectory();
     $this->makeOutputDirectory($output_directory);
+    $output_file_format = config('devel.settings')->get('debug_mail_file_format');
 
-    $output_file_format = variable_get('devel_debug_mail_file_format', '%to-%subject-%datetime.mail.txt');
     $tokens = array(
       '%to' => $message['to'],
       '%subject' => $message['subject'],
@@ -77,6 +77,6 @@ class DevelMailLog extends PhpMail {
   }
 
   public function getOutputDirectory() {
-    return variable_get('devel_debug_mail_directory', 'temporary://devel-mails');
+    return config('devel.settings')->get('debug_mail_directory');
   }
 }
