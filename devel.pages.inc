@@ -1,5 +1,8 @@
 <?php
 
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpFoundation\Response;
+
 // Menu callback that shows menu item.
 function devel_menu_item() {
   $item = menu_get_item($_GET['path']);
@@ -34,9 +37,9 @@ function devel_cache_clear() {
 }
 
 // A menu callback. Called by the AJAX link in query log.
-function devel_querylog_explain($request_id, $qid) {
+function devel_querylog_explain($request_id = NULL, $qid = NULL) {
   if (!is_numeric($request_id)) {
-    return MENU_ACCESS_DENIED;
+    throw new AccessDeniedHttpException();
   }
 
   $path = "temporary://devel_querylog/$request_id.txt";
@@ -53,16 +56,16 @@ function devel_querylog_explain($request_id, $qid) {
     $rows[] = array_values($row);
     $i++;
   }
-  // Print and return nothing thus avoiding page wrapper.
   $output = theme('table', array('header' => $header, 'rows' => $rows));
-  print $output;
+
   $GLOBALS['devel_shutdown'] = FALSE;
+  return new Response($output);
 }
 
 // A menu callback. Called by the AJAX link in query log.
-function devel_querylog_arguments($request_id, $qid) {
+function devel_querylog_arguments($request_id = NULL, $qid = NULL) {
   if (!is_numeric($request_id)) {
-    return MENU_ACCESS_DENIED;
+    throw new AccessDeniedHttpException();
   }
 
   $path = "temporary://devel_querylog/$request_id.txt";
@@ -76,9 +79,8 @@ function devel_querylog_arguments($request_id, $qid) {
   }
   $output = strtr($query->query, $quoted);
 
-  // print and return nothing thus avoiding page wrapper.
-  print $output;
   $GLOBALS['devel_shutdown'] = FALSE;
+  return new Response($output);
 }
 
 /**

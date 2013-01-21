@@ -1699,9 +1699,9 @@ function theme_devel_querylog_row($variables) {
     else {
       $attr['class'] = "cell cell-$i";
     }
-    $attributes = new Attribute($attributes);
+    $attributes = new Attribute($attr);
 
-    $output .= "<div $attr>$data</div>";
+    $output .= "<div $attributes>$data</div>";
   }
   return $output;
 }
