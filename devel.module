@@ -1619,9 +1619,13 @@ function devel_query_table($queries, $counts) {
   $i = 0;
   $config_devel = config('devel.settings');
   $api = $config_devel->get('api_url');
+  $realpath = realpath('.') . '/';
   foreach ($queries as $query) {
+    $file = str_replace('/', '!', str_replace($realpath, '', $query['caller']['file']));
     $function = !empty($query['caller']['class']) ? $query['caller']['class'] . '::' : '';
     $function .= $query['caller']['function'];
+    $function_path = explode('\\', $function);
+    $function_name = end($function_path);
     $count = isset($counts[$query['query']]) ? $counts[$query['query']] : 0;
 
     $diff = round($query['time'] * 1000, 2);
@@ -1632,24 +1636,27 @@ function devel_query_table($queries, $counts) {
       $cell[$i][] = $diff;
     }
     $cell[$i][] = $count;
-    $cell[$i][] = l($function, "http://$api/api/function/$function/$version");
-    $ops[] = l(t('P'), '', array(
+    $cell[$i][] = l($function, "http://$api/api/drupal/$file/function/$function_name/$version", array(
       'attributes' => array(
-        'title' => 'Show placeholders',
+        'target' => '_blank'))
+    );
+    $ops[] = l(t('P'), '#', array(
+      'attributes' => array(
+        'title' => t('Show placeholders'),
         'class' => array('dev-placeholders'),
         'qid' => $i,
     )));
-    $ops[] = l(t('A'), '', array(
+    $ops[] = l(t('A'), '#', array(
         'attributes' => array(
-          'title' => 'Show arguments',
+          'title' => t('Show arguments'),
           'class' => array('dev-arguments'),
           'qid' => $i,
     )));
     // EXPLAIN only valid for select queries.
     if (strpos($query['query'], 'UPDATE') === FALSE && strpos($query['query'], 'INSERT') === FALSE && strpos($query['query'], 'DELETE') === FALSE) {
-      $ops[] = l(t('E'), '', array(
+      $ops[] = l(t('E'), '#', array(
         'attributes' => array(
-          'title' => 'Show EXPLAIN',
+          'title' => t('Show explain'),
           'class' => array('dev-explain'),
           'qid' => $i,
       )));
