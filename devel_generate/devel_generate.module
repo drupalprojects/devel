@@ -62,7 +62,7 @@ function devel_generate_users_form() {
     '#title' => t('Delete all users (except user id 1) before generating new users.'),
     '#default_value' => FALSE,
   );
-  $options = user_roles(TRUE);
+  $options = user_role_names(TRUE);
   unset($options[DRUPAL_AUTHENTICATED_RID]);
   $form['roles'] = array(
     '#type' => 'checkboxes',
