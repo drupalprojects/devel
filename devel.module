@@ -760,105 +760,14 @@ function devel_permission() {
 }
 
 /**
- * Implements hook_block_info().
- */
-function devel_block_info() {
-  $blocks['execute_php'] = array(
-    'info' => t('Execute PHP'),
-    'cache' => DRUPAL_NO_CACHE,
-  );
-  $blocks['switch_user'] = array(
-    'info' => t('Switch user'),
-    'cache' => DRUPAL_NO_CACHE,
-  );
-  return $blocks;
-}
-
-/**
- * Implements hook_block_configure().
- */
-function devel_block_configure($delta) {
-  if ($delta == 'switch_user') {
-    $devel_config = config('devel.settings');
-    $form['list_size'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Number of users to display in the list'),
-      '#default_value' => $config_devel->get('switch_user_list_size'),
-      '#size' => '3',
-      '#maxlength' => '4',
-    );
-    $form['include_anon'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Include %anonymous', array('%anonymous' => user_format_name(drupal_anonymous_user()))),
-      '#default_value' => $config_devel->get('switch_user_include_anon'),
-    );
-    $form['show_form'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Allow entering any user name'),
-      '#default_value' => $config_devel->get('switch_user_show_form'),
-    );
-    return $form;
-  }
-}
-
-/**
- * Implements hook_block_save().
- */
-function devel_block_save($delta, $edit = array()) {
-  if ($delta == 'switch_user') {
-    variable_set('devel_switch_user_list_size', $edit['list_size']);
-    variable_set('devel_switch_user_include_anon', $edit['include_anon']);
-    variable_set('devel_switch_user_show_form', $edit['show_form']);
-  }
-}
-
-/**
- * Implements hook_block_view().
- */
-function devel_block_view($delta) {
-  $block = array();
-  switch ($delta) {
-    case 'switch_user':
-      $block = devel_block_switch_user();
-      break;
-
-    case 'execute_php':
-      if (user_access('execute php code')) {
-        $block['content'] = drupal_get_form('devel_execute_block_form');
-      }
-      break;
-  }
-  return $block;
-}
-
-/**
- * Provides the Switch user block.
- */
-function devel_block_switch_user() {
-  $links = devel_switch_user_list();
-  if (!empty($links) || user_access('switch users')) {
-    drupal_add_css(drupal_get_path('module', 'devel') . '/devel.css');
-    $block['subject'] = t('Switch user');
-    $build['devel_links'] = array('#theme' => 'links', '#links' => $links);
-    if (config('devel.settings')->get('switch_user_show_form')) {
-      $build['devel_form'] = drupal_get_form('devel_switch_user_form');
-    }
-    $block['content'] = $build;
-    return $block;
-  }
-}
-
-/**
  * Provides the Switch user list.
  */
-function devel_switch_user_list() {
+function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
   global $user;
 
   $links = array();
-  if (user_access('switch users')) {
-    $config_devel = config('devel.settings');
-    $list_size = $config_devel->get('switch_user_list_size');
-    if ($include_anon = ($user->uid && $config_devel->get('switch_user_include_anon', FALSE))) {
+  if (user_access('switch users', $user)) {
+    if ($include_anon = ($user->uid && $include_anon)) {
       --$list_size;
     }
     $dest = drupal_get_destination();
@@ -944,25 +853,6 @@ function devel_switch_user_list() {
  */
 function _devel_switch_user_list_cmp($a, $b) {
   return $b['last_access'] - $a['last_access'];
-}
-
-/**
- * Provides the Switch user form.
- */
-function devel_switch_user_form() {
-  $form['username'] = array(
-    '#type' => 'textfield',
-    '#description' => t('Enter username'),
-    '#autocomplete_path' => 'user/autocomplete',
-    '#maxlength' => USERNAME_MAX_LENGTH,
-    '#size' => 16,
-  );
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Switch'),
-  );
-  $form['#attributes'] = array('class' => array('clearfix'));
-  return $form;
 }
 
 /**
@@ -1360,20 +1250,6 @@ function devel_is_compatible_optimizer() {
   else {
     return TRUE;
   }
-}
-
-/**
- * Generates the execute block form.
- */
-function devel_execute_block_form() {
-  $form['execute'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Execute PHP Code'),
-    '#collapsible' => TRUE,
-    '#collapsed' => (!isset($_SESSION['devel_execute_code'])),
-  );
-  $form['#submit'] = array('devel_execute_form_submit');
-  return array_merge_recursive($form, devel_execute_form());
 }
 
 /**
@@ -2131,5 +2007,18 @@ function devel_form_system_modules_alter(&$form, &$form_state) {
         }
       }
     }
+  }
+}
+
+/**
+ * Processes variables for block.tpl.php.
+ *
+ * Adding a module block class.
+ *
+ * @todo remove when http://drupal.org/node/1896098 gets in core.
+ */
+function devel_preprocess_block(&$variables) {
+  if (isset($variables['block']) && $variables['block']->module == 'devel') {
+    $variables['attributes']['class'][] = drupal_html_class('block-' . $variables['elements']['#block']->get('plugin'));
   }
 }
