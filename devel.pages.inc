@@ -3,6 +3,9 @@
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\Response;
 
+use Symfony\Component\Yaml\Dumper;
+use Symfony\Component\Yaml\Parser;
+
 // Menu callback that shows menu item.
 function devel_menu_item() {
   $item = menu_get_item($_GET['path']);
@@ -158,7 +161,10 @@ function devel_field_info_page() {
   return $output;
 }
 
-function devel_variable_form() {
+/**
+ * Form API form builder.
+ */
+function devel_variable_form($form, &$form_state) {
   $header = array(
     'name' => array('data' => t('Name'), 'field' => 'name', 'sort' => 'asc'),
     'value' => array('data' => t('Value'), 'field' => 'value'),
@@ -263,6 +269,255 @@ function devel_variable_edit_submit($form, &$form_state) {
   variable_set($form_state['values']['name'], $form_state['values']['new']);
   drupal_set_message(t('Saved new value for %name.', array('%name' => $form_state['values']['name'])));
    'devel/variable';
+}
+
+/**
+ * Form that displays all the config variables to edit them.
+ *
+ * @see devel_config_system_form_submit()
+ */
+function devel_config_system_form($form, &$form_state, $filter = '') {
+  $form['filter'] = array(
+    '#type' => 'details',
+    '#title' => t('Filter variables'),
+    '#attributes' => array('class' => array('container-inline')),
+  );
+  $form['filter']['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Variable name'),
+    '#title_display' => 'invisible',
+    '#default_value' => $filter,
+  );
+  $form['filter']['show'] = array(
+    '#type' => 'submit',
+    '#value' => t('Filter'),
+  );
+  $header = array(
+    'name' => array('data' => t('Name')),
+    'edit' => array('data' => t('Operations')),
+  );
+  $form['variables'] = array(
+    '#type' => 'table',
+    '#header' => $header,
+  );
+
+  // List all the variables filtered if any filter was provided.
+  $names = config_get_storage_names_with_prefix($filter);
+  foreach ($names as $key => $config_name) {
+    $form['variables'][$key]['name'] = array('#markup' => $config_name);
+    $form['variables'][$key]['operation'] = array('#markup' => l(t('Edit'), "devel/config/edit/$config_name"));
+  }
+
+  return $form;
+}
+
+/**
+ * Submit handler for filter config variables list
+ *
+ * @see devel_config_system_form()
+ */
+function devel_config_system_form_submit($form, &$form_state) {
+  $form_state['redirect'] = 'devel/config/' . check_plain($form_state['values']['name']);
+}
+
+/**
+ * Edit config variable form
+ *
+ * @see devel_config_system_edit_form()
+ */
+function devel_config_system_edit_form($form, &$form_state, $config_name) {
+  $data = config($config_name)->get();
+  if ($data === FALSE) {
+    drupal_set_message(t('Config !name does not exist in the system.', array('!name' => $config_name)), 'error');
+    return;
+  }
+  if (empty($data)) {
+    drupal_set_message(t('Config !name exists but has no data.', array('!name' => $config_name)), 'warning');
+    return;
+  }
+  $dumper = new Dumper();
+  // Set Yaml\Dumper's default indentation for nested nodes/collections to
+  // 2 spaces for consistency with Drupal coding standards.
+  $dumper->setIndentation(2);
+  // The level where you switch to inline YAML is set to PHP_INT_MAX to
+  // ensure this does not occur.
+  $output = $dumper->dump($data, PHP_INT_MAX);
+
+  $form['name'] = array(
+    '#type' => 'value',
+    '#value' => $config_name,
+  );
+
+  $form['value'] = array(
+    '#type' => 'item',
+    '#title' => t('Old value for %variable', array('%variable' => $config_name)),
+    '#markup' => dpr($output, TRUE),
+  );
+
+  $form['new'] = array(
+    '#type' => 'textarea',
+    '#title' => t('New value'),
+    '#default_value' => $output,
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  $form['actions']['cancel'] = array(
+    '#type' => 'link',
+    '#title' => t('Cancel'),
+    '#href' => 'devel/config',
+  );
+
+  return $form;
+}
+
+/**
+ * Submit handler for edit config variable form
+ *
+ * @see devel_config_system_edit()
+ */
+function devel_config_system_edit_form_submit($form, &$form_state) {
+  $parser = new Parser();
+  $new_config = $parser->parse($form_state['values']['new']);
+  config($form_state['values']['name'])->setData($new_config)->save();
+
+  drupal_set_message(t('Configuration variable %variable was successfully saved.', array('%variable' => $form_state['values']['name'])));
+
+  $form_state['redirect'] = 'devel/config';
+}
+
+/**
+ * Page callback that lists all the state variables.
+ */
+function devel_state_system_page() {
+  $page['states'] = array(
+    '#type' => 'table',
+    '#header' => array(
+      'name' => array('data' => t('Name'), 'field' => 'name', 'sort' => 'asc'),
+      'value' => array('data' => t('Value'), 'field' => 'value'),
+      'edit' => array('data' => t('Operations')),
+    ),
+    '#empty' => t('No state variables.'),
+  );
+
+  // Get all states from the KeyValueStorage and put them in the table.
+  foreach (state()->getAll() as $state_name => $state) {
+    $page['states'][$state_name] = array(
+      'name' => array('#markup' => $state_name),
+      // Output value in krumo if necessary with kprint_r.
+      'value' => array('#markup' => kprint_r($state, TRUE)),
+      'edit' => array(
+        '#type' => 'link',
+        '#title' => t('Edit'),
+        '#href' => 'devel/state/edit/' . $state_name,
+      ),
+    );
+  }
+
+  return $page;
+}
+
+/**
+ * Form API form to edit a state.
+ *
+ * The user can only edit non-array and non-objec variables.
+ */
+function devel_state_system_edit_form($form, &$form_state, $key) {
+  // Get the old value
+  $old_value = state()->get($key);
+  // First we will show the user the content of the variable about to be edited
+  $form['old_value'] = array(
+    '#type' => 'item',
+    '#title' => t('Old value for %name', array('%name' => $key)),
+    '#markup' => kprint_r($old_value, TRUE),
+  );
+  // Store in the form the name of the state variable
+  $form['state_name'] = array(
+    '#type' => 'hidden',
+    '#value' => $key,
+  );
+
+  // Only simple structures are allowed to be editted.
+  $disabled = !_devel_check_object($old_value);
+  // Set the transport format for the new value. Values:
+  //  - plain
+  //  - yaml
+  $form['transport'] = array(
+    '#type' => 'hidden',
+    '#value' => 'plain',
+  );
+  if (is_array($old_value)) {
+    $dumper = new Dumper();
+    // Set Yaml\Dumper's default indentation for nested nodes/collections to
+    // 2 spaces for consistency with Drupal coding standards.
+    $dumper->setIndentation(2);
+    // The level where you switch to inline YAML is set to PHP_INT_MAX to
+    // ensure this does not occur.
+    $old_value = $dumper->dump($old_value, PHP_INT_MAX);
+    $form['transport']['#value'] = 'yaml';
+  }
+  $form['new_value'] = array(
+    '#type' => 'textarea',
+    '#title' => t('New value'),
+    '#default_value' => $disabled ? '' : $old_value,
+    '#disabled' => $disabled,
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+  $form['actions']['cancel'] = array(
+    '#type' => 'link',
+    '#title' => t('Cancel'),
+    '#href' => 'devel/state',
+  );
+
+  return $form;
+}
+
+/**
+ * Helper function to determine if a variable is or contains an object.
+ *
+ * @param $data
+ *   Input data to check
+ * @return
+ *   TRUE if the variable is not an object and does not contain one.
+ */
+function _devel_check_object($data) {
+  if (is_object($data)) {
+    return FALSE;
+  }
+  if (is_array($data)) {
+    // If the current object is an array, then check recursively.
+    foreach ($data as $key => $value) {
+      // If there is an object the whole container is "contaminated"
+      if (!_devel_check_object($value)) {
+        return FALSE;
+      }
+    }
+  }
+  // All checks pass
+  return TRUE;
+}
+
+/**
+ * Submit callback for devel_state_system_edit_form
+ */
+function devel_state_system_edit_form_submit($form, &$form_state) {
+  // Save the state
+  $name = $form_state['values']['state_name'];
+  switch ($form_state['values']['transport']) {
+    case 'yaml':
+      $parser = new Parser();
+      $new_value = $parser->parse($form_state['values']['new_value']);
+      break;
+
+    default:
+      $new_value = $form_state['values']['new_value'];
+      break;
+  }
+  state()->set($name, $new_value);
+  $form_state['redirect'] = 'devel/state';
+  drupal_set_message(t('Variable %var was successfully edited.', array('%var' => $name)));
 }
 
 /**

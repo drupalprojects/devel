@@ -93,6 +93,50 @@ function devel_menu() {
     'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
   );
+  $items['devel/config'] = array(
+    'title' => 'Config editor',
+    'description' => 'Edit and delete config system variables',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devel_config_system_form'),
+    'access arguments' => array('access devel information'),
+    'file' => 'devel.pages.inc',
+    'menu_name' => 'devel',
+  );
+  $items['devel/config/%'] = array(
+    'title' => 'Config editor',
+    'description' => 'Edit and delete config system variables',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devel_config_system_form', 2),
+    'access arguments' => array('access devel information'),
+    'file' => 'devel.pages.inc',
+    'menu_name' => 'devel',
+  );
+  $items['devel/config/edit/%'] = array(
+    'title' => 'Edit configuration object: !config_name',
+    'title arguments' => array('!config_name' => 3),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devel_config_system_edit_form', 3),
+    'access arguments' => array('access devel information'),
+    'file' => 'devel.pages.inc',
+    'menu_name' => 'devel',
+  );
+  $items['devel/state'] = array(
+    'title' => 'State editor',
+    'description' => 'Edit and delete state system variables',
+    'page callback' => 'devel_state_system_page',
+    'access arguments' => array('access devel information'),
+    'file' => 'devel.pages.inc',
+    'menu_name' => 'devel',
+  );
+  $items['devel/state/edit/%'] = array(
+    'title' => 'Edit state variable: !state_name',
+    'title arguments' => array('!state_name' => 3),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('devel_state_system_edit_form', 3),
+    'access arguments' => array('access devel information'),
+    'file' => 'devel.pages.inc',
+    'menu_name' => 'devel',
+  );
   // We don't want the abbreviated version provided by status report.
   $items['devel/phpinfo'] = array(
     'title' => 'PHPinfo()',
