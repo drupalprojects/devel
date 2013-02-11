@@ -327,14 +327,14 @@ function devel_generate_links($num_links, $menus, $title_length, $link_types, $m
     // Pick a random menu.
     $menu_name = $menus[array_rand($menus)];
     // Build up our link.
-    $link = array(
+    $link = entity_create('menu_link', array(
       'menu_name'   => $menu_name,
       'options'     => array('devel' => TRUE),
       'weight'      => mt_rand(-50, 50),
       'mlid'        => 0,
       'link_title'  => devel_generate_word(mt_rand(2, max(2, $title_length))),
-    );
-    $link['options']['attributes']['title'] = t('Description of @title.', array('@title' => $link['link_title']));
+    ));
+    $link->options['attributes']['title'] = t('Description of @title.', array('@title' => $link->link_title));
 
     // For the first $max_width items, make first level links.
     if ($i <= $max_width) {
@@ -346,7 +346,7 @@ function devel_generate_links($num_links, $menus, $title_length, $link_types, $m
     }
     // Get a random parent link from the proper depth.
     do {
-      $link['plid'] = db_select('menu_links', 'm')
+      $link->plid = db_select('menu_links', 'm')
         ->fields('m', array('mlid'))
         ->condition('m.menu_name', $menus, 'IN')
         ->condition('m.depth', $depth)
@@ -355,9 +355,9 @@ function devel_generate_links($num_links, $menus, $title_length, $link_types, $m
         ->execute()
         ->fetchField();
       $depth--;
-    } while (!$link['plid'] && $depth > 0);
-    if (!$link['plid']) {
-      $link['plid'] = 0;
+    } while (!$link->plid && $depth > 0);
+    if (!$link->plid) {
+      $link->plid = 0;
     }
 
     $link_type = array_rand($link_types);
@@ -376,24 +376,24 @@ function devel_generate_links($num_links, $menus, $title_length, $link_types, $m
         $node = $select->execute()->fetchAssoc();
         if (isset($node['nid'])) {
           $nids[$menu_name][] = $node['nid'];
-          $link['link_path'] = $link['router_path'] = 'node/' . $node['nid'];
-          $link['link_title'] = $node['title'];
+          $link->link_path = $link->router_path = 'node/' . $node['nid'];
+          $link->link_title = $node['title'];
           break;
         }
       case 'external':
-        $link['link_path'] = 'http://www.example.com/';
+        $link->link_path = 'http://www.example.com/';
         break;
       case 'front':
-        $link['link_path'] = $link['router_path'] = '<front>';
+        $link->link_path = $link->router_path = '<front>';
         break;
       default:
-        $link['devel_link_type'] = $link_type;
+        $link->devel_link_type = $link_type;
         break;
     }
 
-    menu_link_save($link);
+    $link->save();
 
-    $links[$link['mlid']] = $link['link_title'];
+    $links[$link->id()] = $link->link_title;
   }
 
   return $links;
