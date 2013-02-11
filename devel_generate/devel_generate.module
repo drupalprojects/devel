@@ -378,7 +378,7 @@ function devel_generate_node_insert($node) {
         'source' => 'node/' . $node->nid,
         'alias' => 'node-' . $node->nid . '-' . $node->type,
       );
-      path_save($path);
+      drupal_container()->get('path.crud')->save($path['source'], $path['alias']);
     }
 
     // Add node statistics.
