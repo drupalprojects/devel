@@ -517,16 +517,62 @@ function backtrace_error_handler($error_level, $message, $filename, $line, $cont
     // Do what core does in common.inc.
     // (We need to duplicate the core code here rather than calling it
     // to avoid having the backtrace_error_handler() on top of the call stack.)
-    if ($error_level) {
-      $caller = _drupal_get_last_caller(debug_backtrace());
-      // We treat recoverable errors as fatal.
-      _drupal_log_error(array(
-        '%type' => $type[1],
-        '%message' => $message,
-        '%function' => $caller['function'],
-        '%file' => $caller['file'],
-        '%line' => $caller['line'],
-      ), $error_level == E_RECOVERABLE_ERROR);
+    if (function_exists('_drupal_get_last_caller') && function_exists('_drupal_log_error')) {
+      // Use the functions in the D6-core-simpletest.patch.
+      if ($error_level) {
+        $caller = _drupal_get_last_caller(debug_backtrace());
+        // We treat recoverable errors as fatal.
+        _drupal_log_error(array(
+          '%type' => $type[1],
+          '%message' => $message,
+          '%function' => $caller['function'],
+          '%file' => $caller['file'],
+          '%line' => $caller['line'],
+        ), $error_level == E_RECOVERABLE_ERROR);
+      }
+    }
+    else {
+      // Duplicate the drupal_error_handler() code.
+      $errno = $error_level;
+      // If the @ error suppression operator was used, error_reporting will have
+      // been temporarily set to 0.
+      if (error_reporting() == 0) {
+        return;
+      }
+
+      if ($errno & (E_ALL ^ E_DEPRECATED)) {
+        $types = array(1 => 'error', 2 => 'warning', 4 => 'parse error', 8 => 'notice', 16 => 'core error', 32 => 'core warning', 64 => 'compile error', 128 => 'compile warning', 256 => 'user error', 512 => 'user warning', 1024 => 'user notice', 2048 => 'strict warning', 4096 => 'recoverable fatal error');
+
+        // For database errors, we want the line number/file name of the place that
+        // the query was originally called, not _db_query().
+        if (isset($context[DB_ERROR])) {
+          $backtrace = array_reverse(debug_backtrace());
+
+          // List of functions where SQL queries can originate.
+          $query_functions = array('db_query', 'pager_query', 'db_query_range', 'db_query_temporary', 'update_sql');
+
+          // Determine where query function was called, and adjust line/file
+          // accordingly.
+          foreach ($backtrace as $index => $function) {
+            if (in_array($function['function'], $query_functions)) {
+              $line = $backtrace[$index]['line'];
+              $filename = $backtrace[$index]['file'];
+              break;
+            }
+          }
+        }
+
+        // Try to use filter_xss(). If it's too early in the bootstrap process for
+        // filter_xss() to be loaded, use check_plain() instead.
+        $entry = check_plain($types[$errno]) .': '. (function_exists('filter_xss') ? filter_xss($message) : check_plain($message)) .' in '. check_plain($filename) .' on line '. check_plain($line) .'.';
+
+        // Force display of error messages in update.php.
+        if (variable_get('error_level', 1) == 1 || strstr($_SERVER['SCRIPT_NAME'], 'update.php')) {
+          drupal_set_message($entry, 'error');
+        }
+
+        watchdog('php', '%message in %file on line %line.', array('%error' => $types[$errno], '%message' => $message, '%file' => $filename, '%line' => $line), WATCHDOG_ERROR);
+      }
     }
     return;
   }
