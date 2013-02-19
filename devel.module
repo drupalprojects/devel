@@ -845,7 +845,7 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
       $links[$account->uid] = array(
         'title' => drupal_placeholder(user_format_name($account)),
         'href' => $path,
-        'query' => array($dest, 'token' => drupal_get_token($path . '|' . $dest['destination'])),
+        'query' => $dest + array('token' => drupal_get_token($path . '|' . $dest['destination'])),
         'attributes' => array('title' => t('This user can switch back.')),
         'html' => TRUE,
         'last_access' => $account->access,
@@ -861,7 +861,7 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
         $links[$account->uid] = array(
           'title' => user_format_name($account),
           'href' => $path,
-          'query' => array($dest, 'token' => drupal_get_token($path . '|' . $dest['destination'])),
+          'query' => $dest + array('token' => drupal_get_token($path . '|' . $dest['destination'])),
           'attributes' => array('title' => t('Caution: this user will be unable to switch back.')),
           'last_access' => $account->access,
         );
@@ -873,7 +873,7 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
       $link = array(
         'title' => user_format_name(drupal_anonymous_user()),
         'href' => $path,
-        'query' => array($dest, 'token' => drupal_get_token($path . '/|' . $dest['destination'])),
+        'query' => $dest + array('token' => drupal_get_token($path . '/|' . $dest['destination'])),
         'attributes' => array('title' => t('Caution: the anonymous user will be unable to switch back.')),
       );
       if (user_access('switch users', drupal_anonymous_user())) {
