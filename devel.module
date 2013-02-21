@@ -811,7 +811,7 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
 
   $links = array();
   if (user_access('switch users', $user)) {
-    if ($include_anon = ($user->uid && $include_anon)) {
+    if ($include_anon) {
       --$list_size;
     }
     $dest = drupal_get_destination();
