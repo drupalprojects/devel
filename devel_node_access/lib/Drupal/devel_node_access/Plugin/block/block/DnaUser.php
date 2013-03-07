@@ -8,7 +8,7 @@ namespace Drupal\devel_node_access\Plugin\block\block;
 
 use Drupal\block\BlockBase;
 use Drupal\devel_node_access\DnaBlockBase;
-use Drupal\Core\Annotation\Plugin;
+use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
 use Drupal\block\Plugin\Core\Entity\Block;
 use Drupal\Component\Plugin\Discovery\DiscoveryInterface;
