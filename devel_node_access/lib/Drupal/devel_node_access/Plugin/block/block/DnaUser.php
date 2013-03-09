@@ -15,14 +15,14 @@ use Drupal\Component\Plugin\Discovery\DiscoveryInterface;
 
 /**
  * Provides the "Devel Node Access by User" block.
-*
-*
-* @Plugin(
-*   id = "devel_dna_user_block",
-*   admin_label = @Translation("Devel Node Access by User"),
-*   module = "devel_node_access"
-* )
-*/
+ *
+ *
+ * @Plugin(
+ *   id = "devel_dna_user_block",
+ *   admin_label = @Translation("Devel Node Access by User"),
+ *   module = "devel_node_access"
+ * )
+ */
 class DnaUser extends DnaBlockBase {
 
   /**
