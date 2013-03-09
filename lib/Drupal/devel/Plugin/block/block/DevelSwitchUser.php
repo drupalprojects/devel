@@ -11,15 +11,15 @@ use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
 
 /**
-* Provides a block for switching users.
-*
-*
-* @Plugin(
-*   id = "devel_switch_user",
-*   subject = @Translation("Switch user"),
-*   module = "devel"
-* )
-*/
+ * Provides a block for switching users.
+ *
+ *
+ * @Plugin(
+ *   id = "devel_switch_user",
+ *   admin_label = @Translation("Switch user"),
+ *   module = "devel"
+ * )
+ */
 class DevelSwitchUser extends BlockBase {
 
   /**

@@ -16,7 +16,7 @@ use Drupal\Core\Annotation\Translation;
  *
  * @Plugin(
  *   id = "devel_dna_node_block",
- *   subject = @Translation("Devel Node Access"),
+ *   admin_label = @Translation("Devel Node Access"),
  *   module = "devel_node_access"
  * )
  */

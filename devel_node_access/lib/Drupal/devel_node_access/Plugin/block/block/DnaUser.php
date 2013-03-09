@@ -19,7 +19,7 @@ use Drupal\Component\Plugin\Discovery\DiscoveryInterface;
 *
 * @Plugin(
 *   id = "devel_dna_user_block",
-*   subject = @Translation("Devel Node Access by User"),
+*   admin_label = @Translation("Devel Node Access by User"),
 *   module = "devel_node_access"
 * )
 */

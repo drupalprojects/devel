@@ -11,15 +11,15 @@ use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
 
 /**
-* Provides a block for executing PHP code.
-*
-*
-* @Plugin(
-*   id = "devel_execute_php",
-*   subject = @Translation("Execute PHP"),
-*   module = "devel"
-* )
-*/
+ * Provides a block for executing PHP code.
+ *
+ *
+ * @Plugin(
+ *   id = "devel_execute_php",
+ *   admin_label = @Translation("Execute PHP"),
+ *   module = "devel"
+ * )
+ */
 class DevelExecutePHP extends BlockBase {
 
   /**
