@@ -653,35 +653,6 @@ function devel_xhprof_is_enabled() {
 }
 
 /**
- * Implements hook_boot().
- *
- * Runs even for cached pages.
- */
-function devel_boot() {
-  // Initialize XHProf.
-  devel_xhprof_enable();
-
-  if (!devel_silent()) {
-    if (config('devel.settings')->get('memory')) {
-      global $memory_init;
-      $memory_init = memory_get_usage();
-    }
-
-    if (devel_query_enabled()) {
-      @include_once DRUPAL_ROOT . '/core/includes/database/log.inc';
-      Drupal\Core\Database\Database::startLog('devel');;
-    }
-  }
-
-  // We need user_access() in the shutdown function. make sure it gets loaded.
-  // Also prime the drupal_get_filename() static with user.module's location to
-  // avoid a stray query.
-  drupal_get_filename('module', 'user', 'core/modules/user/user.module');
-  drupal_load('module', 'user');
-  drupal_register_shutdown_function('devel_shutdown');
-}
-
-/**
  * Displays backtrace showing the route of calls to the current error.
  *
  * @param int $error_level
