@@ -148,7 +148,7 @@ function devel_field_info_page() {
   $output = kprint_r($info, TRUE, t('Fields'));
   $info = field_info_instances();
   $output .= kprint_r($info, TRUE, t('Instances'));
-  $info = field_info_bundles();
+  $info = entity_get_bundles();
   $output .= kprint_r($info, TRUE, t('Bundles'));
   $info = field_info_field_types();
   $output .= kprint_r($info, TRUE, t('Field types'));
