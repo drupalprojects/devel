@@ -5,11 +5,13 @@
  * Functions needed for devel_generate Fields API integration.
  */
 
+use Drupal\Core\Entity\EntityInterface;
+
 /**
  * Enrich the $object that is about to be saved with arbitrary
  * information in each of its fields.
  **/
-function devel_generate_fields(&$object, $obj_type, $bundle) {
+function devel_generate_fields(EntityInterface &$object, $obj_type, $bundle) {
   $field_types = field_info_field_types();
   $instances = field_info_instances($obj_type, $bundle);
   $skips = function_exists('drush_get_option') ? drush_get_option('skip-fields', '') : @$_REQUEST['skip-fields'];
@@ -61,7 +63,7 @@ function devel_generate_fields(&$object, $obj_type, $bundle) {
       }
     }
     $field_name = $field['field_name'];
-    $object->{$field_name}[$object->langcode] = $object_field;
+    $object->set($field_name, $object_field);
   }
 }
 
