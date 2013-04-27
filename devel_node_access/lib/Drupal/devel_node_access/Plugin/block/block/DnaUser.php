@@ -33,9 +33,9 @@ class DnaUser extends DnaBlockBase {
   }
 
   /**
-   * Implements \Drupal\block\BlockBase::build().
+   * Implements \Drupal\block\BlockBase:::blockBuild().
    */
-  public function build() {
+  public function blockBuild() {
     $form_state = array();
     $form_state['build_info']['args'] = array();
     $form_state['build_info']['callback'] = array($this, 'buildForm');
