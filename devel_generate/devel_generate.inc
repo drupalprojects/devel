@@ -226,7 +226,7 @@ function devel_generate_terms($records, $vocabs, $maxlength = 12) {
 
       // Limit memory usage. Only report first 20 created terms.
       if ($i < 20) {
-        $terms[] = $term->name;
+        $terms[] = $term->name->value;
       }
 
       unset($term);
