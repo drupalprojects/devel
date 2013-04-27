@@ -75,9 +75,9 @@ class DevelSwitchUser extends BlockBase {
   }
 
   /**
-   * Implements \Drupal\block\BlockBase::build().
+   * Implements \Drupal\block\BlockBase::blockBuild().
    */
-  public function build() {
+  public function blockBuild() {
     $links = $this->switchUserList();
     if (!empty($links)) {
       drupal_add_css(drupal_get_path('module', 'devel') . '/css/devel.css');
