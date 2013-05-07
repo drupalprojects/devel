@@ -132,7 +132,7 @@ function devel_generate_vocabs($records, $maxlength = 12, $types = array('page',
   // Insert new data:
   for ($i = 1; $i <= $records; $i++) {
     $name = devel_generate_word(mt_rand(2, $maxlength));
-    $voc = entity_create('taxonomy_vocabulary', array(
+    $vocabulary = entity_create('taxonomy_vocabulary', array(
       'name' => $name,
       'vid' => drupal_strtolower($name),
       'langcode' => LANGUAGE_NOT_SPECIFIED,
@@ -143,10 +143,10 @@ function devel_generate_vocabs($records, $maxlength = 12, $types = array('page',
       'required' => 0,
       'relations' => 1,
     ));
-    taxonomy_vocabulary_save($voc);
-    $vocs[] = $voc->name;
+    $vocabulary->save();
+    $vocs[] = $vocabulary->name;
 
-    unset($voc);
+    unset($vocabulary);
   }
   return $vocs;
 }
@@ -213,7 +213,7 @@ function devel_generate_terms($records, $vocabs, $maxlength = 12) {
     module_load_include('inc', 'devel_generate', 'devel_generate.fields');
     devel_generate_fields($term, 'taxonomy_term', $values['vocabulary_machine_name']);
 
-    if ($status = taxonomy_term_save($term)) {
+    if ($status = $term->save()) {
       $max += 1;
       if (function_exists('drush_log')) {
         $feedback = drush_get_option('feedback', 1000);
@@ -256,15 +256,15 @@ function devel_generate_delete_vocabulary_terms($vid) {
   foreach (taxonomy_get_tree($vid) as $term) {
     $tids[] = $term->tid;
   }
-  taxonomy_term_delete_multiple($tids);
+  entity_delete_multiple('taxonomy_term', $tids);;
 }
 
 /**
  * Deletes all vocabularies.
  */
 function devel_generate_delete_vocabularies() {
-  foreach (taxonomy_vocabulary_load_multiple() as $vid => $vocab) {
-    taxonomy_vocabulary_delete($vid);
+  foreach (taxonomy_vocabulary_load_multiple() as $vid => $vocabulary) {
+    $vocabulary->delete();
   }
 }
 
