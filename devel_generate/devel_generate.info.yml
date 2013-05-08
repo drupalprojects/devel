@@ -1,4 +1,5 @@
 name: 'Devel generate'
+type: module
 description: 'Generate dummy users, nodes, and taxonomy terms.'
 package: Development
 core: 8.x
