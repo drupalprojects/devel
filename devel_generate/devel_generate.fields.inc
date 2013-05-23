@@ -63,7 +63,13 @@ function devel_generate_fields(EntityInterface &$object, $obj_type, $bundle) {
       }
     }
     $field_name = $field['field_name'];
-    $object->set($field_name, $object_field);
+    // @todo Remove once all entities converted. http://drupal.org/node/1346214
+    if (is_a($object, 'Drupal\Core\Entity\EntityNG')) {
+      $object->set($field_name, $object_field);
+    }
+    else {
+      $object->{$field_name}[$object->langcode] = $object_field;
+    }
   }
 }
 

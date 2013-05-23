@@ -619,6 +619,10 @@ function devel_generate_content_add_node(&$results) {
   else {
     $edit_node['title'] = '';
   }
+  // @todo Remove once comment become field. http://drupal.org/node/731724
+  if (Drupal::moduleHandler()->moduleExists('comment')) {
+    $edit_node['comment'] = variable_get('comment_' . $node_type, COMMENT_NODE_OPEN);
+  }
   $node = entity_create('node', $edit_node);
 
   // A flag to let hook_node_insert() implementations know that this is a
