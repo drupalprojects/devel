@@ -56,7 +56,8 @@ class DevelMailTest extends WebTestBase {
     $this->assertEqual($content, 'From: postmaster@example.com
 X-stupid: dumb
 To: drupal@example.com
-Test mail
+Subject: Test mail
+
 I am the body of this message');
   }
 }
