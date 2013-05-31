@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Language\Language;
+
 /**
  * Generate some random users.
  *
@@ -115,7 +117,7 @@ function devel_generate_add_comments($node, $users, $max_comments, $title_length
       'timestamp' => mt_rand($node->created, REQUEST_TIME),
       'subject' => substr(devel_create_greeking(mt_rand(2, $title_length), TRUE), 0, 63),
       'uid' => $users[array_rand($users)],
-      'langcode' => LANGUAGE_NOT_SPECIFIED,
+      'langcode' => Language::LANGCODE_NOT_SPECIFIED,
       'pid' => $pid,
     ));
 
@@ -135,7 +137,7 @@ function devel_generate_vocabs($records, $maxlength = 12, $types = array('page',
     $vocabulary = entity_create('taxonomy_vocabulary', array(
       'name' => $name,
       'vid' => drupal_strtolower($name),
-      'langcode' => LANGUAGE_NOT_SPECIFIED,
+      'langcode' => Language::LANGCODE_NOT_SPECIFIED,
       'description' => "description of $name",
       'hierarchy' => 1,
       'weight' => mt_rand(0, 10),
@@ -206,7 +208,7 @@ function devel_generate_terms($records, $vocabs, $maxlength = 12) {
     $values['description'] = "description of " . $values['name'];
     $values['format'] = filter_fallback_format();
     $values['weight'] = mt_rand(0, 10);
-    $values['langcode'] = LANGUAGE_NOT_SPECIFIED;
+    $values['langcode'] = Language::LANGCODE_NOT_SPECIFIED;
     $term = entity_create('taxonomy_term', $values);
 
     // Populate all core fields on behalf of field.module
@@ -649,5 +651,5 @@ function devel_generate_get_langcode($results) {
   else {
     $langcode = language_default()->langcode;
   }
-  return $langcode == 'en' ? LANGUAGE_NOT_SPECIFIED : $langcode;
+  return $langcode == 'en' ? Language::LANGCODE_NOT_SPECIFIED : $langcode;
 }

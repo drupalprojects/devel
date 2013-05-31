@@ -10,6 +10,7 @@ use Drupal\block\BlockBase;
 use Drupal\devel_node_access\DnaBlockBase;
 use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
+use Drupal\Core\Language\Language;
 
 /**
  * Provides the "Devel Node Access" block.
@@ -819,7 +820,7 @@ class DnaNode extends DnaBlockBase {
   private static function get_node_title($node, $clip_and_decorate = FALSE) {
     if (isset($node)) {
       if (isset($node->title)) {
-        $node_title = check_plain(!is_array($node->title) ? $node->title : $node->title[LANGUAGE_NOT_SPECIFIED][0]['value']);
+        $node_title = check_plain(!is_array($node->title) ? $node->title : $node->title[Language::LANGCODE_NOT_SPECIFIED][0]['value']);
         if ($clip_and_decorate) {
           if (drupal_strlen($node_title) > 20) {
             $node_title = "<span title='node/$node->nid: $node_title'>" . drupal_substr($node_title, 0, 15) . '...</span>';

@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Language\Language;
+
 /**
  * Implements hook_menu().
  */
@@ -212,7 +214,7 @@ function devel_generate_content_form() {
   );
 
   unset($options);
-  $options[LANGUAGE_NOT_SPECIFIED] = t('Language neutral');
+  $options[Language::LANGCODE_NOT_SPECIFIED] = t('Language neutral');
   if (module_exists('locale')) {
     $languages = language_list();
     foreach ($languages as $langcode => $language) {
@@ -226,7 +228,7 @@ function devel_generate_content_form() {
     '#disabled' => !module_exists('locale'),
     '#description' => t('Requires locale.module'),
     '#options' => $options,
-    '#default_value' => array(LANGUAGE_NOT_SPECIFIED),
+    '#default_value' => array(Language::LANGCODE_NOT_SPECIFIED),
   );
 
   $form['submit'] = array(
