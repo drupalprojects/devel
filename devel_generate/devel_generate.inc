@@ -364,7 +364,7 @@ function devel_generate_links($num_links, $menus, $title_length, $link_types, $m
     switch ($link_types[$link_type]) {
       case 'node':
         // Grab a random node ID.
-        $select = db_select('node', 'n')
+        $select = db_select('node_field_data', 'n')
           ->fields('n', array('nid', 'title'))
           ->condition('n.status', 1)
           ->range(0, 1)
