@@ -564,7 +564,7 @@ function devel_generate_content_kill($values) {
   }
 
   if (!empty($nids)) {
-    node_delete_multiple($nids);
+    entity_delete_multiple('node', $nids);
     drupal_set_message(t('Deleted %count nodes.', array('%count' => count($nids))));
   }
 }
@@ -637,7 +637,7 @@ function devel_generate_content_add_node(&$results) {
 
   // See devel_generate_node_insert() for actions that happen before and after
   // this save.
-  node_save($node);
+  $node->save();
 }
 
 /*
