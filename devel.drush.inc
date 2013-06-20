@@ -72,6 +72,28 @@ function devel_drush_command() {
     'core' => array(7), // Remove once 3.0 is released.
     //@todo support --format option for json, csv, etc.
   );
+
+  $items['devel-container-services'] = array(
+    'description' => 'Get a list of available container services.',
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_FULL,
+    'core' => array('8+'),
+    'aliases' => array('dcs'),
+    'options' => array(
+      'format' => 'Format to output. Allowed values are: json, export, html.',
+    ),
+    'arguments' => array(
+      'prefix' => 'A prefix to filter the service list by.',
+    ),
+    'examples' => array(
+      'drush container-services' => 'Gets a list of all available container services',
+      'drush container-services plugin.manager' => 'Get all services containing "plugin.manager"',
+    ),
+    'outputformat' => array(
+      'default' => 'list',
+      'pipe-format' => 'export',
+    ),
+  );
+
   return $items;
 }
 
@@ -243,4 +265,30 @@ function _drush_devel_print_function($file, $start_line, $end_line) {
     ++$line_num;
     drush_print(rtrim($line));
   }
+}
+
+/**
+ * Command callback to list available container services.
+ */
+function drush_devel_container_services($prefix = NULL) {
+  $container = Drupal::getContainer();
+
+  if (empty($container)) {
+    return drush_set_error(dt('No container was found.'));
+  }
+
+  // Get a list of all available service IDs.
+  $services = $container->getServiceIds();
+
+  // If there is a prefix, try to find matches.
+  if (isset($prefix)) {
+    $services = preg_grep("/$prefix/", $services);
+  }
+
+  if (empty($services)) {
+    return drush_log(dt('No container services found.'), 'ok');
+  }
+
+  sort($services);
+  return $services;
 }
