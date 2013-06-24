@@ -2,6 +2,8 @@
 
 define('DEVEL_GENERATE_IMAGE_MAX', 5);
 
+use Drupal\file\Plugin\Core\Entity\File;
+
 function image_devel_generate($object, $field, $instance, $bundle) {
   if (function_exists('imagejpeg')) {
     $devel_generate_image_function = variable_get('devel_generate_image_function', '_image_devel_generate');
@@ -25,20 +27,20 @@ function _image_devel_generate($object, $field, $instance, $bundle) {
   $max_resolution = empty($instance['settings']['max_resolution']) ? '600x600' : $instance['settings']['max_resolution'];
   $extensions = array_intersect(explode(' ', $instance['settings']['file_extensions']), array('png', 'gif', 'jpg', 'jpeg'));
   $extension = array_rand(drupal_map_assoc($extensions));
-
   // Generate a max of 5 different images.
   if (!isset($images[$extension][$min_resolution][$max_resolution]) || count($images[$extension][$min_resolution][$max_resolution]) <= DEVEL_GENERATE_IMAGE_MAX) {
     if ($path = devel_generate_image($extension, $min_resolution, $max_resolution)) {
-      $source = entity_create('file', array());
-      $source->uri = $path;
-      $source->uid = 1; // TODO: randomize? Use case specific.
-      $source->filemime = 'image/' . pathinfo($path, PATHINFO_EXTENSION);
-      $source->filename = drupal_basename($path);
+      $account = user_load(1);
+      $image = entity_create('file', array());
+      $image->setFileUri($path);
+      $image->setOwner($account);
+      $image->setMimeType('image/' . pathinfo($path, PATHINFO_EXTENSION));
+      $image->setFileName(drupal_basename($path));
       $destination_dir = $field['settings']['uri_scheme'] . '://' . $instance['settings']['file_directory'];
       file_prepare_directory($destination_dir, FILE_CREATE_DIRECTORY);
       $destination = $destination_dir . '/' . basename($path);
-      $file = file_move($source, $destination, FILE_CREATE_DIRECTORY);
-      $images[$extension][$min_resolution][$max_resolution][$file->fid] = $file;
+      $file = file_move($image, $destination, FILE_CREATE_DIRECTORY);
+      $images[$extension][$min_resolution][$max_resolution][$file->id()] = $file;
     }
     else {
       return FALSE;
@@ -46,11 +48,11 @@ function _image_devel_generate($object, $field, $instance, $bundle) {
   }
   else {
     // Select one of the images we've already generated for this field.
-    $file = new stdClass();
-    $file->fid = array_rand($images[$extension][$min_resolution][$max_resolution]);
+    $image_index = array_rand($images[$extension][$min_resolution][$max_resolution]);
+    $file = $images[$extension][$min_resolution][$max_resolution][$image_index];
   }
 
-  $object_field['fid'] = $file->fid;
+  $object_field['fid'] = $file->id();
   $object_field['alt'] = devel_create_greeking(4);
   $object_field['title'] = devel_create_greeking(4);
   return $object_field;
@@ -89,6 +91,6 @@ function devel_generate_image($extension = 'png', $min_resolution, $max_resoluti
 
     $save_function = 'image'. ($extension == 'jpg' ? 'jpeg' : $extension);
     $save_function($im, drupal_realpath($destination));
+    return $destination;
   }
-  return $destination;
 }
