@@ -30,7 +30,7 @@ function _taxonomy_devel_generate($object, $field, $instance, $bundle) {
     if ($tid === FALSE) {
       return NULL;
     }
-    $object_field['tid'] = (int) $tid;
+    $object_field['target_id'] = (int) $tid;
     return $object_field;
   }
 }
