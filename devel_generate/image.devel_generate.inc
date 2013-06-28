@@ -52,7 +52,7 @@ function _image_devel_generate($object, $field, $instance, $bundle) {
     $file = $images[$extension][$min_resolution][$max_resolution][$image_index];
   }
 
-  $object_field['fid'] = $file->id();
+  $object_field['target_id'] = $file->id();
   $object_field['alt'] = devel_create_greeking(4);
   $object_field['title'] = devel_create_greeking(4);
   return $object_field;

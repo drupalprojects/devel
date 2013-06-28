@@ -33,7 +33,7 @@ function _file_devel_generate($object, $field, $instance, $bundle) {
     return FALSE;
   }
   else {
-    $object_field['fid'] = $file->fid;
+    $object_field['target_id'] = $file->id();
     $object_field['display'] = $field['settings']['display_default'];
     $object_field['description'] = devel_create_greeking(10);
 
