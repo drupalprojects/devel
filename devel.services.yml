@@ -1,0 +1,6 @@
+services:
+  devel.event_subscriber:
+    class: Drupal\devel\EventSubscriber\DevelEventSubscriber
+    arguments: ['@config.factory']
+    tags:
+      - { name: event_subscriber }
