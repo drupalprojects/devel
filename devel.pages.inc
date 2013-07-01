@@ -401,7 +401,7 @@ function devel_state_system_page() {
   );
 
   // Get all states from the KeyValueStorage and put them in the table.
-  foreach (state()->getAll() as $state_name => $state) {
+  foreach (Drupal::state()->getAll() as $state_name => $state) {
     $page['states'][$state_name] = array(
       'name' => array('#markup' => $state_name),
       // Output value in krumo if necessary with kprint_r.
@@ -424,7 +424,7 @@ function devel_state_system_page() {
  */
 function devel_state_system_edit_form($form, &$form_state, $key) {
   // Get the old value
-  $old_value = state()->get($key);
+  $old_value = Drupal::state()->get($key);
   // First we will show the user the content of the variable about to be edited
   $form['old_value'] = array(
     '#type' => 'item',
@@ -515,7 +515,7 @@ function devel_state_system_edit_form_submit($form, &$form_state) {
       $new_value = $form_state['values']['new_value'];
       break;
   }
-  state()->set($name, $new_value);
+  Drupal::state()->set($name, $new_value);
   $form_state['redirect'] = 'devel/state';
   drupal_set_message(t('Variable %var was successfully edited.', array('%var' => $name)));
 }
