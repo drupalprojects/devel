@@ -38,17 +38,16 @@ function devel_generate_fields(EntityInterface &$object, $obj_type, $bundle) {
       }
     }
     for ($i = 0; $i <= $max; $i++) {
-      $module = $field_types[$field['type']]['module'];
-
+      $provider = $field_types[$field['type']]['provider'];
       // Include any support file that might exist for this field.
-      if (in_array($module, array('file', 'image', 'taxonomy', 'number', 'text', 'comment', 'list', 'email', 'link'))) {
+      if (in_array($provider, array('file', 'image', 'taxonomy', 'number', 'text', 'comment', 'options', 'email', 'link'))) {
         // devel_generate implements on behalf of core and special friends.
-        module_load_include('inc', 'devel_generate', "$module.devel_generate");
+        module_load_include('inc', 'devel_generate', "$provider.devel_generate");
       }
       else {
-        module_load_include('inc', $module, "$module.devel_generate");
+        module_load_include('inc', $provider, "$provider.devel_generate");
       }
-      $function = $module . '_devel_generate';
+      $function = $provider . '_devel_generate';
       if (function_exists($function)) {
         if ($result = $function($object, $field, $instance, $bundle)) {
           if (field_behaviors_widget('multiple values', $instance) == FIELD_BEHAVIOR_CUSTOM) {
