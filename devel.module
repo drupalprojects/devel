@@ -137,15 +137,6 @@ function devel_menu() {
     'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
   );
-  // We don't want the abbreviated version provided by status report.
-  $items['devel/phpinfo'] = array(
-    'title' => 'PHPinfo()',
-    'description' => 'View your server\'s PHP configuration',
-    'page callback' => 'devel_phpinfo',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
-    'menu_name' => 'devel',
-  );
   $items['devel/php'] = array(
     'title' => 'Execute PHP Code',
     'description' => 'Execute some PHP code',
