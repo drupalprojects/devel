@@ -369,7 +369,7 @@ function devel_generate_node_insert($node) {
   if (isset($node->devel_generate)) {
     $results = $node->devel_generate;
 
-    if (!empty($results['max_comments']) && $node->comment >= COMMENT_NODE_OPEN) {
+    if (!empty($results['max_comments']) && $node->comment->value >= COMMENT_NODE_OPEN) {
       devel_generate_add_comments($node, $results['users'], $results['max_comments'], $results['title_length']);
     }
 
@@ -377,8 +377,8 @@ function devel_generate_node_insert($node) {
     // Add an url alias. Cannot happen before save because we don't know the nid.
     if (!empty($results['add_alias'])) {
       $path = array(
-        'source' => 'node/' . $node->nid,
-        'alias' => 'node-' . $node->nid . '-' . $node->type,
+        'source' => 'node/' . $node->id(),
+        'alias' => 'node-' . $node->id() . '-' . $node->bundle(),
       );
       drupal_container()->get('path.crud')->save($path['source'], $path['alias']);
     }

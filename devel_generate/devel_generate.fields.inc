@@ -11,16 +11,15 @@ use Drupal\Core\Entity\EntityInterface;
  * Enrich the $object that is about to be saved with arbitrary
  * information in each of its fields.
  **/
-function devel_generate_fields(EntityInterface &$object, $obj_type, $bundle) {
+function devel_generate_fields(EntityInterface &$object, $entity_type, $bundle) {
   $field_types = field_info_field_types();
-  $instances = field_info_instances($obj_type, $bundle);
+  $instances = field_info_instances($entity_type, $bundle);
   $skips = function_exists('drush_get_option') ? drush_get_option('skip-fields', '') : @$_REQUEST['skip-fields'];
   foreach (explode(',', $skips) as $skip) {
     unset($instances[$skip]);
   }
   foreach ($instances as $instance) {
-    $field_name = $instance['field_name'];
-    $field = field_info_field($field_name);
+    $field = $instance->getField();
 
     $object_field = array();
     // If module handles own multiples, then only call its hook once.

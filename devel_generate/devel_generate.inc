@@ -100,21 +100,21 @@ function devel_generate_add_comments($node, $users, $max_comments, $title_length
   for ($i = 1; $i <= $num_comments; $i++) {
     switch ($i % 3) {
       case 1:
-        $pid = db_query_range("SELECT cid FROM {comment} WHERE pid = 0 AND nid = :nid ORDER BY RAND()", 0, 1, array(':nid' => $node->nid))->fetchField();
+        $pid = db_query_range("SELECT cid FROM {comment} WHERE pid = 0 AND nid = :nid ORDER BY RAND()", 0, 1, array(':nid' => $node->id()))->fetchField();
         break;
       case 2:
-        $pid = db_query_range("SELECT cid FROM {comment} WHERE pid > 0 AND nid = :nid ORDER BY RAND()", 0, 1, array(':nid' => $node->nid))->fetchField();
+        $pid = db_query_range("SELECT cid FROM {comment} WHERE pid > 0 AND nid = :nid ORDER BY RAND()", 0, 1, array(':nid' => $node->id()))->fetchField();
         break;
       default:
         $pid = 0;
     }
 
     $comment = entity_create('comment', array(
-      'nid' => $node->nid,
+      'nid' => $node->id(),
       'cid' => NULL,
       'name' => 'devel generate',
       'mail' => 'devel_generate@example.com',
-      'timestamp' => mt_rand($node->created, REQUEST_TIME),
+      'timestamp' => mt_rand($node->created->value, REQUEST_TIME),
       'subject' => substr(devel_create_greeking(mt_rand(2, $title_length), TRUE), 0, 63),
       'uid' => $users[array_rand($users)],
       'langcode' => Language::LANGCODE_NOT_SPECIFIED,
@@ -123,7 +123,7 @@ function devel_generate_add_comments($node, $users, $max_comments, $title_length
 
     // Populate all core fields on behalf of field.module
     module_load_include('inc', 'devel_generate', 'devel_generate.fields');
-    devel_generate_fields($comment, 'comment', 'comment_node_' . $node->type);
+    devel_generate_fields($comment, 'comment', 'comment_node_' . $node->bundle());
     $comment->save();
   }
 }
@@ -539,7 +539,7 @@ function devel_get_users() {
  */
 function devel_generate_add_statistics($node) {
   $statistic = array(
-    'nid' => $node->nid,
+    'nid' => $node->id(),
     'totalcount' => mt_rand(0, 500),
     'timestamp' => REQUEST_TIME - mt_rand(0, $node->created),
   );
@@ -633,7 +633,7 @@ function devel_generate_content_add_node(&$results) {
 
   // Populate all core fields on behalf of field.module
   module_load_include('inc', 'devel_generate', 'devel_generate.fields');
-  devel_generate_fields($node, 'node', $node->type);
+  devel_generate_fields($node, 'node', $node->bundle());
 
   // See devel_generate_node_insert() for actions that happen before and after
   // this save.
