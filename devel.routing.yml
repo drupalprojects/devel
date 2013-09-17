@@ -1,5 +1,5 @@
 devel_admin_settings:
-  pattern: 'admin/config/development/devel'
+  path: 'admin/config/development/devel'
   defaults:
     _form: '\Drupal\devel\Form\SettingsForm'
   requirements:
