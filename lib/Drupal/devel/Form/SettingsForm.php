@@ -8,7 +8,7 @@
 namespace Drupal\devel\Form;
 
 use Drupal\Component\Utility\MapArray;
-use Drupal\Core\Config\ConfigFactory;
+use Drupal\Core\Form\ConfigFormBase;
 use Drupal\system\SystemConfigFormBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Defines a form that configures devel settings.
  */
-class SettingsForm extends SystemConfigFormBase {
+class SettingsForm extends ConfigFormBase {
 
   /**
    * {@inheritdoc}
