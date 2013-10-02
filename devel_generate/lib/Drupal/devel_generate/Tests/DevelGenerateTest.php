@@ -61,8 +61,8 @@ class DevelGenerateTest extends WebTestBase {
       'title_length' => 12,
       'kill_taxonomy' => 1,
     );
-    $this->drupalPost('admin/config/development/generate/vocabs',
-                      $edit, t('Generate'));
+    $this->drupalPostForm('admin/config/development/generate/vocabs',
+                          $edit, t('Generate'));
     $this->assertText(t('Deleted existing vocabularies.'));
     $this->assertText(t('Created the following new vocabularies:'));
 
@@ -75,8 +75,8 @@ class DevelGenerateTest extends WebTestBase {
       'title_length' => 12,
       'kill_taxonomy' => 1,
     );
-    $this->drupalPost('admin/config/development/generate/taxonomy',
-                      $edit, t('Generate'));
+    $this->drupalPostForm('admin/config/development/generate/taxonomy',
+                          $edit, t('Generate'));
     $this->assertText(t('Deleted existing terms.'));
     $this->assertText(t('Created the following new terms: '));
 
@@ -93,8 +93,8 @@ class DevelGenerateTest extends WebTestBase {
       'max_width' => 6,
       'kill' => 1,
     );
-    $this->drupalPost('admin/config/development/generate/menu',
-                      $edit, t('Generate'));
+    $this->drupalPostForm('admin/config/development/generate/menu',
+                          $edit, t('Generate'));
     $this->assertText(t('Deleted existing menus and links.'));
     $this->assertText(t('Created the following new menus:'));
     $this->assertText(t('Created 50 new menu links.'));
@@ -112,7 +112,7 @@ class DevelGenerateTest extends WebTestBase {
       'max_comments' => 3,
       'title_length' => 4,
     );
-    $this->drupalPost('admin/config/development/generate/content', $edit, t('Generate'));
+    $this->drupalPostForm('admin/config/development/generate/content', $edit, t('Generate'));
     $this->assertText(t('Deleted 1 nodes.'));
     $this->assertText(t('Finished creating 2 nodes'));
   }
