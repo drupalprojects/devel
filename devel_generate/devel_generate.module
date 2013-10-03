@@ -131,7 +131,7 @@ function devel_generate_content_form() {
         'type' => array('#markup' => t($type->name)),
       );
       if (module_exists('comment')) {
-        $default = variable_get('comment_' . $type->type, COMMENT_NODE_OPEN);
+        $default = variable_get('comment_' . $type->type, COMMENT_OPEN);
         $map = array(t('Hidden'), t('Closed'), t('Open'));
         $options[$type->type]['comments'] = array('#markup' => '<small>'. $map[$default]. '</small>');
       }
@@ -369,7 +369,7 @@ function devel_generate_node_insert($node) {
   if (isset($node->devel_generate)) {
     $results = $node->devel_generate;
 
-    if (!empty($results['max_comments']) && $node->comment->value >= COMMENT_NODE_OPEN) {
+    if (!empty($results['max_comments']) && $node->comment->value >= COMMENT_OPEN) {
       devel_generate_add_comments($node, $results['users'], $results['max_comments'], $results['title_length']);
     }
 
