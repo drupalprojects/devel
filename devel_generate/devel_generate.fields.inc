@@ -6,14 +6,15 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\field\Field;
 
 /**
  * Enrich the $object that is about to be saved with arbitrary
  * information in each of its fields.
  **/
-function devel_generate_fields(EntityInterface &$object, $entity_type, $bundle) {
-  $field_types = field_info_field_types();
-  $instances = field_info_instances($entity_type, $bundle);
+function devel_generate_fields(EntityInterface &$object, $entity_type, $bundle_name) {
+  $instances = Field::fieldInfo()->getBundleInstances($entity_type, $bundle_name);
+  $field_types = \Drupal::service('plugin.manager.entity.field.field_type')->getDefinitions();
   $skips = function_exists('drush_get_option') ? drush_get_option('skip-fields', '') : @$_REQUEST['skip-fields'];
   foreach (explode(',', $skips) as $skip) {
     unset($instances[$skip]);
@@ -48,7 +49,7 @@ function devel_generate_fields(EntityInterface &$object, $entity_type, $bundle) 
       }
       $function = $provider . '_devel_generate';
       if (function_exists($function)) {
-        if ($result = $function($object, $field, $instance, $bundle)) {
+        if ($result = $function($object, $field, $instance, $bundle_name)) {
           if (field_behaviors_widget('multiple values', $instance) == FIELD_BEHAVIOR_CUSTOM) {
             // Fields that handle their own multiples will add their own deltas.
             $object_field = $result;
@@ -61,13 +62,7 @@ function devel_generate_fields(EntityInterface &$object, $entity_type, $bundle) 
       }
     }
     $field_name = $field['field_name'];
-    // @todo Remove once all entities converted. http://drupal.org/node/1346214
-    if (is_a($object->getNGEntity(), 'Drupal\Core\Entity\EntityNG')) {
-      $object->set($field_name, $object_field);
-    }
-    else {
-      $object->{$field_name}[$object->langcode] = $object_field;
-    }
+    $object->{$field_name} = $object_field;
   }
 }
 
