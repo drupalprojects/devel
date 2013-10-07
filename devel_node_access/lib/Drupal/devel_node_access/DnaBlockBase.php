@@ -46,7 +46,7 @@ abstract class DnaBlockBase extends BlockBase {
     }
 
     if ($op == 'create' && is_object($node)) {
-      $node = $node->type;
+      $node = $node->bundle();
     }
 
     if (!empty($account)) {
@@ -67,7 +67,8 @@ abstract class DnaBlockBase extends BlockBase {
     }
 
     if (empty($langcode)) {
-      $langcode = (is_object($node) && isset($node->nid)) ? $node->langcode : '';
+      $nid = $node->id();
+      $langcode = (is_object($node) && isset($nid)) ? $node->langcode->value : '';
     }
 
     $variables = array(
@@ -147,7 +148,7 @@ abstract class DnaBlockBase extends BlockBase {
       );
     }
 
-    if ($op != 'create' && $node->nid) {
+    if ($op != 'create' && $node->id()) {
       if (node_access($op, $node, $user, $langcode)) {  // delegate this part
         $variables['@node_access_table'] = '{node_access}';
         return array(

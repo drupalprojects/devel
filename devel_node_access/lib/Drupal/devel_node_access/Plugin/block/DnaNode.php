@@ -4,36 +4,66 @@
  * Contains \Drupal\devel_node_access\Plugin\block\block\DnaNode.
  */
 
-namespace Drupal\devel_node_access\Plugin\block\block;
+namespace Drupal\devel_node_access\Plugin\Block;
 
-use Drupal\block\BlockBase;
 use Drupal\devel_node_access\DnaBlockBase;
 use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Language\Language;
+use Drupal\Core\Entity\EntityManager;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides the "Devel Node Access" block.
  *
- * @Plugin(
+ * @Block(
  *   id = "devel_dna_node_block",
- *   admin_label = @Translation("Devel Node Access"),
- *   module = "devel_node_access"
+ *   admin_label = @Translation("Devel Node Access")
  * )
  */
-class DnaNode extends DnaBlockBase {
+class DnaNode extends DnaBlockBase implements ContainerFactoryPluginInterface {
 
   /**
-   * Overrides \Drupal\block\BlockBase::blockAccess().
+   * Constructs an AggregatorFeedBlock object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param array $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Entity\EntityManager $entity_manager
+   *   The entity manager.
    */
-  public function blockAccess() {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityManager $entity_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->entityManager = $entity_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, array $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity.manager')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function access() {
     return user_access(DNA_ACCESS_VIEW);
   }
 
   /**
-   * Implements \Drupal\block\BlockBase:::blockBuild().
+   * {@inheritdoc}
    */
-  public function blockBuild() {
+  public function build() {
     $form_state = array();
     $form_state['build_info']['args'] = array();
     $form_state['build_info']['callback'] = array($this, 'buildForm');
@@ -42,10 +72,7 @@ class DnaNode extends DnaBlockBase {
   }
 
   /**
-   * Builds the content of the block.
-   *
-   * @return array
-   *   A renderable array representing the content of the block.
+   * {@inheritdoc}
    */
   public function buildForm() {
     global $user;
@@ -59,9 +86,10 @@ class DnaNode extends DnaBlockBase {
     }
 
     // Find out whether our DnaUser block is active or not.
+    $blocks = $this->entityManager->getListController('block')->load();
     $user_block_active = FALSE;
-    foreach (block_list($this->entity->get('region')) as $block) {
-      if ($block->get('instance')->plugin_id == 'devel_dna_user_block') {
+    foreach ($blocks as $block) {
+      if ($block->get('plugin') == 'devel_dna_user_block') {
         $user_block_active = TRUE;
       }
     }
@@ -179,7 +207,7 @@ class DnaNode extends DnaBlockBase {
           //dpm($acquired_records_nid, "acquired_records_nid =");
 
           // Check node_access_grants().
-          if ($node->nid) {
+          if ($node->id()) {
             foreach (array('view', 'update', 'delete') as $op) {
               $checked_grants[$nid][$op] = array_merge(array('all' => array(0)), $grants[$op]);
             }
@@ -443,7 +471,7 @@ class DnaNode extends DnaBlockBase {
       $accounts = array();
       $variables += array(
         '!username' => '<em class="placeholder">' . theme('username', array('account' => $user)) . '</em>',
-        '%uid'      => $user->uid,
+        '%uid'      => $user->id(),
       );
 
       if (user_access('bypass node access')) {
@@ -683,7 +711,7 @@ class DnaNode extends DnaBlockBase {
         foreach ($data_by_realm as $gid => $data_by_realm_gid) {
           $msg .= '<li><ul>';
           foreach ($data_by_realm_gid as $record) {
-            $msg .= "<li>$node->nid/$realm/$gid/" . ($record['grant_view'] ? 1 : 0) . ($record['grant_update'] ? 1 : 0) . ($record['grant_delete'] ? 1 : 0) . ' by ' . $record['#module'] . '</li>';
+            $msg .= "<li>$node->id()/$realm/$gid/" . ($record['grant_view'] ? 1 : 0) . ($record['grant_update'] ? 1 : 0) . ($record['grant_delete'] ? 1 : 0) . ' by ' . $record['#module'] . '</li>';
           }
           $msg .= '</ul></li>';
         }
@@ -819,18 +847,19 @@ class DnaNode extends DnaBlockBase {
    */
   private static function get_node_title($node, $clip_and_decorate = FALSE) {
     if (isset($node)) {
+      $nid = $node->id();
       if (isset($node->title)) {
-        $node_title = check_plain(!is_array($node->title) ? $node->title : $node->title[Language::LANGCODE_NOT_SPECIFIED][0]['value']);
+        $node_title = check_plain(!is_array($node->title->value) ? $node->title->value : $node->title[Language::LANGCODE_NOT_SPECIFIED][0]['value']);
         if ($clip_and_decorate) {
           if (drupal_strlen($node_title) > 20) {
-            $node_title = "<span title='node/$node->nid: $node_title'>" . drupal_substr($node_title, 0, 15) . '...</span>';
+            $node_title = "<span title='node/$nid: $node_title'>" . drupal_substr($node_title, 0, 15) . '...</span>';
           }
-          $node_title = '<span title="node/' . $node->nid . '">' . $node_title . '</span>';
+          $node_title = '<span title="node/' . $nid . '">' . $node_title . '</span>';
         }
         return $node_title;
       }
-      elseif (isset($node->nid)) {
-        return $node->nid;
+      elseif (isset($nid)) {
+        return $nid;
       }
     }
     return '&mdash;';

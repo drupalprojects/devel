@@ -797,17 +797,18 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
     }
 
     $uids = $query->execute()->fetchCol();
+
     $accounts = user_load_multiple($uids);
 
     foreach ($accounts as $account) {
-      $path = 'devel/switch/' . $account->name;
-      $links[$account->uid] = array(
+      $path = 'devel/switch/' . $account->name->value;
+      $links[$account->id()] = array(
         'title' => drupal_placeholder(user_format_name($account)),
         'href' => $path,
         'query' => $dest + array('token' => drupal_get_token($path . '|' . $dest['destination'])),
         'attributes' => array('title' => t('This user can switch back.')),
         'html' => TRUE,
-        'last_access' => $account->access,
+        'last_access' => $account->access->value,
       );
     }
     $num_links = count($links);
@@ -816,13 +817,13 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
       $uids = db_query_range('SELECT uid FROM {users} WHERE uid > 0 AND uid NOT IN (:uids) AND status > 0 ORDER BY access DESC', 0, $list_size - $num_links, array(':uids' => array_keys($links)))->fetchCol();
       $accounts = user_load_multiple($uids);
       foreach ($accounts as $account) {
-        $path = 'devel/switch/' . $account->name;
-        $links[$account->uid] = array(
+        $path = 'devel/switch/' . $account->name->value;
+        $links[$account->id()] = array(
           'title' => user_format_name($account),
           'href' => $path,
           'query' => $dest + array('token' => drupal_get_token($path . '|' . $dest['destination'])),
           'attributes' => array('title' => t('Caution: this user will be unable to switch back.')),
-          'last_access' => $account->access,
+          'last_access' => $account->access->value,
         );
       }
       uasort($links, '_devel_switch_user_list_cmp');
@@ -843,8 +844,8 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
       $links[] = $link;
     }
   }
-  if (array_key_exists($user->uid, $links)) {
-    $links[$user->uid]['title'] = '<strong>' . $links[$user->uid]['title'] . '</strong>';
+  if (array_key_exists($user->id(), $links)) {
+    $links[$user->id()]['title'] = '<strong>' . $links[$user->id()]['title'] . '</strong>';
   }
   return $links;
 }

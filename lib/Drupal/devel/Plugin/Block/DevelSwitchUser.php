@@ -1,31 +1,30 @@
 <?php
+
 /**
 * @file
-* Contains \Drupal\devel\Plugin\block\block\DevelSwitchUser.
+* Contains \Drupal\devel\Plugin\Block\DevelSwitchUser.
 */
 
-namespace Drupal\devel\Plugin\block\block;
+namespace Drupal\devel\Plugin\Block;
 
 use Drupal\block\BlockBase;
-use Drupal\Component\Annotation\Plugin;
+use Drupal\block\Annotation\Block;
 use Drupal\Core\Annotation\Translation;
 
 /**
  * Provides a block for switching users.
  *
- *
- * @Plugin(
+ * @Block(
  *   id = "devel_switch_user",
- *   admin_label = @Translation("Switch user"),
- *   module = "devel"
+ *   admin_label = @Translation("Switch user")
  * )
  */
 class DevelSwitchUser extends BlockBase {
 
   /**
-   * Overrides \Drupal\block\BlockBase::settings().
+   * {@inheritdoc}
    */
-  public function settings() {
+  public function defaultConfiguration() {
     // By default, the block will contain 12 users.
     return array(
       'list_size' => 12,
@@ -35,7 +34,7 @@ class DevelSwitchUser extends BlockBase {
   }
 
   /**
-   * Overrides \Drupal\block\BlockBase::blockForm().
+   * {@inheritdoc}
    */
   public function blockForm($form, &$form_state) {
     $form['list_size'] = array(
@@ -59,7 +58,7 @@ class DevelSwitchUser extends BlockBase {
   }
 
   /**
-   * Overrides \Drupal\block\BlockBase::blockSubmit().
+   * {@inheritdoc}
    */
   public function blockSubmit($form, &$form_state) {
     $this->configuration['list_size'] = $form_state['values']['list_size'];
@@ -68,16 +67,16 @@ class DevelSwitchUser extends BlockBase {
   }
 
   /**
-   * Overrides \Drupal\block\BlockBase::blockAccess().
+   * {@inheritdoc}
    */
-  public function blockAccess() {
+  public function access() {
     return user_access('switch users');
   }
 
   /**
-   * Implements \Drupal\block\BlockBase::blockBuild().
+   * {@inheritdoc}
    */
-  public function blockBuild() {
+  public function build() {
     $links = $this->switchUserList();
     if (!empty($links)) {
       drupal_add_css(drupal_get_path('module', 'devel') . '/css/devel.css');

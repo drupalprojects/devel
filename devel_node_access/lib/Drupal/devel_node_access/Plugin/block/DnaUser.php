@@ -4,38 +4,35 @@
 * Contains \Drupal\devel_node_access\Plugin\block\block\DnaUser.
 */
 
-namespace Drupal\devel_node_access\Plugin\block\block;
+namespace Drupal\devel_node_access\Plugin\Block;
 
-use Drupal\block\BlockBase;
 use Drupal\devel_node_access\DnaBlockBase;
 use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
-use Drupal\block\Plugin\Core\Entity\Block;
 use Drupal\Component\Plugin\Discovery\DiscoveryInterface;
 
 /**
  * Provides the "Devel Node Access by User" block.
  *
  *
- * @Plugin(
+ * @Block(
  *   id = "devel_dna_user_block",
- *   admin_label = @Translation("Devel Node Access by User"),
- *   module = "devel_node_access"
+ *   admin_label = @Translation("Devel Node Access by User")
  * )
  */
 class DnaUser extends DnaBlockBase {
 
   /**
-   * Overrides \Drupal\block\BlockBase::blockAccess().
+   * {@inheritdoc}
    */
-  public function blockAccess() {
+  public function access() {
     return user_access(DNA_ACCESS_VIEW);
   }
 
   /**
-   * Implements \Drupal\block\BlockBase:::blockBuild().
+   * {@inheritdoc}
    */
-  public function blockBuild() {
+  public function build() {
     $form_state = array();
     $form_state['build_info']['args'] = array();
     $form_state['build_info']['callback'] = array($this, 'buildForm');
@@ -44,10 +41,7 @@ class DnaUser extends DnaBlockBase {
   }
 
   /**
-   * Builds the content of the block.
-   *
-   * @return array|null
-   *   A renderable array representing the content of the block.
+   * {@inheritdoc}
    */
   public function buildForm() {
     global $user;
@@ -69,10 +63,10 @@ class DnaUser extends DnaBlockBase {
       $node = node_load($menu_item['original_map'][1]);
     }
     if (isset($node)) {
-      $nid = $node->nid;
-      $langcode = $node->langcode;
+      $nid = $node->id();
+      $langcode = $node->langcode->value;
       $language = language_load($langcode);
-      $node_type = node_type_load($node->type);
+      $node_type = node_type_load($node->bundle());
       $headers = array(t('username'), '<span title="' . t("Create '@langname'-language nodes of the '@Node_type' type.", array('@langname' => $language->name, '@Node_type' => $node_type->name)) . '">' . t('create') . '</span>', t('view'), t('update'), t('delete'));
       $rows = array();
       // Determine whether to use Ajax or pre-populate the tables.
@@ -92,28 +86,28 @@ class DnaUser extends DnaBlockBase {
       $accounts = user_load_multiple($uids);
       foreach ($accounts as $account) {
         $username = theme('username', array('account' => $account));
-        if ($account->uid == $user->uid) {
+        if ($account->id() == $user->id()) {
           $username = '<strong>' . $username . '</strong>';
         }
         $rows[] = array(
           $username,
           array(
-            'id' => 'create-' . $nid . '-' . $account->uid,
+            'id' => 'create-' . $nid . '-' . $account->id(),
             'class' => 'dna-permission',
             'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explain_access('create', $node, $account, $langcode))),
           ),
           array(
-            'id' => 'view-' . $nid . '-' . $account->uid,
+            'id' => 'view-' . $nid . '-' . $account->id(),
             'class' => 'dna-permission',
             'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explain_access('view', $node, $account, $langcode))),
           ),
           array(
-            'id' => 'update-' . $nid . '-' . $account->uid,
+            'id' => 'update-' . $nid . '-' . $account->id(),
             'class' => 'dna-permission',
             'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explain_access('update', $node, $account, $langcode))),
           ),
           array(
-            'id' => 'delete-' . $nid . '-' . $account->uid,
+            'id' => 'delete-' . $nid . '-' . $account->id(),
             'class' => 'dna-permission',
             'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explain_access('delete', $node, $account, $langcode))),
           ),

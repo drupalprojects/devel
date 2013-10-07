@@ -246,7 +246,7 @@ function dna_summary() {
  */
 function devel_node_access_node_view($node, $build_mode) {
   // Remember this node, for display in our block.
-  DnaBlockBase::visible_nodes($node->nid);
+  DnaBlockBase::visible_nodes($node->id());
 }
 
 /**
@@ -267,7 +267,7 @@ function devel_node_access_user_ajax($data_type, $cell) {
   }
   // HTML output for error message click-throughs.
   if ($node) {
-    $node_title = l($node->title, 'node/' . $node->nid);
+    $node_title = l($node->title, 'node/' . $node->id());
   }
   else {
     $node_title = t('unknown node %nid', array('%nid' => $nid));

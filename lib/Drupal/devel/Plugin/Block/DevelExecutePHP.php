@@ -1,38 +1,36 @@
 <?php
 /**
 * @file
-* Contains \Drupal\devel\Plugin\block\block\DevelExecutePHP.
+* Contains \Drupal\devel\Plugin\Block\DevelExecutePHP.
 */
 
-namespace Drupal\devel\Plugin\block\block;
+namespace Drupal\devel\Plugin\Block;
 
 use Drupal\block\BlockBase;
-use Drupal\Component\Annotation\Plugin;
+use Drupal\block\Annotation\Block;
 use Drupal\Core\Annotation\Translation;
 
 /**
  * Provides a block for executing PHP code.
  *
- *
- * @Plugin(
+ * @Block(
  *   id = "devel_execute_php",
- *   admin_label = @Translation("Execute PHP"),
- *   module = "devel"
+ *   admin_label = @Translation("Execute PHP")
  * )
  */
 class DevelExecutePHP extends BlockBase {
 
   /**
-   * Overrides \Drupal\block\BlockBase::blockAccess().
+   * {@inheritdoc}
    */
-  public function blockAccess() {
+  public function access() {
     return user_access('execute php code');
   }
 
   /**
-   * Implements \Drupal\block\BlockBase::blockBuild().
+   * {@inheritdoc}
    */
-  public function blockBuild() {
+  public function build() {
     $form_state = array();
     $form_state['build_info']['args'] = array();
     $form_state['build_info']['callback'] = array($this, 'executePhpForm');
