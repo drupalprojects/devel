@@ -1,16 +1,17 @@
 <?php
 
-function file_devel_generate($object, $field, $instance, $bundle) {
-  if (field_behaviors_widget('multiple values', $instance) == FIELD_BEHAVIOR_CUSTOM) {
-    return devel_generate_multiple('_file_devel_generate', $object, $field, $instance, $bundle);
+function file_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
+  if (isset($plugin_definition['multiple_values']) && $plugin_definition['multiple_values'] === TRUE) {
+    return devel_generate_multiple('_file_devel_generate', $object, $instance, $plugin_definition, $form_display_options);
   }
   else {
-    return _file_devel_generate($object, $field, $instance, $bundle);
+    return _file_devel_generate($object, $instance, $plugin_definition, $form_display_options);
   }
 }
 
-function _file_devel_generate($object, $field, $instance, $bundle) {
+function _file_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   static $file;
+  $settings = $instance->getFieldSettings();
 
   if (empty($file)) {
     if ($path = devel_generate_textfile()) {
@@ -19,7 +20,7 @@ function _file_devel_generate($object, $field, $instance, $bundle) {
       $source->uid = 1; // TODO: randomize? use case specific.
       $source->filemime = 'text/plain';
       $source->filename = drupal_basename($path);
-      $destination_dir = $field['settings']['uri_scheme'] . '://' . $instance['settings']['file_directory'];
+      $destination_dir = $settings['uri_scheme'] . '://' . $settings['file_directory'];
       file_prepare_directory($destination_dir, FILE_CREATE_DIRECTORY);
       $destination = $destination_dir . '/' . basename($path);
       $file = file_move($source, $destination, FILE_CREATE_DIRECTORY);
@@ -34,7 +35,7 @@ function _file_devel_generate($object, $field, $instance, $bundle) {
   }
   else {
     $object_field['target_id'] = $file->id();
-    $object_field['display'] = $field['settings']['display_default'];
+    $object_field['display'] = $settings['display_default'];
     $object_field['description'] = devel_create_greeking(10);
 
     return $object_field;

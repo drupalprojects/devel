@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\Language;
 
 /**
@@ -53,7 +54,7 @@ function devel_create_users($num, $kill, $age = 0, $roles = array(), $pass = NUL
 
       // Populate all core fields on behalf of field.module
       module_load_include('inc', 'devel_generate', 'devel_generate.fields');
-      devel_generate_fields($account, 'user', 'user');
+      devel_generate_fields($account, 'user', 'user', 'register');
       $account->save();
     }
   }
@@ -95,36 +96,40 @@ function devel_generate_content($form_state) {
   devel_generate_set_message(format_plural($form_state['values']['num_nodes'], '1 node created.', 'Finished creating @count nodes'));
 }
 
-function devel_generate_add_comments($node, $users, $max_comments, $title_length = 8) {
-  $num_comments = mt_rand(1, $max_comments);
-  for ($i = 1; $i <= $num_comments; $i++) {
-    switch ($i % 3) {
-      case 1:
-        $pid = db_query_range("SELECT cid FROM {comment} WHERE pid = 0 AND nid = :nid ORDER BY RAND()", 0, 1, array(':nid' => $node->id()))->fetchField();
-        break;
-      case 2:
-        $pid = db_query_range("SELECT cid FROM {comment} WHERE pid > 0 AND nid = :nid ORDER BY RAND()", 0, 1, array(':nid' => $node->id()))->fetchField();
-        break;
-      default:
-        $pid = 0;
+function devel_generate_add_comments(EntityInterface $node, $field, $users, $max_comments, $title_length = 8) {
+  $field_name = $field->getFieldName();
+  if ($node->{$field_name}->status >= COMMENT_OPEN) {
+    $num_comments = mt_rand(1, $max_comments);
+    for ($i = 1; $i <= $num_comments; $i++) {
+      switch ($i % 3) {
+        case 1:
+          $pid = db_query_range("SELECT cid FROM {comment} WHERE pid = 0 AND entity_id = :entity_id ORDER BY RAND()", 0, 1, array(':entity_id' => $node->id()))->fetchField();
+          break;
+        case 2:
+          $pid = db_query_range("SELECT cid FROM {comment} WHERE pid > 0 AND entity_id = :entity_id ORDER BY RAND()", 0, 1, array(':entity_id' => $node->id()))->fetchField();
+          break;
+        default:
+          $pid = 0;
+      }
+
+      $comment = entity_create('comment', array(
+        'entity_type' => $node->entityType(),
+        'entity_id' => $node->id(),
+        'field_id' => $node->entityType() . '__' . $field_name,
+        'name' => 'devel generate',
+        'mail' => 'devel_generate@example.com',
+        'timestamp' => mt_rand($node->created->value, REQUEST_TIME),
+        'subject' => substr(devel_create_greeking(mt_rand(2, $title_length), TRUE), 0, 63),
+        'uid' => $users[array_rand($users)],
+        'langcode' => Language::LANGCODE_NOT_SPECIFIED,
+        'pid' => !empty($pid) ? $pid : 0,
+      ));
+
+      //Populate all core fields on behalf of field.module
+      module_load_include('inc', 'devel_generate', 'devel_generate.fields');
+      devel_generate_fields($comment, 'comment', $comment->bundle());
+      $comment->save();
     }
-
-    $comment = entity_create('comment', array(
-      'nid' => $node->id(),
-      'cid' => NULL,
-      'name' => 'devel generate',
-      'mail' => 'devel_generate@example.com',
-      'timestamp' => mt_rand($node->created->value, REQUEST_TIME),
-      'subject' => substr(devel_create_greeking(mt_rand(2, $title_length), TRUE), 0, 63),
-      'uid' => $users[array_rand($users)],
-      'langcode' => Language::LANGCODE_NOT_SPECIFIED,
-      'pid' => $pid,
-    ));
-
-    // Populate all core fields on behalf of field.module
-    module_load_include('inc', 'devel_generate', 'devel_generate.fields');
-    devel_generate_fields($comment, 'comment', 'comment_node_' . $node->bundle());
-    $comment->save();
   }
 }
 
@@ -620,10 +625,6 @@ function devel_generate_content_add_node(&$results) {
   }
   else {
     $edit_node['title'] = '';
-  }
-  // @todo Remove once comment become field. http://drupal.org/node/731724
-  if (Drupal::moduleHandler()->moduleExists('comment')) {
-    $edit_node['comment'] = variable_get('comment_' . $node_type, COMMENT_OPEN);
   }
   $node = entity_create('node', $edit_node);
 

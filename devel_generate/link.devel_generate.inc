@@ -4,17 +4,18 @@
  * Support file for generating link field content.
  */
 
-function link_devel_generate($object, $field, $instance, $bundle) {
-  if (field_behaviors_widget('multiple values', $instance) == FIELD_BEHAVIOR_CUSTOM) {
-    return devel_generate_multiple('_link_devel_generate', $object, $field, $instance, $bundle);
+function link_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
+  if (isset($plugin_definition['multiple_values']) && $plugin_definition['multiple_values'] === TRUE) {
+    return devel_generate_multiple('_link_devel_generate', $object, $instance, $plugin_definition, $form_display_options);
   }
   else {
-    return _link_devel_generate($object, $field, $instance, $bundle);
+    return _link_devel_generate($object, $instance, $plugin_definition, $form_display_options);
   }
 }
 
-function _link_devel_generate($object, $field, $instance, $bundle) {
+function _link_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   $object_field = array();
+  $settings = $instance->getFieldSettings();
 
   // Set of possible top-level domains.
   $tlds = array('com', 'net', 'gov', 'org', 'edu', 'biz', 'info');
@@ -23,7 +24,7 @@ function _link_devel_generate($object, $field, $instance, $bundle) {
   $domain_length = mt_rand(7, 15);
 
   // Get the title settings from the field instance.
-  $allow_title = $instance['settings']['title'];
+  $allow_title = $settings['title'];
   switch ($allow_title) {
     case DRUPAL_DISABLED:
       $generate_title = FALSE;

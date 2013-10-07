@@ -4,16 +4,16 @@
  * Support file for generating email field content.
  */
 
-function email_devel_generate($object, $field, $instance, $bundle) {
-  if (field_behaviors_widget('multiple values', $instance) == FIELD_BEHAVIOR_CUSTOM) {
-    return devel_generate_multiple('_email_devel_generate', $object, $field, $instance, $bundle);
+function email_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
+  if (isset($plugin_definition['multiple_values']) && $plugin_definition['multiple_values'] === TRUE) {
+    return devel_generate_multiple('_email_devel_generate', $object, $instance, $plugin_definition, $form_display_options);
   }
   else {
-    return _email_devel_generate($object, $field, $instance, $bundle);
+    return _email_devel_generate($object, $instance, $plugin_definition, $form_display_options);
   }
 }
 
-function _email_devel_generate($object, $field, $instance, $bundle) {
+function _email_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   $object_field = array();
 
   // Set of possible top-level domains.

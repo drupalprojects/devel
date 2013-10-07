@@ -1,19 +1,20 @@
 <?php
 
-function taxonomy_devel_generate($object, $field, $instance, $bundle) {
-  if (field_behaviors_widget('multiple values', $instance) == FIELD_BEHAVIOR_CUSTOM) {
-    return devel_generate_multiple('_taxonomy_devel_generate', $object, $field, $instance, $bundle);
+function taxonomy_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
+  if (isset($plugin_definition['multiple_values']) && $plugin_definition['multiple_values'] === TRUE) {
+    return devel_generate_multiple('_taxonomy_devel_generate', $object, $instance, $plugin_definition, $form_display_options);
   }
   else {
-    return _taxonomy_devel_generate($object, $field, $instance, $bundle);
+    return _taxonomy_devel_generate($object, $instance, $plugin_definition, $form_display_options);
   }
 }
 
-function _taxonomy_devel_generate($object, $field, $instance, $bundle) {
+function _taxonomy_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   $object_field = array();
+  $settings = $instance->getFieldSettings();
   // TODO: For free tagging vocabularies that do not already have terms, this
   // will not result in any tags being added.
-  $machine_name = $field['settings']['allowed_values'][0]['vocabulary'];
+  $machine_name = $settings['allowed_values'][0]['vocabulary'];
   $vocabulary = entity_load('taxonomy_vocabulary', $machine_name);
   if ($max = db_query('SELECT MAX(tid) FROM {taxonomy_term_data} WHERE vid = :vid', array(':vid' => $vocabulary->vid))->fetchField()) {
     $candidate = mt_rand(1, $max);

@@ -2,30 +2,29 @@
 
 define('DEVEL_GENERATE_IMAGE_MAX', 5);
 
-use Drupal\file\Plugin\Core\Entity\File;
-
-function image_devel_generate($object, $field, $instance, $bundle) {
+function image_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   if (function_exists('imagejpeg')) {
     $devel_generate_image_function = variable_get('devel_generate_image_function', '_image_devel_generate');
     if (!function_exists($devel_generate_image_function)) {
       $devel_generate_image_function = '_image_devel_generate';
     }
-    if (field_behaviors_widget('multiple values', $instance) == FIELD_BEHAVIOR_CUSTOM) {
-      return devel_generate_multiple($devel_generate_image_function, $object, $field, $instance, $bundle);
+    if (isset($plugin_definition['multiple_values']) && $plugin_definition['multiple_values'] === TRUE) {
+      return devel_generate_multiple($devel_generate_image_function, $object, $instance, $plugin_definition, $form_display_options);
     }
     else {
-      return $devel_generate_image_function($object, $field, $instance, $bundle);
+      return $devel_generate_image_function($object, $instance, $plugin_definition, $form_display_options);
     }
   }
 }
 
-function _image_devel_generate($object, $field, $instance, $bundle) {
+function _image_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   $object_field = array();
   static $images = array();
+  $settings = $instance->getFieldSettings();
 
-  $min_resolution = empty($instance['settings']['min_resolution']) ? '100x100' : $instance['settings']['min_resolution'];
-  $max_resolution = empty($instance['settings']['max_resolution']) ? '600x600' : $instance['settings']['max_resolution'];
-  $extensions = array_intersect(explode(' ', $instance['settings']['file_extensions']), array('png', 'gif', 'jpg', 'jpeg'));
+  $min_resolution = empty($settings['min_resolution']) ? '100x100' : $settings['min_resolution'];
+  $max_resolution = empty($settings['max_resolution']) ? '600x600' : $settings['max_resolution'];
+  $extensions = array_intersect(explode(' ', $settings['file_extensions']), array('png', 'gif', 'jpg', 'jpeg'));
   $extension = array_rand(drupal_map_assoc($extensions));
   // Generate a max of 5 different images.
   if (!isset($images[$extension][$min_resolution][$max_resolution]) || count($images[$extension][$min_resolution][$max_resolution]) <= DEVEL_GENERATE_IMAGE_MAX) {
@@ -36,7 +35,7 @@ function _image_devel_generate($object, $field, $instance, $bundle) {
       $image->setOwner($account);
       $image->setMimeType('image/' . pathinfo($path, PATHINFO_EXTENSION));
       $image->setFileName(drupal_basename($path));
-      $destination_dir = $field['settings']['uri_scheme'] . '://' . $instance['settings']['file_directory'];
+      $destination_dir = $settings['uri_scheme'] . '://' . $settings['file_directory'];
       file_prepare_directory($destination_dir, FILE_CREATE_DIRECTORY);
       $destination = $destination_dir . '/' . basename($path);
       $file = file_move($image, $destination, FILE_CREATE_DIRECTORY);
