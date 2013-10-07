@@ -67,8 +67,7 @@ abstract class DnaBlockBase extends BlockBase {
     }
 
     if (empty($langcode)) {
-      $nid = $node->id();
-      $langcode = (is_object($node) && isset($nid)) ? $node->langcode->value : '';
+      $langcode = (is_object($node) && $node->id()) ? $node->langcode->value : '';
     }
 
     $variables = array(

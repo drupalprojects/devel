@@ -797,7 +797,6 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
     }
 
     $uids = $query->execute()->fetchCol();
-
     $accounts = user_load_multiple($uids);
 
     foreach ($accounts as $account) {
@@ -844,8 +843,8 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
       $links[] = $link;
     }
   }
-  if (array_key_exists($user->id(), $links)) {
-    $links[$user->id()]['title'] = '<strong>' . $links[$user->id()]['title'] . '</strong>';
+  if (array_key_exists($uid = $user->id(), $links)) {
+    $links[$uid]['title'] = '<strong>' . $links[$uid]['title'] . '</strong>';
   }
   return $links;
 }
@@ -1297,11 +1296,11 @@ function devel_execute_form_submit($form, &$form_state) {
 function devel_switch_user($name = NULL) {
   global $user;
 
-  if ($user->uid) {
+  if ($uid = $user->id()) {
     module_invoke_all('user_logout', $user);
   }
   if (isset($name) && $account = user_load_by_name($name)) {
-    $old_uid = $user->uid;
+    $old_uid = $uid;
     $user = $account;
     $user->timestamp = time() - 9999;
     if (!$old_uid) {
@@ -1310,10 +1309,11 @@ function devel_switch_user($name = NULL) {
     }
     module_invoke_all('user_login', $user);
   }
-  elseif ($user->uid) {
+  elseif ($uid) {
     session_destroy();
   }
-  drupal_goto();
+  $destination = drupal_get_destination();
+  return new Symfony\Component\HttpFoundation\RedirectResponse(url($destination['destination'], array('absolute' => TRUE)));
 }
 
 /**

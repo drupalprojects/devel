@@ -1,7 +1,7 @@
 <?php
 /**
 * @file
-* Contains \Drupal\devel_node_access\Plugin\block\block\DnaUser.
+* Contains \Drupal\devel_node_access\Plugin\Block\DnaUser.
 */
 
 namespace Drupal\devel_node_access\Plugin\Block;
@@ -86,28 +86,29 @@ class DnaUser extends DnaBlockBase {
       $accounts = user_load_multiple($uids);
       foreach ($accounts as $account) {
         $username = theme('username', array('account' => $account));
-        if ($account->id() == $user->id()) {
+        $uid = $account->id();
+        if ($uid == $user->id()) {
           $username = '<strong>' . $username . '</strong>';
         }
         $rows[] = array(
           $username,
           array(
-            'id' => 'create-' . $nid . '-' . $account->id(),
+            'id' => 'create-' . $nid . '-' . $uid,
             'class' => 'dna-permission',
             'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explain_access('create', $node, $account, $langcode))),
           ),
           array(
-            'id' => 'view-' . $nid . '-' . $account->id(),
+            'id' => 'view-' . $nid . '-' . $uid,
             'class' => 'dna-permission',
             'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explain_access('view', $node, $account, $langcode))),
           ),
           array(
-            'id' => 'update-' . $nid . '-' . $account->id(),
+            'id' => 'update-' . $nid . '-' . $uid,
             'class' => 'dna-permission',
             'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explain_access('update', $node, $account, $langcode))),
           ),
           array(
-            'id' => 'delete-' . $nid . '-' . $account->id(),
+            'id' => 'delete-' . $nid . '-' . $uid,
             'class' => 'dna-permission',
             'data' => $ajax ? NULL : theme('dna_permission', array('permission' => self::explain_access('delete', $node, $account, $langcode))),
           ),

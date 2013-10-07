@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains \Drupal\devel_node_access\Plugin\block\block\DnaNode.
+ * Contains \Drupal\devel_node_access\Plugin\Block\DnaNode.
  */
 
 namespace Drupal\devel_node_access\Plugin\Block;
@@ -10,9 +10,6 @@ use Drupal\devel_node_access\DnaBlockBase;
 use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Language\Language;
-use Drupal\Core\Entity\EntityManager;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides the "Devel Node Access" block.
@@ -22,36 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   admin_label = @Translation("Devel Node Access")
  * )
  */
-class DnaNode extends DnaBlockBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * Constructs an AggregatorFeedBlock object.
-   *
-   * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param array $plugin_definition
-   *   The plugin implementation definition.
-   * @param \Drupal\Core\Entity\EntityManager $entity_manager
-   *   The entity manager.
-   */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityManager $entity_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->entityManager = $entity_manager;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, array $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('entity.manager')
-    );
-  }
+class DnaNode extends DnaBlockBase {
 
   /**
    * {@inheritdoc}
@@ -86,7 +54,7 @@ class DnaNode extends DnaBlockBase implements ContainerFactoryPluginInterface {
     }
 
     // Find out whether our DnaUser block is active or not.
-    $blocks = $this->entityManager->getListController('block')->load();
+    $blocks = \Drupal::entityManager()->getListController('block')->load();
     $user_block_active = FALSE;
     foreach ($blocks as $block) {
       if ($block->get('plugin') == 'devel_dna_user_block') {
@@ -848,8 +816,8 @@ class DnaNode extends DnaBlockBase implements ContainerFactoryPluginInterface {
   private static function get_node_title($node, $clip_and_decorate = FALSE) {
     if (isset($node)) {
       $nid = $node->id();
-      if (isset($node->title)) {
-        $node_title = check_plain(!is_array($node->title->value) ? $node->title->value : $node->title[Language::LANGCODE_NOT_SPECIFIED][0]['value']);
+      if ($node_title = $node->title->value) {
+        $node_title = check_plain($node_title);
         if ($clip_and_decorate) {
           if (drupal_strlen($node_title) > 20) {
             $node_title = "<span title='node/$nid: $node_title'>" . drupal_substr($node_title, 0, 15) . '...</span>';
@@ -858,7 +826,7 @@ class DnaNode extends DnaBlockBase implements ContainerFactoryPluginInterface {
         }
         return $node_title;
       }
-      elseif (isset($nid)) {
+      elseif ($nid) {
         return $nid;
       }
     }
