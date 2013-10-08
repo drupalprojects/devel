@@ -11,12 +11,9 @@
 DRUSH_PATH="`which drush`"
 DRUSH_DIRNAME="`dirname -- "$DRUSH_PATH"`"
 
-# if [ $# = 0 ] ; then
-#   phpunit --bootstrap="$DRUSH_DIRNAME/tests/drush_testcase.inc" .
-# else
-#   phpunit --bootstrap="$DRUSH_DIRNAME/tests/drush_testcase.inc" "$@"
-# fi
-
-#Instead, hard code target file so we don't find a simpletest file at
-# /lib/Drupal/devel_generate/Tests/DevelGenerateTest.php.
-phpunit --bootstrap="$DRUSH_DIRNAME/tests/drush_testcase.inc" develDrushTest.php
+if [ $# = 0 ] ; then
+   phpunit --bootstrap="$DRUSH_DIRNAME/tests/drush_testcase.inc" drush
+else
+   # If you pass arguments, you must specify a file or drush dir as first argument. Else you get simpletest error.
+   phpunit --bootstrap="$DRUSH_DIRNAME/tests/drush_testcase.inc" "$@"
+fi
