@@ -3,8 +3,7 @@
 /*
  * @file
  *   PHPUnit Tests for devel. This uses Drush's own test framework, based on PHPUnit.
- *   To run the tests, use phpunit --bootstrap=/path/to/drush/tests/drush_testcase.inc.
- *   Note that we are pointing to the drush_testcase.inc file under /tests subdir in drush.
+ *   To run the tests, use run-tests-drush.sh from the devel directory.
  */
 class develCase extends Drush_CommandTestCase {
 
