@@ -67,7 +67,7 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('Created the following new vocabularies:'));
 
     // Generate taxonomy terms.
-    $form = devel_generate_term_form();
+    $form = drupal_get_form('Drupal\devel_generate\Form\GenerateTerm');
     $vids = array_keys($form['vids']['#options']);
     $edit = array(
       'vids[]' => $vids,

@@ -14,7 +14,7 @@ use Drupal\field\Field;
  **/
 function devel_generate_fields(EntityInterface &$object, $entity_type, $bundle_name, $form_mode = 'default') {
   $instances = Field::fieldInfo()->getBundleInstances($entity_type, $bundle_name);
-  $field_types = \Drupal::service('plugin.manager.entity.field.field_type')->getDefinitions();
+  $field_types = \Drupal::service('plugin.manager.field.field_type')->getDefinitions();
   $skips = function_exists('drush_get_option') ? drush_get_option('skip-fields', '') : @$_REQUEST['skip-fields'];
   foreach (explode(',', $skips) as $skip) {
     unset($instances[$skip]);
