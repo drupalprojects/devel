@@ -69,8 +69,8 @@ class DevelSwitchUser extends BlockBase {
   /**
    * {@inheritdoc}
    */
-  public function access() {
-    return user_access('switch users');
+  public function access(AccountInterface $account) {
+    return $account->hasPermission('switch users');
   }
 
   /**

@@ -9,6 +9,7 @@ namespace Drupal\devel\Plugin\Block;
 use Drupal\block\BlockBase;
 use Drupal\block\Annotation\Block;
 use Drupal\Core\Annotation\Translation;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Provides a block for executing PHP code.
@@ -23,8 +24,8 @@ class DevelExecutePHP extends BlockBase {
   /**
    * {@inheritdoc}
    */
-  public function access() {
-    return user_access('execute php code');
+  public function access(AccountInterface $account) {
+    return $account->hasPermission('execute php code');
   }
 
   /**

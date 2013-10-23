@@ -6,6 +6,7 @@
 
 namespace Drupal\devel_node_access\Plugin\Block;
 
+use Drupal\Core\Session\AccountInterface;
 use Drupal\devel_node_access\DnaBlockBase;
 use Drupal\Component\Annotation\Plugin;
 use Drupal\Core\Annotation\Translation;
@@ -25,8 +26,8 @@ class DnaUser extends DnaBlockBase {
   /**
    * {@inheritdoc}
    */
-  public function access() {
-    return user_access(DNA_ACCESS_VIEW);
+  public function access(AccountInterface $account) {
+    return $account->hasPermission(DNA_ACCESS_VIEW);
   }
 
   /**
