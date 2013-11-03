@@ -1,14 +1,13 @@
 <?php
+
 /**
-* @file
-* Contains \Drupal\devel\Plugin\Block\DevelExecutePHP.
-*/
+ * @file
+ * Contains \Drupal\devel\Plugin\Block\DevelExecutePHP.
+ */
 
 namespace Drupal\devel\Plugin\Block;
 
 use Drupal\block\BlockBase;
-use Drupal\block\Annotation\Block;
-use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Session\AccountInterface;
 
 /**
@@ -32,24 +31,7 @@ class DevelExecutePHP extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $form_state = array();
-    $form_state['build_info']['args'] = array();
-    $form_state['build_info']['callback'] = array($this, 'executePhpForm');
-    $form = drupal_build_form('devel_execute_block_form', $form_state);
-    return array($form);
-  }
-
-  /**
-   * Build the execute PHP block form.
-   */
-  public function executePhpForm() {
-    $form['execute'] = array(
-      '#type' => 'details',
-      '#title' => t('Execute PHP Code'),
-      '#collapsed' => (!isset($_SESSION['devel_execute_code'])),
-    );
-    $form['#submit'] = array('devel_execute_form_submit');
-    return array_merge_recursive($form, devel_execute_form());
+    return \Drupal::formBuilder()->getForm('Drupal\devel\Form\ExecutePHP');
   }
 
 }

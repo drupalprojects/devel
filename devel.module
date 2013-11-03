@@ -17,6 +17,7 @@ define('DEVEL_ERROR_HANDLER_BACKTRACE_DPM', 4);
 define('DEVEL_MIN_TEXTAREA', 50);
 
 use Drupal\Core\Template\Attribute;
+use Drupal\devel\Controller\DevelController;
 
 /**
  * Implements hook_help().
@@ -43,216 +44,134 @@ function devel_menu() {
   // Do so at theme layer. Fix in D7?
   $items['devel/cache/clear'] = array(
     'title' => 'Clear cache',
-    'page callback' => 'devel_cache_clear',
     'description' => 'Clear the CSS cache and all database cache tables which store page, node, theme and variable caches.',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.cache_clear'
   );
 
   $items['devel/reference'] = array(
     'title' => 'Function reference',
     'description' => 'View a list of currently defined user functions with documentation links.',
-    'page callback' => 'devel_function_reference',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.reference',
   );
   $items['devel/reinstall'] = array(
     'title' => 'Reinstall modules',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devel_reinstall'),
     'description' => 'Run hook_uninstall() and then hook_install() for a given module.',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.reinstall',
   );
   $items['devel/menu/reset'] = array(
     'title' => 'Rebuild menus',
     'description' => 'Rebuild menu based on hook_menu() and revert any custom changes. All menu items return to their default settings.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devel_menu_rebuild'),
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.menu_rebuild',
   );
   $items['devel/menu/item'] = array(
     'title' => 'Menu item',
     'description' => 'Details about a given menu item.',
-    'page callback' => 'devel_menu_item',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.menu_item',
   );
   $items['devel/variable'] = array(
     'title' => 'Variable editor',
     'description' => 'Edit and delete site variables.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devel_variable_form'),
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.devel_variable',
   );
   $items['devel/config'] = array(
     'title' => 'Config editor',
     'description' => 'Edit and delete config system variables',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devel_config_system_form'),
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.configs_list',
   );
   $items['devel/config/%'] = array(
     'title' => 'Config editor',
     'description' => 'Edit and delete config system variables',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devel_config_system_form', 2),
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.configs_list',
   );
   $items['devel/config/edit/%'] = array(
     'title' => 'Edit configuration object: !config_name',
     'title arguments' => array('!config_name' => 3),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devel_config_system_edit_form', 3),
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.config_edit',
   );
   $items['devel/state'] = array(
     'title' => 'State editor',
     'description' => 'Edit and delete state system variables',
-    'page callback' => 'devel_state_system_page',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.state_system_page',
   );
   $items['devel/state/edit/%'] = array(
     'title' => 'Edit state variable: !state_name',
     'title arguments' => array('!state_name' => 3),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devel_state_system_edit_form', 3),
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.system_state_edit',
   );
   $items['devel/php'] = array(
     'title' => 'Execute PHP Code',
     'description' => 'Execute some PHP code',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devel_execute_form'),
-    'access arguments' => array('execute php code'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.execute_php',
   );
   $items['devel/theme/registry'] = array(
     'title' => 'Theme registry',
     'description' => 'View a list of available theme functions across the whole site.',
-    'page callback' => 'devel_theme_registry',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
+    'route_name' => 'devel.theme_registry',
     'menu_name' => 'devel',
   );
   $items['devel/entity/info'] = array(
     'title' => 'Entity info',
     'description' => 'View entity information across the whole site.',
-    'page callback' => 'devel_entity_info_page',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
+    'route_name' => 'devel.entity_info_page',
   );
   $items['devel/field/info'] = array(
     'title' => 'Field info',
     'description' => 'View fields information across the whole site.',
-    'page callback' => 'devel_field_info_page',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
+    'route_name' => 'devel.field_info_page',
     'menu_name' => 'devel',
   );
   $items['devel/elements'] = array(
     'title' => 'Hook_elements()',
     'description' => 'View the active form/render elements for this site.',
-    'page callback' => 'devel_elements_page',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
-    'menu_name' => 'devel',
-  );
-  $items['devel/variable/edit/%'] = array(
-    'title' => 'Variable editor',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devel_variable_edit', 3),
-    'access arguments' => array('access devel information'),
-    'type' => MENU_CALLBACK,
-    'file' => 'devel.pages.inc',
+    'route_name' => 'devel.elements_page',
     'menu_name' => 'devel',
   );
   $items['devel/session'] = array(
     'title' => 'Session viewer',
     'description' => 'List the contents of $_SESSION.',
-    'page callback' => 'devel_session',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'menu_name' => 'devel',
-  );
-  $items['devel/switch'] = array(
-    'title' => 'Switch user',
-    'page callback' => 'devel_switch_user',
-    'access callback' => '_devel_switch_user_access',
-    'access arguments' => array(2),
-    'type' => MENU_CALLBACK,
-    'file' => 'devel.pages.inc',
-    'menu_name' => 'devel',
+    'route_name' => 'devel.session',
   );
   $items['devel/explain'] = array(
     'title' => 'Explain query',
-    'page callback' => 'devel_querylog_explain',
     'description' => 'Run an EXPLAIN on a given query. Used by query log',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
-    'type' => MENU_CALLBACK,
+    'route_name' => 'devel.explain',
   );
   $items['devel/arguments'] = array(
     'title' => 'Arguments query',
-    'page callback' => 'devel_querylog_arguments',
     'description' => 'Return a given query, with arguments instead of placeholders. Used by query log',
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
-    'type' => MENU_CALLBACK,
+    'route_name' => 'devel.arguments',
   );
   $items['devel/run-cron'] = array(
     'title' => 'Run cron',
-    'page callback' => 'system_run_cron',
-    'access arguments' => array('administer site configuration'),
-    'file' => 'system.admin.inc',
-    'file path' => drupal_get_path('module', 'system'),
     'menu_name' => 'devel',
+    'route_name' => 'devel.run_cron',
   );
 
-  // Duplicate path in 2 different menus. See http://drupal.org/node/601788.
-  $items['devel/settings'] = array(
-    'title' => 'Devel settings',
-    'description' => 'Helper functions, pages, and blocks to assist Drupal developers. The devel blocks can be managed via the block administration page.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('devel_admin_settings'),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'devel.admin.inc',
-    'menu_name' => 'devel',
-  );
   $items['admin/config/development/devel'] = array(
     'title' => 'Devel settings',
     'description' => 'Helper functions, pages, and blocks to assist Drupal developers. The devel blocks can be managed via the block administration page.',
-    'route_name' => 'devel_admin_settings',
+    'route_name' => 'devel.admin_settings',
   );
 
   $items['node/%node/devel'] = array(
     'title' => 'Devel',
-    'page callback' => 'devel_load_object',
-    'page arguments' => array('node', 1),
-    'access arguments' => array('access devel information'),
     'type' => MENU_LOCAL_TASK,
-    'file' => 'devel.pages.inc',
     'weight' => 100,
+    'route_name' => 'devel.devel_node_load',
   );
   $items['node/%node/devel/load'] = array(
     'title' => 'Load',
@@ -260,21 +179,15 @@ function devel_menu() {
   );
   $items['node/%node/devel/render'] = array(
     'title' => 'Render',
-    'page callback' => 'devel_render_object',
-    'page arguments' => array('node', 1),
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'type' => MENU_LOCAL_TASK,
     'weight' => 100,
+    'route_name' => 'devel.devel_node_render',
   );
   $items['comment/%comment/devel'] = array(
     'title' => 'Devel',
-    'page callback' => 'devel_load_object',
-    'page arguments' => array('comment', 1),
-    'access arguments' => array('access devel information'),
     'type' => MENU_LOCAL_TASK,
-    'file' => 'devel.pages.inc',
     'weight' => 100,
+    'route_name' => 'devel.devel_comment_load',
   );
   $items['comment/%comment/devel/load'] = array(
     'title' => 'Load',
@@ -282,21 +195,15 @@ function devel_menu() {
   );
   $items['comment/%comment/devel/render'] = array(
     'title' => 'Render',
-    'page callback' => 'devel_render_object',
-    'page arguments' => array('comment', 1),
-    'access arguments' => array('access devel information'),
     'type' => MENU_LOCAL_TASK,
-    'file' => 'devel.pages.inc',
     'weight' => 100,
+    'route_name' => 'devel.devel_comment_render',
   );
   $items['user/%user/devel'] = array(
     'title' => 'Devel',
-    'page callback' => 'devel_load_object',
-    'page arguments' => array('user', 1),
-    'access arguments' => array('access devel information'),
     'type' => MENU_LOCAL_TASK,
-    'file' => 'devel.pages.inc',
     'weight' => 100,
+    'route_name' => 'devel.devel_user_load',
   );
   $items['user/%user/devel/load'] = array(
     'title' => 'Load',
@@ -304,21 +211,15 @@ function devel_menu() {
   );
   $items['user/%user/devel/render'] = array(
     'title' => 'Render',
-    'page callback' => 'devel_render_object',
-    'page arguments' => array('user', 1),
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'type' => MENU_LOCAL_TASK,
     'weight' => 100,
+    'route_name' => 'devel.devel_user_render',
   );
   $items['taxonomy/term/%taxonomy_term/devel'] = array(
     'title' => 'Devel',
-    'page callback' => 'devel_load_object',
-    'page arguments' => array('taxonomy_term', 2, 'term'),
-    'access arguments' => array('access devel information'),
-    'file' => 'devel.pages.inc',
     'type' => MENU_LOCAL_TASK,
     'weight' => 100,
+    'route_name' => 'devel.devel_taxonomy_term_load',
   );
   $items['taxonomy/term/%taxonomy_term/devel/load'] = array(
     'title' => 'Load',
@@ -326,23 +227,12 @@ function devel_menu() {
   );
   $items['taxonomy/term/%taxonomy_term/devel/render'] = array(
     'title' => 'Render',
-    'page callback' => 'devel_render_object',
-    'page arguments' => array('taxonomy_term', 2, 'term'),
-    'access arguments' => array('access devel information'),
     'type' => MENU_LOCAL_TASK,
-    'file' => 'devel.pages.inc',
     'weight' => 100,
+    'route_name' => 'devel.devel_taxonomy_term_render',
   );
 
   return $items;
-}
-
-/**
- * Menu item access callback - check permission and token for Switch User.
- */
-function _devel_switch_user_access($name) {
-  // Suppress notices when on other pages when menu system still checks access.
-  return user_access('switch users') && drupal_valid_token(@$_GET['token'], "devel/switch/$name|" . @$_GET['destination'], TRUE);
 }
 
 /**
@@ -817,7 +707,7 @@ function _devel_switch_user_list_cmp($a, $b) {
  * Provides the devel docs form.
  */
 function devel_doc_function_form() {
-  $version = devel_get_core_version(VERSION);
+  $version = DevelController::getCoreVersion(\Drupal::VERSION);
   $form['function'] = array(
     '#type' => 'textfield',
     '#description' => t('Enter function name for api lookup'),
@@ -1113,7 +1003,7 @@ function devel_query_put_contents($queries) {
     // It enables the AJAX to retrieve queries from this request.
     'request_id' => $request_id,
   );
-  print '<script type="text/javascript">jQuery.extend(Drupal.settings, ' . json_encode($settings) . ");</script>\n";
+  print '<script type="text/javascript">jQuery.extend(drupalSettings, ' . json_encode($settings) . ");</script>\n";
 }
 
 /**
@@ -1158,21 +1048,6 @@ function t_safe($string, $args) {
 }
 
 /**
- * Returns the core version.
- */
-function devel_get_core_version($version) {
-  $version_parts = explode('.', $version);
-  // Map from 4.7.10 -> 4.7
-  if ($version_parts[0] < 5) {
-    return $version_parts[0] . '.' . $version_parts[1];
-  }
-  // Map from 5.5 -> 5 or 6.0-beta2 -> 6
-  else {
-    return $version_parts[0];
-  }
-}
-
-/**
  * Returns whether the optimizer is compatible.
  */
 function devel_is_compatible_optimizer() {
@@ -1208,67 +1083,6 @@ function devel_is_compatible_optimizer() {
   else {
     return TRUE;
   }
-}
-
-/**
- * Generates the execute form.
- */
-function devel_execute_form() {
-  $form['execute']['code'] = array(
-    '#type' => 'textarea',
-    '#title' => t('PHP code to execute'),
-    '#description' => t('Enter some code. Do not use <code>&lt;?php ?&gt;</code> tags.'),
-    '#default_value' => (isset($_SESSION['devel_execute_code']) ? $_SESSION['devel_execute_code'] : ''),
-    '#rows' => 20,
-  );
-  $form['execute']['op'] = array('#type' => 'submit', '#value' => t('Execute'));
-  $form['#redirect'] = FALSE;
-  if (isset($_SESSION['devel_execute_code'])) {
-    unset($_SESSION['devel_execute_code']);
-  }
-  return $form;
-}
-
-/**
- * Processes PHP execute form submissions.
- */
-function devel_execute_form_submit($form, &$form_state) {
-  ob_start();
-  print eval($form_state['values']['code']);
-  $_SESSION['devel_execute_code'] = $form_state['values']['code'];
-  dpm(ob_get_clean());
-}
-
-/**
- * Switches to a different user.
- *
- * We don't call session_save_session() because we really want to change users.
- * Usually unsafe!
- *
- * @param string $name
- *   The username to switch to, or NULL to log out.
- */
-function devel_switch_user($name = NULL) {
-  global $user;
-
-  if ($uid = $user->id()) {
-    module_invoke_all('user_logout', $user);
-  }
-  if (isset($name) && $account = user_load_by_name($name)) {
-    $old_uid = $uid;
-    $user = $account;
-    $user->timestamp = time() - 9999;
-    if (!$old_uid) {
-      // Switch from anonymous to authorized.
-      drupal_session_regenerate();
-    }
-    module_invoke_all('user_login', $user);
-  }
-  elseif ($uid) {
-    session_destroy();
-  }
-  $destination = drupal_get_destination();
-  return new Symfony\Component\HttpFoundation\RedirectResponse(url($destination['destination'], array('absolute' => TRUE)));
 }
 
 /**
@@ -1449,7 +1263,7 @@ function _devel_print_object($obj, $prefix = NULL, $parents = NULL, $object = FA
  * queries that were made to generate the page.
  */
 function devel_query_table($queries, $counts) {
-  $version = devel_get_core_version(VERSION);
+  $version = DevelController::getCoreVersion(\Drupal::VERSION);
   $header = array('ms', '#', 'where', 'ops', 'query', 'target');
   $i = 0;
   $config_devel = config('devel.settings');

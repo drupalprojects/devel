@@ -9,8 +9,6 @@ namespace Drupal\devel\Form;
 
 use Drupal\Component\Utility\MapArray;
 use Drupal\Core\Form\ConfigFormBase;
-use Drupal\system\SystemConfigFormBase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
