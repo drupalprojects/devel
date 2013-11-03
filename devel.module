@@ -413,59 +413,14 @@ function devel_theme() {
 }
 
 /**
- * Implements hook_init().
+ * Implements hook_page_build().
  */
-function devel_init() {
-  if (!devel_silent()) {
-    if (user_access('access devel information')) {
-      devel_set_handler(devel_get_handlers());
-      // We want to include the class early so that anyone may call krumo()
-      // as needed. See http://krumo.sourceforge.net/
-      has_krumo();
-
-      // See http://www.firephp.org/HQ/Install.htm
-      $path = NULL;
-      if ((@include_once 'fb.php') || (@include_once 'FirePHPCore/fb.php')) {
-        // FirePHPCore is in include_path. Probably a PEAR installation.
-        $path = '';
-      }
-      elseif (module_exists('libraries')) {
-        // Support Libraries API - http://drupal.org/project/libraries
-        $firephp_path = libraries_get_path('FirePHPCore');
-        $firephp_path = ($firephp_path ? $firephp_path . '/lib/FirePHPCore/' : '');
-        $chromephp_path = libraries_get_path('chromephp');
-      }
-      else {
-        $firephp_path = DRUPAL_ROOT . '/libraries/FirePHPCore/lib/FirePHPCore/';
-        $chromephp_path = './' . drupal_get_path('module', 'devel') . '/chromephp';
-      }
-
-      // Include FirePHP if it exists.
-      if (!empty($firephp_path) && file_exists($firephp_path . 'fb.php')) {
-        include_once $firephp_path . 'fb.php';
-        include_once $firephp_path . 'FirePHP.class.php';
-      }
-
-      // Include ChromePHP if it exists.
-      if (!empty($chromephp_path) && file_exists($chromephp_path .= '/ChromePhp.php')) {
-        include_once $chromephp_path;
-      }
-
-      // Add CSS for query log if should be displayed.
-      if (config('devel.settings')->get('query_display')) {
-        drupal_add_css(drupal_get_path('module', 'devel') . '/css/devel.css');
-        drupal_add_js(drupal_get_path('module', 'devel') . '/js/devel.js');
-      }
-    }
-  }
-  if (config('devel.settings')->get('rebuild_theme_registry')) {
-    drupal_theme_rebuild();
-    if (drupal_container()->get('flood')->isAllowed('devel_rebuild_registry_warning', 1)) {
-      drupal_container()->get('flood')->register('devel_rebuild_registry_warning');
-      if (!devel_silent() && user_access('access devel information')) {
-        drupal_set_message(t('The theme registry is being rebuilt on every request. Remember to <a href="!url">turn off</a> this feature on production websites.', array("!url" => url('admin/config/development/devel'))));
-      }
-    }
+function devel_page_build(&$page) {
+  // Add CSS for query log if should be displayed.
+  if (\Drupal::config('devel.settings')->get('query_display')) {
+    $path = drupal_get_path('module', 'devel');
+    $page['#attached']['js'][] = $path . '/js/devel.js';
+    $page['#attached']['css'][] = $path . '/css/devel.css';
   }
 }
 

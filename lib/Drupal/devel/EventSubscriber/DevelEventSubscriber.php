@@ -7,9 +7,10 @@
 
 namespace Drupal\devel\EventSubscriber;
 
-use Drupal\Core\Config\Config;
 use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Database\Database;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -25,10 +26,26 @@ class DevelEventSubscriber implements EventSubscriberInterface {
   protected $config;
 
   /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $account;
+
+  /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * Constructs a DevelEventSubscriber object.
    */
-  public function __construct(ConfigFactory $factory) {
-    $this->config = $factory->get('devel.settings');
+  public function __construct(ConfigFactory $config, AccountInterface $account, ModuleHandlerInterface $module_handler) {
+    $this->config = $config->get('devel.settings');
+    $this->account = $account;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -44,10 +61,55 @@ class DevelEventSubscriber implements EventSubscriberInterface {
       if (devel_query_enabled()) {
         Database::startLog('devel');
       }
+
+      if ($this->account->hasPermission('access devel information')) {
+        devel_set_handler(devel_get_handlers());
+        // We want to include the class early so that anyone may call krumo()
+        // as needed. See http://krumo.sourceforge.net/
+        has_krumo();
+
+        // See http://www.firephp.org/HQ/Install.htm
+        $path = NULL;
+        if ((@include_once 'fb.php') || (@include_once 'FirePHPCore/fb.php')) {
+          // FirePHPCore is in include_path. Probably a PEAR installation.
+          $path = '';
+        }
+        elseif ($this->moduleHandler->moduleExists('libraries')) {
+          // Support Libraries API - http://drupal.org/project/libraries
+          $firephp_path = libraries_get_path('FirePHPCore');
+          $firephp_path = ($firephp_path ? $firephp_path . '/lib/FirePHPCore/' : '');
+          $chromephp_path = libraries_get_path('chromephp');
+        }
+        else {
+          $firephp_path = DRUPAL_ROOT . '/libraries/FirePHPCore/lib/FirePHPCore/';
+          $chromephp_path = './' . drupal_get_path('module', 'devel') . '/chromephp';
+        }
+
+        // Include FirePHP if it exists.
+        if (!empty($firephp_path) && file_exists($firephp_path . 'fb.php')) {
+          include_once $firephp_path . 'fb.php';
+          include_once $firephp_path . 'FirePHP.class.php';
+        }
+
+        // Include ChromePHP if it exists.
+        if (!empty($chromephp_path) && file_exists($chromephp_path .= '/ChromePhp.php')) {
+          include_once $chromephp_path;
+        }
+
+      }
     }
 
     // Initialize XHProf.
     devel_xhprof_enable();
+    if ($this->config->get('rebuild_theme_registry')) {
+      drupal_theme_rebuild();
+      if (\Drupal::service('flood')->isAllowed('devel.rebuild_registry_warning', 1)) {
+        \Drupal::service('flood')->register('devel.rebuild_registry_warning');
+        if (!devel_silent() && $this->account->hasPermission('access devel information')) {
+          drupal_set_message(t('The theme registry is being rebuilt on every request. Remember to <a href="!url">turn off</a> this feature on production websites.', array("!url" => url('admin/config/development/devel'))));
+        }
+      }
+    }
 
     // We need user_access() in the shutdown function. make sure it gets loaded.
     // Also prime the drupal_get_filename() static with user.module's location to
