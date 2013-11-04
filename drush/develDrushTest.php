@@ -1,5 +1,7 @@
 <?php
 
+if (class_exists('Drush_CommandTestCase')) {
+
 /*
  * @file
  *   PHPUnit Tests for devel. This uses Drush's own test framework, based on PHPUnit.
@@ -28,4 +30,6 @@ class develCase extends Drush_CommandTestCase {
 //    $expected = array('dblog', 'file', 'field', 'system', 'update');
 //    $this->assertSame($expected, $output);
   }
+}
+
 }
