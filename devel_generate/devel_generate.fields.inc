@@ -7,6 +7,7 @@
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\field\Field;
+use Drupal\Core\Field\FieldDefinitionInterface;
 
 /**
  * Enrich the $object that is about to be saved with arbitrary
@@ -34,7 +35,7 @@ function devel_generate_fields(EntityInterface &$object, $entity_type, $bundle_n
     }
     else {
       switch ($cardinality) {
-        case FIELD_CARDINALITY_UNLIMITED:
+        case FieldDefinitionInterface::CARDINALITY_UNLIMITED;
           $max = rand(0, 3); //just an arbitrary number for 'unlimited'
           break;
         default:
@@ -84,7 +85,7 @@ function devel_generate_multiple($function, $object, $instance, $plugin_definiti
   if (function_exists($function)) {
     $cardinality = $instance->getFieldCardinality();
     switch ($cardinality) {
-      case FIELD_CARDINALITY_UNLIMITED:
+      case FieldDefinitionInterface::CARDINALITY_UNLIMITED;
         $max = rand(0, 3); //just an arbitrary number for 'unlimited'
         break;
       default:
