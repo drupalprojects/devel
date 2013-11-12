@@ -10,6 +10,7 @@ namespace Drupal\devel\Plugin\Block;
 use Drupal\block\BlockBase;
 use Drupal\block\Annotation\Block;
 use Drupal\Core\Annotation\Translation;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Provides a block for switching users.
