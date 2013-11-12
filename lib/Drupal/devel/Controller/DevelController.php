@@ -278,7 +278,7 @@ class DevelController extends ControllerBase {
     $conn = Drupal\Core\Database\Database::getConnection();
     $quoted = array();
     foreach ((array)$query->args as $key => $val) {
-      $quoted[$key] = $conn->quote($val);
+      $quoted[$key] = is_null($val) ? 'NULL' : $conn->quote($val);
     }
     $output = strtr($query->query, $quoted);
 
