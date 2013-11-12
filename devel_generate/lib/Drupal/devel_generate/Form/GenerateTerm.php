@@ -32,7 +32,7 @@ class GenerateTerm extends FormBase implements FormInterface {
     );
 
     $options = array();
-    foreach (taxonomy_vocabulary_load_multiple() as $vid => $vocab) {
+    foreach (entity_load_multiple('taxonomy_vocabulary') as $vid => $vocab) {
       $options[$vid] = $vocab->vid;
     }
     $form['vids'] = array(
@@ -80,7 +80,7 @@ class GenerateTerm extends FormBase implements FormInterface {
       }
       drupal_set_message(t('Deleted existing terms.'));
     }
-    $vocabs = taxonomy_vocabulary_load_multiple($values['vids']);
+    $vocabs = entity_load_multiple('taxonomy_vocabulary', $values['vids']);
     $new_terms = devel_generate_terms($values['num_terms'], $vocabs, $values['title_length']);
     if (!empty($new_terms)) {
       drupal_set_message(t('Created the following new terms: !terms', array('!terms' => implode(', ', $new_terms))));

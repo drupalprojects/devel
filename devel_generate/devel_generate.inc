@@ -270,7 +270,7 @@ function devel_generate_delete_vocabulary_terms($vid) {
  * Deletes all vocabularies.
  */
 function devel_generate_delete_vocabularies() {
-  foreach (taxonomy_vocabulary_load_multiple() as $vid => $vocabulary) {
+  foreach (entity_load_multiple('taxonomy_vocabulary') as $vid => $vocabulary) {
     $vocabulary->delete();
   }
 }
