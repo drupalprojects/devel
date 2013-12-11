@@ -162,7 +162,8 @@ function drush_devel_generate_content($num_nodes = NULL, $max_comments = NULL) {
   }
 
   // Load user 1; is needed for creating *published* comments.
-  if ($max_comments) {
+  // This code breaks D8 and is not needed there. Perhaps unneeded on D7 as well.
+  if ($max_comments && drush_drupal_major_version() <= 7) {
     global $user;
     $user_one = user_load(1);
     $user = $user_one;
@@ -173,7 +174,13 @@ function drush_devel_generate_content($num_nodes = NULL, $max_comments = NULL) {
   $values['values']['title_length'] = 6;
   $values['values']['num_nodes'] = $num_nodes;
   $values['values']['max_comments'] = $max_comments;
-  $values['values']['node_types'] = drupal_map_assoc(explode(',', drush_get_option('types', 'page,article')));
+  $all_types = array_keys(node_type_get_names());
+  $default_types = array_intersect(array('page', 'article'), $all_types);
+  $selected_types = _convert_csv_to_array(drush_get_option('types', $default_types));
+  if (empty($selected_types)) {
+    return drush_set_error('DEVEL_GENERATE_NO_CONTENT_TYPES', dt('No content types available'));
+  }
+  $values['values']['node_types'] = drupal_map_assoc($selected_types);
   $node_types = array_filter($values['values']['node_types']);
   if (!empty($values['values']['kill_content']) && empty($node_types)) {
     return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Please provide content type (--types) in which you want to delete the content.'));

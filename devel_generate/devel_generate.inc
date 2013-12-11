@@ -603,11 +603,12 @@ function devel_generate_content_add_node(&$results) {
 
   $node_type = array_rand(array_filter($results['node_types']));
   $type = node_type_load($node_type);
+  $uid = $users[array_rand($users)];
 
   $edit_node = array(
     'nid' => NULL,
     'type' => $node_type,
-    'uid' => $users[array_rand($users)],
+    'uid' => $uid,
     'revision' => mt_rand(0, 1),
     'status' => TRUE,
     'promote' => mt_rand(0, 1),
@@ -650,7 +651,7 @@ function devel_generate_get_langcode($results) {
     $langcode = $langcodes[array_rand($langcodes)];
   }
   else {
-    $langcode = language_default()->langcode;
+    $langcode = language_default()->id;
   }
   return $langcode == 'en' ? Language::LANGCODE_NOT_SPECIFIED : $langcode;
 }
