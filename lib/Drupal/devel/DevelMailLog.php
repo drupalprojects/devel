@@ -30,7 +30,7 @@ class DevelMailLog extends PhpMail {
       $mimeheaders[] = $name . ': ' . mime_header_encode($value);
     }
 
-    $line_endings = variable_get('mail_line_endings', MAIL_LINE_ENDINGS);
+    $line_endings = settings()->get('mail_line_endings', PHP_EOL);
     $output = join($line_endings, $mimeheaders) . $line_endings;
     // 'Subject:' is a mail header and should not be translated.
     $output .= 'Subject: ' . $message['subject'] . $line_endings;
