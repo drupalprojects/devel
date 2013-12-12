@@ -15,7 +15,7 @@ function link_devel_generate($object, $instance, $plugin_definition, $form_displ
 
 function _link_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   $object_field = array();
-  $settings = $instance->getFieldSettings();
+  $settings = $instance->getSettings();
 
   // Set of possible top-level domains.
   $tlds = array('com', 'net', 'gov', 'org', 'edu', 'biz', 'info');

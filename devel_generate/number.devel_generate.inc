@@ -12,7 +12,7 @@ function number_devel_generate($object, $instance, $plugin_definition, $form_dis
 
 function _number_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   $object_field = array();
-  $settings = $instance->getFieldSettings();
+  $settings = $instance->getSettings();
 
   // Make sure the instance settings are all set.
   foreach (array('min', 'max', 'precision', 'scale') as $key) {

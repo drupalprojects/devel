@@ -59,7 +59,7 @@ function devel_generate_node_insert(EntityInterface $node) {
       $instances = Field::fieldInfo()->getBundleInstances($node->entityType(), $node->bundle());
       foreach ($instances as $instance) {
         $field = $instance->getField();
-        if ($field->getFieldType() == 'comment') {
+        if ($field->getType() == 'comment') {
           devel_generate_add_comments($node, $field, $results['users'], $results['max_comments'], $results['title_length']);
         }
       }

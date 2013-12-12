@@ -23,8 +23,8 @@ function devel_generate_fields(EntityInterface &$object, $entity_type, $bundle_n
 
   foreach ($instances as $instance) {
     $field = $instance->getField();
-    $cardinality = $field->getFieldCardinality();
-    $field_name = $field->getFieldName();
+    $cardinality = $field->getCardinality();
+    $field_name = $field->getName();
     $object_field = array();
 
     // If module handles own multiples, then only call its hook once.
@@ -83,7 +83,7 @@ function devel_generate_fields(EntityInterface &$object, $entity_type, $bundle_n
 function devel_generate_multiple($function, $object, $instance, $plugin_definition, $form_display_options) {
   $object_field = array();
   if (function_exists($function)) {
-    $cardinality = $instance->getFieldCardinality();
+    $cardinality = $instance->getCardinality();
     switch ($cardinality) {
       case FieldDefinitionInterface::CARDINALITY_UNLIMITED;
         $max = rand(0, 3); //just an arbitrary number for 'unlimited'

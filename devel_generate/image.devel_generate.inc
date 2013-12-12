@@ -20,7 +20,7 @@ function image_devel_generate($object, $instance, $plugin_definition, $form_disp
 function _image_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   $object_field = array();
   static $images = array();
-  $settings = $instance->getFieldSettings();
+  $settings = $instance->getSettings();
 
   $min_resolution = empty($settings['min_resolution']) ? '100x100' : $settings['min_resolution'];
   $max_resolution = empty($settings['max_resolution']) ? '600x600' : $settings['max_resolution'];

@@ -97,7 +97,7 @@ function devel_generate_content($form_state) {
 }
 
 function devel_generate_add_comments(EntityInterface $node, $field, $users, $max_comments, $title_length = 8) {
-  $field_name = $field->getFieldName();
+  $field_name = $field->getName();
   if ($node->{$field_name}->status >= COMMENT_OPEN) {
     $num_comments = mt_rand(1, $max_comments);
     for ($i = 1; $i <= $num_comments; $i++) {

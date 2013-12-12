@@ -11,7 +11,7 @@ function file_devel_generate($object, $instance, $plugin_definition, $form_displ
 
 function _file_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   static $file;
-  $settings = $instance->getFieldSettings();
+  $settings = $instance->getSettings();
 
   if (empty($file)) {
     if ($path = devel_generate_textfile()) {

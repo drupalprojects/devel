@@ -11,7 +11,7 @@ function text_devel_generate($object, $instance, $plugin_definition, $form_displ
 
 function _text_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   $object_field = array();
-  $settings = $instance->getFieldSettings();
+  $settings = $instance->getSettings();
   if (!empty($settings['text_processing'])) {
     $formats = filter_formats();
     $format = array_rand($formats);
