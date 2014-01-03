@@ -8,7 +8,7 @@
 namespace Drupal\devel\Access;
 
 use Drupal\Core\Access\CsrfTokenGenerator;
-use Drupal\Core\Access\StaticAccessCheckInterface;
+use Drupal\Core\Routing\Access\AccessInterface as RoutingAccessInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Route;
 /**
  * Defines a special access checker for the user switch route.
  */
-class SwitchAccess implements StaticAccessCheckInterface {
+class SwitchAccess implements RoutingAccessInterface {
 
   /**
    * CSRF token validator.
