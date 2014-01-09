@@ -72,7 +72,7 @@ class DnaUser extends DnaBlockBase {
       $rows = array();
       // Determine whether to use Ajax or pre-populate the tables.
       if ($ajax = config('devel_node_access.settings')->get('user_ajax')) {
-        drupal_add_js(drupal_get_path('module', 'devel_node_access') . '/devel_node_access.js');
+        $output['#attached']['library'][] = array('devel_node_access', 'node_access');
       }
       // Find all users. The following operations are very inefficient, so we
       // limit the number of users returned.  It would be better to make a

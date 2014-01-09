@@ -144,6 +144,21 @@ function devel_node_access_form_alter(&$form, $form_state, $form_id) {
 }
 
 /**
+ * Implements hook_library_info().
+ */
+function devel_node_access_library_info() {
+  $path = drupal_get_path('module', 'devel_node_access');
+
+  $libraries['node_access'] = array(
+    'js' => array(
+      $path . '/devel_node_access.js',
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
  * Builds the DNA Summary page.
  */
 function dna_summary() {

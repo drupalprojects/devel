@@ -327,12 +327,24 @@ function devel_set_message($msg, $type = NULL) {
 }
 
 /**
+ * Implements hook_library_info().
+ */
+function devel_library_info() {
+  $libraries['krumo_path'] = array(
+    'js' => array(
+      drupal_get_path('module', 'devel') . '/js/devel_krumo_path.js',
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
  * Returns boolean. No need for cache here.
  */
 function has_krumo() {
   @include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'devel') . '/krumo/class.krumo.php';
   if (function_exists('krumo') && !drupal_is_cli()) {
-    drupal_add_js(drupal_get_path('module', 'devel') . '/js/devel_krumo_path.js');
     return TRUE;
   }
   return FALSE;
@@ -822,8 +834,14 @@ function devel_shutdown() {
  * Implements hook_page_alter().
  */
 function devel_page_alter($page) {
-  if (config('devel.settings')->get('page_alter') && user_access('access devel information')) {
-    dpm($page, 'page');
+  if (user_access('access devel information')) {
+    if (config('devel.settings')->get('page_alter')) {
+      dpm($page, 'page');
+    }
+
+    if (!devel_silent()) {
+      $page['#attached']['library'][] = array('devel', 'krumo_path');
+    }
   }
 }
 
