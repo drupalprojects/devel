@@ -5,6 +5,9 @@
  * Drush integration for the devel module.
  */
 
+use Drupal\Component\Uuid\Uuid;
+use Drupal\Component\Uuid\Php;
+
 /**
  * Implements hook_drush_command().
  */
@@ -94,6 +97,18 @@ function devel_drush_command() {
     ),
   );
 
+  $items['devel-generate-uuid'] = array(
+    'description' => 'Generate a UUID.',
+    'core' => array('8+'),
+    'examples' => array(
+      "drush devel-generate-uuid" => "Outputs a Universally Unique IDentifier.",
+    ),
+    'aliases' => array('uuid'),
+    'outputformat' => array(
+      'default' => 'string',
+    ),
+  );
+
   return $items;
 }
 
@@ -129,21 +144,6 @@ function drush_devel_download($path = 'libraries') {
   }
   else {
     drush_log(dt('Drush was unable to export FirePHP to @path.', array('@path' => $path)), 'warning');
-  }
-}
-
-/**
- * Implements drush_MODULE_post_COMMAND().
- */
-function drush_devel_post_pm_enable() {
-  $extensions = func_get_args();
-  // Deal with comma delimited extension list.
-  if (strpos($extensions[0], ',') !== FALSE) {
-    $extensions = explode(',', $extensions[0]);
-  }
-
-  if (in_array('devel', $extensions) && !drush_get_option('skip')) {
-    drush_devel_download();
   }
 }
 
@@ -233,6 +233,16 @@ function drush_devel_token() {
   drush_print_table($rows, TRUE);
 }
 
+/**
+ * Command callback. Outputs a UUID.
+ *
+ * @return string
+ *   A freshly generated UUID.
+ */
+function drush_devel_generate_uuid() {
+  $uuid = new Php();
+  return $uuid->generate();
+}
 
 /**
  * Print the specified function, including any
