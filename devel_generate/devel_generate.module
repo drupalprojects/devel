@@ -56,7 +56,7 @@ function devel_generate_node_insert(EntityInterface $node) {
       // Disable entity statistics for comments created as it tries to insert
       // them twice.
       \Drupal::state()->set('comment.maintain_entity_statistics', FALSE);
-      $instances = Field::fieldInfo()->getBundleInstances($node->entityType(), $node->bundle());
+      $instances = Field::fieldInfo()->getBundleInstances($node->getEntityTypeId(), $node->bundle());
       foreach ($instances as $instance) {
         $field = $instance->getField();
         if ($field->getType() == 'comment') {

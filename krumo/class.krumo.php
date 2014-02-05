@@ -673,7 +673,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 
     $css = '';
     // DEVEL: changed for Drupal variables system
-    $skin = variable_get('devel_krumo_skin', 'orange');
+    $skin = \Drupal::config('devel.settings')->get('krumo_skin');
 
     // custom selected skin ?
     //

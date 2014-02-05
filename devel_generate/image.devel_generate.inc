@@ -4,7 +4,7 @@ define('DEVEL_GENERATE_IMAGE_MAX', 5);
 
 function image_devel_generate($object, $instance, $plugin_definition, $form_display_options) {
   if (function_exists('imagejpeg')) {
-    $devel_generate_image_function = variable_get('devel_generate_image_function', '_image_devel_generate');
+    $devel_generate_image_function = \Drupal::config('devel.settings')->get('image_function');
     if (!function_exists($devel_generate_image_function)) {
       $devel_generate_image_function = '_image_devel_generate';
     }

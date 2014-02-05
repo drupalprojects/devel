@@ -190,22 +190,6 @@ devel.elements_page:
   requirements:
     _permission: 'access devel information'
 
-devel.devel_variable:
-  path: '/devel/variable'
-  defaults:
-    _form: '\Drupal\devel\Form\VariableForm'
-    _title: 'Variable editor'
-  requirements:
-    _permission: 'access devel information'
-
-devel.devel_variable_edit:
-  path: '/devel/variable/edit/{name}'
-  defaults:
-    _form: '\Drupal\devel\Form\VariableEditForm'
-    _title: 'Edit variable: !name'
-  requirements:
-    _permission: 'access devel information'
-
 devel.cache_clear:
   path: '/devel/cache/clear'
   defaults:

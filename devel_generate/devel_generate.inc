@@ -113,9 +113,9 @@ function devel_generate_add_comments(EntityInterface $node, $field, $users, $max
       }
 
       $comment = entity_create('comment', array(
-        'entity_type' => $node->entityType(),
+        'entity_type' => $node->getEntityTypeId(),
         'entity_id' => $node->id(),
-        'field_id' => $node->entityType() . '__' . $field_name,
+        'field_id' => $node->getEntityTypeId() . '__' . $field_name,
         'name' => 'devel generate',
         'mail' => 'devel_generate@example.com',
         'timestamp' => mt_rand($node->created->value, REQUEST_TIME),

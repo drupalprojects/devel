@@ -28,9 +28,6 @@ function devel_help($section) {
       return '<p>' . t('This is a list of defined user functions that generated this current request lifecycle. Click on a function name to view its documention.') . '</p>';
     case 'devel/session':
       return '<p>' . t('Here are the contents of your <code>$_SESSION</code> variable.') . '</p>';
-    case 'devel/variable':
-      $api = config('devel.settings')->get('api_url');
-      return '<p>' . t('This is a list of the variables and their values currently stored in variables table and the <code>$conf</code> array of your settings.php file. These variables are usually accessed with <a href="@variable-get-doc">variable_get()</a> and <a href="@variable-set-doc">variable_set()</a>. Variables that are too long can slow down your pages.', array('@variable-get-doc' => "http://$api/api/HEAD/function/variable_get", '@variable-set-doc' => "http://$api/api/HEAD/function/variable_set")) . '</p>';
     case 'devel/reinstall':
       return t('Warning - will delete your module tables and variables.');
   }
@@ -72,12 +69,6 @@ function devel_menu() {
     'description' => 'Details about a given menu item.',
     'menu_name' => 'devel',
     'route_name' => 'devel.menu_item',
-  );
-  $items['devel/variable'] = array(
-    'title' => 'Variable editor',
-    'description' => 'Edit and delete site variables.',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.devel_variable',
   );
   $items['devel/config'] = array(
     'title' => 'Config editor',
@@ -258,7 +249,7 @@ function devel_admin_paths() {
  */
 function devel_menu_need_destination() {
   return array('devel/cache/clear', 'devel/reinstall', 'devel/menu/reset',
-    'devel/variable', 'admin/reports/status/run-cron');
+    'admin/reports/status/run-cron');
 }
 
 /**

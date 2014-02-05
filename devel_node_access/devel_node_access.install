@@ -9,15 +9,3 @@ function devel_node_access_uninstall() {
     $devel_menu->delete();
   }
 }
-
-/**
- * Moves devel_node_access settings from variable to config.
- *
- * @ingroup config_upgrade
- */
-function devel_node_access_update_8001() {
-  update_variables_to_config('devel_node_access.settings', array(
-    'devel_node_access_debug_mode' => 'debug_mode',
-    'devel_node_access_user_ajax' => 'user_ajax',
-  ));
-}

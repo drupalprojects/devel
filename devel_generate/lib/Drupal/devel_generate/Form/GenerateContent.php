@@ -10,11 +10,38 @@ namespace Drupal\devel_generate\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormInterface;
 use Drupal\Core\Language\Language;
+use Drupal\field\FieldInfo;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a form that allows privileged users to generate nodes and comments.
  */
 class GenerateContent extends FormBase implements FormInterface {
+  /**
+   * Field info service.
+   *
+   * @var \Drupal\field\FieldInfo
+   */
+  protected $fieldInfo;
+
+  /**
+   * Constructs a GenerateContent object.
+   *
+   * @param \Drupal\field\FieldInfo $field_info
+   *   Field Info service.
+   */
+  public function __construct(FieldInfo $field_info) {
+    $this->fieldInfo = $field_info;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('field.info')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -50,10 +77,12 @@ class GenerateContent extends FormBase implements FormInterface {
         $options[$type->type] = array(
           'type' => array('#markup' => t($type->name)),
         );
-        if (module_exists('comment')) {
-          $default = variable_get('comment_' . $type->type, COMMENT_OPEN);
+        if (module_exists('comment') && ($instance = $this->fieldInfo->getInstance('node', $type->type, 'comment'))) {
+          //@TODO: Make this part support multiple comment fields.
+          $instance = $this->fieldInfo->getInstance('node', $type->type, 'comment');
+          $mode = $instance->getSetting('default_mode');
           $map = array(t('Hidden'), t('Closed'), t('Open'));
-          $options[$type->type]['comments'] = array('#markup' => '<small>'. $map[$default]. '</small>');
+          $options[$type->type]['comments'] = array('#markup' => '<small>'. $map[$mode]. '</small>');
         }
       }
     }
