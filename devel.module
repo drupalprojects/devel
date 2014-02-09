@@ -1358,12 +1358,7 @@ function theme_devel_querylog_row($variables) {
       $attr = array();
     }
 
-    if (!empty($attr['class'])) {
-      $attr['class'] .= " cell cell-$i";
-    }
-    else {
-      $attr['class'] = "cell cell-$i";
-    }
+    $attr['class'][] = "cell cell-$i";
     $attributes = new Attribute($attr);
 
     $output .= "<div $attributes>$data</div>";
