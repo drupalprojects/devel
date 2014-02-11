@@ -168,6 +168,7 @@ class DevelController extends ControllerBase {
   public function session() {
     $output = kprint_r($_SESSION, TRUE);
     $headers = array(t('Session name'), t('Session ID'));
+    // @todo don't call theme() directly.
     $output .= theme('table', array('headers' => $headers, 'rows' => array(array(session_name(), session_id()))));
     return $output;
   }
@@ -257,6 +258,7 @@ class DevelController extends ControllerBase {
       $rows[] = array_values($row);
       $i++;
     }
+    // @todo don't call theme() directly.
     $output = theme('table', array('header' => $header, 'rows' => $rows));
 
     $GLOBALS['devel_shutdown'] = FALSE;
@@ -275,7 +277,7 @@ class DevelController extends ControllerBase {
     $path = file_stream_wrapper_uri_normalize($path);
     $queries = json_decode(file_get_contents($path));
     $query = $queries[$qid];
-    $conn = Drupal\Core\Database\Database::getConnection();
+    $conn = \Drupal\Core\Database\Database::getConnection();
     $quoted = array();
     foreach ((array)$query->args as $key => $val) {
       $quoted[$key] = is_null($val) ? 'NULL' : $conn->quote($val);
