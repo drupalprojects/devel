@@ -299,9 +299,7 @@ function devel_theme() {
 function devel_page_build(&$page) {
   // Add CSS for query log if should be displayed.
   if (\Drupal::config('devel.settings')->get('query_display')) {
-    $path = drupal_get_path('module', 'devel');
-    $page['#attached']['js'][] = $path . '/js/devel.js';
-    $page['#attached']['css'][] = $path . '/css/devel.css';
+    $page['#attached']['library'][] = array('devel', 'devel');
   }
 }
 
@@ -321,12 +319,26 @@ function devel_set_message($msg, $type = NULL) {
  * Implements hook_library_info().
  */
 function devel_library_info() {
+  $path = drupal_get_path('module', 'devel');
   $libraries['krumo_path'] = array(
     'js' => array(
-      drupal_get_path('module', 'devel') . '/js/devel_krumo_path.js',
+      $path . '/js/devel_krumo_path.js',
     ),
   );
-
+  $libraries['devel'] = array(
+    'title' => 'Devel',
+    'version' => '0',
+    'js' => array(
+      $path . '/js/devel.js',
+    ),
+    'css' => array(
+      $path . '/css/devel.css',
+    ),
+    'dependencies' => array(
+      array('system', 'jquery'),
+      array('system', 'drupal'),
+    ),
+  );
   return $libraries;
 }
 

@@ -1,4 +1,4 @@
-(function ($) {
+(function ($, Drupal) {
 
 "use strict";
 
@@ -44,4 +44,4 @@ Drupal.behaviors.devel_placeholders = {
   }
 }
 
-})(jQuery);
+})(jQuery, Drupal);
