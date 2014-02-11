@@ -15,7 +15,7 @@
     if (cell !== undefined) {
       // Generate the URI from the basePath, path, data type, cell ID, and a
       // random token to bypass caching.
-      var url = settings.basePath
+      var url = settings.path.basePath
               + "?q="
               + 'devel/node_access/by_user/json/'
               + cell

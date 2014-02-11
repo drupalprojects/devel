@@ -8,7 +8,7 @@ Drupal.behaviors.devel_explain = {
     $('a.dev-explain').click(function () {
       var qid = $(this).attr("qid");
       var cell = $('#devel-query-' + qid);
-      $('.dev-explain', cell).load(settings.basePath + 'devel/explain/' + settings.devel.request_id + '/' + qid).show();
+      $('.dev-explain', cell).load(settings.path.basePath + 'devel/explain/' + settings.devel.request_id + '/' + qid).show();
       $('.dev-placeholders', cell).hide();
       $('.dev-arguments', cell).hide();
       return false;
@@ -22,7 +22,7 @@ Drupal.behaviors.devel_arguments = {
     $('a.dev-arguments').click(function () {
       var qid = $(this).attr("qid");
       var cell = $('#devel-query-' + qid);
-      $('.dev-arguments', cell).load(settings.basePath + 'devel/arguments/' + settings.devel.request_id + '/' + qid).show();
+      $('.dev-arguments', cell).load(settings.path.basePath + 'devel/arguments/' + settings.devel.request_id + '/' + qid).show();
       $('.dev-placeholders', cell).hide();
       $('.dev-explain', cell).hide();
       return false;
