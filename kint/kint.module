@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * Alias of Kint::dump(). Prints data using Kint debug tool.
+ *
+ * Pass as many arguments as you wish.
+ */
+function kint() {
+  kint_require();
+  if (Kint::enabled() && user_access('access kint')) {
+    $args = func_get_args();
+    call_user_func_array(drupal_is_cli() ? 's' : array('Kint', 'dump'), $args);
+  }
+}
+
+/**
+ * Alias of Kint::trace().
+ * Print backtrace in Kint debug tool.
+ */
+function kint_trace() {
+  kint_require();
+  if (Kint::enabled() && user_access('access kint')) {
+    call_user_func_array(array('Kint', 'trace'), array());
+  }
+}
+
+function kint_lite() {
+  if (Kint::enabled() && user_access('access kint')) {
+    $args = func_get_args();
+    call_user_func_array('kintLite', $args);
+  }
+}
+
+function ksm() {
+  kint_require();
+  if (Kint::enabled() && user_access('access kint')) {
+    $args = func_get_args();
+    $msg = @Kint::dump($args);
+    drupal_set_message($msg);
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function kint_permission() {
+  return array(
+    'access kint' => array(
+      'description' => t('View developer debug output.'),
+      'title' => t('Access kint information'),
+      'restrict access' => TRUE,
+    ),
+  );
+}
+
+function kint_require() {
+  require_once drupal_get_path('module', 'kint') . '/kint-0.9/Kint.class.php';
+}
+
+
+
+
+
