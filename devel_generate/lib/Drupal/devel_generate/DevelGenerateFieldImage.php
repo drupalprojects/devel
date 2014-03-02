@@ -14,7 +14,7 @@ class DevelGenerateFieldImage extends DevelGenerateFieldBase {
     $min_resolution = empty($settings['min_resolution']) ? '100x100' : $settings['min_resolution'];
     $max_resolution = empty($settings['max_resolution']) ? '600x600' : $settings['max_resolution'];
     $extensions = array_intersect(explode(' ', $settings['file_extensions']), array('png', 'gif', 'jpg', 'jpeg'));
-    $extension = array_rand(drupal_map_assoc($extensions));
+    $extension = array_rand(array_combine($extensions, $extensions));
     // Generate a max of 5 different images.
     if (!isset($images[$extension][$min_resolution][$max_resolution]) || count($images[$extension][$min_resolution][$max_resolution]) <= DEVEL_GENERATE_IMAGE_MAX) {
       if ($path = $this->generateImage($extension, $min_resolution, $max_resolution)) {

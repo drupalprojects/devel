@@ -26,6 +26,9 @@ function devel_generate_menu_link_defaults() {
   return $items;
 }
 
+/**
+ * Implements hook_permission().
+ */
 function devel_generate_permission() {
   $permissions = array();
 
