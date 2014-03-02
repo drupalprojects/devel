@@ -144,12 +144,13 @@ class MenuDevelGenerate extends DevelGenerateBase {
 
   public function validateDrushParams($args) {
 
+    $link_types = array('node', 'front', 'external');
     $values = array(
       'num_menus' => array_shift($args),
       'num_links' => array_shift($args),
       'kill' => drush_get_option('kill'),
       'pipe' => drush_get_option('pipe'),
-      'link_types' => $link_types = drupal_map_assoc(array('node', 'front', 'external')),
+      'link_types' => array_combine($link_types, $link_types),
     );
 
     $max_depth = array_shift($args);

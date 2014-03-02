@@ -84,7 +84,7 @@ class DnaNode extends DnaBlockBase {
       ->orderBy('na.gid');
     $nodes = node_load_multiple($nids);
 
-    if (!config('devel_node_access.settings')->get('debug_mode')) {
+    if (!\Drupal::config('devel_node_access.settings')->get('debug_mode')) {
       $headers = array(t('node'), t('realm'), t('gid'), t('view'), t('update'), t('delete'), t('explained'));
       $rows = array();
       foreach ($query->execute() as $row) {

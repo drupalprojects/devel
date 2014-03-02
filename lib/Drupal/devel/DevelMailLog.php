@@ -18,7 +18,7 @@
 
 namespace Drupal\devel;
 
-use Drupal\Core\Mail\PhpMail;
+use Drupal\Core\Mail\Plugin\Mail\PhpMail;
 use Exception;
 
 class DevelMailLog extends PhpMail {
@@ -43,7 +43,7 @@ class DevelMailLog extends PhpMail {
   public function getFileName($message) {
     $output_directory = $this->getOutputDirectory();
     $this->makeOutputDirectory($output_directory);
-    $output_file_format = config('devel.settings')->get('debug_mail_file_format');
+    $output_file_format = \Drupal::config('devel.settings')->get('debug_mail_file_format');
 
     $tokens = array(
       '%to' => $message['to'],
@@ -81,6 +81,6 @@ class DevelMailLog extends PhpMail {
   }
 
   public function getOutputDirectory() {
-    return config('devel.settings')->get('debug_mail_directory');
+    return \Drupal::config('devel.settings')->get('debug_mail_directory');
   }
 }

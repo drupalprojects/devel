@@ -71,7 +71,7 @@ class DnaUser extends DnaBlockBase {
       $headers = array(t('username'), '<span title="' . t("Create '@langname'-language nodes of the '@Node_type' type.", array('@langname' => $language->name, '@Node_type' => $node_type->name)) . '">' . t('create') . '</span>', t('view'), t('update'), t('delete'));
       $rows = array();
       // Determine whether to use Ajax or pre-populate the tables.
-      if ($ajax = config('devel_node_access.settings')->get('user_ajax')) {
+      if ($ajax = \Drupal::config('devel_node_access.settings')->get('user_ajax')) {
         $output['#attached']['library'][] = array('devel_node_access', 'node_access');
       }
       // Find all users. The following operations are very inefficient, so we

@@ -362,7 +362,7 @@ function has_krumo() {
  * @return boolean
  */
 function merits_krumo($input) {
-  return (is_object($input) || is_array($input)) && has_krumo() && config('devel.settings')->get('krumo_skin') != 'disabled';
+  return (is_object($input) || is_array($input)) && has_krumo() && \Drupal::config('devel.settings')->get('krumo_skin') != 'disabled';
 }
 
 /**
@@ -437,7 +437,7 @@ function devel_watchdog(array $log_entry) {
  * Gets error handlers.
  */
 function devel_get_handlers() {
-  $error_handlers = config('devel.settings')->get('error_handlers');
+  $error_handlers = \Drupal::config('devel.settings')->get('error_handlers');
   if (!empty($error_handlers)) {
     unset($error_handlers[DEVEL_ERROR_HANDLER_NONE]);
   }
@@ -484,7 +484,7 @@ function devel_silent() {
  */
 function devel_xhprof_enable() {
   if (devel_xhprof_is_enabled()) {
-    if ($path = config('devel.settings')->get('xhprof_directory')) {
+    if ($path = \Drupal::config('devel.settings')->get('xhprof_directory')) {
       include_once $path . '/xhprof_lib/utils/xhprof_lib.php';
       include_once $path . '/xhprof_lib/utils/xhprof_runs.php';
       // @todo: consider a variable per-flag instead.
@@ -497,7 +497,7 @@ function devel_xhprof_enable() {
  * Checks if xhprof is enabled.
  */
 function devel_xhprof_is_enabled() {
-  return extension_loaded('xhprof') && config('devel.settings')->get('xhprof_enabled');
+  return extension_loaded('xhprof') && \Drupal::config('devel.settings')->get('xhprof_enabled');
 }
 
 /**
@@ -580,7 +580,7 @@ function backtrace_error_handler($error_level, $message, $filename, $line, $cont
     // (This is Drupal's error_level, which is different from $error_level,
     // and we purposely ignore the difference between _SOME and _ALL,
     // see #970688!)
-    if (config('system.logging')->get('error_level') != 'hide') {
+    if (\Drupal::config('system.logging')->get('error_level') != 'hide') {
       $error_handlers = devel_get_handlers();
       if (!empty($error_handlers[DEVEL_ERROR_HANDLER_STANDARD])) {
         drupal_set_message($msg, ($type[1] <= WATCHDOG_ERROR ? 'error' : 'warning'), TRUE);
@@ -743,7 +743,7 @@ function devel_doc_function_form() {
 function devel_doc_function_form_submit($form, &$form_state) {
   $version = $form_state['values']['version'];
   $function = $form_state['values']['function'];
-  $api = config('devel.settings')->get('api_url');
+  $api = \Drupal::config('devel.settings')->get('api_url');
   $form_state['redirect'] = "http://$api/api/function/$function/$version";
 }
 
@@ -780,7 +780,7 @@ function devel_drupal_goto_alter($path, $options, $http_response_code) {
     // The page we are leaving is a drupal_goto(). Present a redirection page
     // so that the developer can see the intermediate query log.
     // We don't want to load user module here, so keep function_exists() call.
-    if (isset($user) && function_exists('user_access') && user_access('access devel information') && config('devel.settings')->get('redirect_page')) {
+    if (isset($user) && function_exists('user_access') && user_access('access devel information') && \Drupal::config('devel.settings')->get('redirect_page')) {
       $destination = function_exists('url') ? url($path, $options) : $path;
       $output = t_safe('<p>The user is being redirected to <a href="@destination">@destination</a>.</p>', array('@destination' => $destination));
       drupal_deliver_page($output);
@@ -799,7 +799,7 @@ function devel_drupal_goto_alter($path, $options, $http_response_code) {
  */
 function devel_library_alter(&$libraries, $module) {
   // Use an uncompressed version of jQuery for debugging.
-  if ($module === 'system' && config('devel.settings')->get('use_uncompressed_jquery') && isset($libraries['jquery'])) {
+  if ($module === 'system' && \Drupal::config('devel.settings')->get('use_uncompressed_jquery') && isset($libraries['jquery'])) {
     // Make sure we're not changing the jQuery version used on the site.
     if (version_compare($libraries['jquery']['version'], '1.4.4', '=')) {
       $libraries['jquery']['js'] = array(
@@ -838,7 +838,7 @@ function devel_shutdown() {
  */
 function devel_page_alter($page) {
   if (user_access('access devel information')) {
-    if (config('devel.settings')->get('page_alter')) {
+    if (\Drupal::config('devel.settings')->get('page_alter')) {
       dpm($page, 'page');
     }
 
@@ -911,7 +911,7 @@ function devel_shutdown_summary($queries) {
   $sum = 0;
   $output = '';
   list($counts, $query_summary) = devel_query_summary($queries);
-  $config_devel = config('devel.settings');
+  $config_devel = \Drupal::config('devel.settings');
 
   if ($config_devel->get('query_display')) {
     // Query log on.
@@ -939,7 +939,7 @@ function devel_shutdown_summary($queries) {
  */
 function devel_shutdown_xhprof() {
   // Namespace for your application.
-  $namespace = config('system.site')->get('name');
+  $namespace = \Drupal::config('system.site')->get('name');
   $xhprof_data = xhprof_disable();
   $xhprof_runs = new XHProfRuns_Default();
   return $xhprof_runs->save_run($xhprof_data, $namespace);
@@ -950,9 +950,9 @@ function devel_shutdown_xhprof() {
  */
 function devel_xhprof_link($run_id, $type = 'link') {
   // @todo: render results from within Drupal.
-  $xhprof_url = config('devel.settings')->get('xhprof_url');
+  $xhprof_url = \Drupal::config('devel.settings')->get('xhprof_url');
   // Namespace for your application.
-  $namespace = config('system.site')->get('name');
+  $namespace = \Drupal::config('system.site')->get('name');
   if ($xhprof_url) {
     $url = $xhprof_url . '/index.php?run=' . urlencode($run_id) . '&source=' . urlencode($namespace);
     return $type == 'url' ? $url : t('<a href="@xhprof">XHProf output</a>. ', array('@xhprof' => $url));
@@ -965,7 +965,7 @@ function devel_xhprof_link($run_id, $type = 'link') {
 function devel_shutdown_memory() {
   global $memory_init;
 
-  if (config('devel.settings')->get('memory')) {
+  if (\Drupal::config('devel.settings')->get('memory')) {
     $memory_shutdown = memory_get_usage();
     $args = array(
       '@memory_boot' => round($memory_init / 1024 / 1024, 2),
@@ -1031,14 +1031,14 @@ function devel_query_put_contents($queries) {
  * Returns whether query logging is enabled.
  */
 function devel_query_enabled() {
-  return method_exists('Drupal\Core\Database\Database', 'getLog') && config('devel.settings')->get('query_display');
+  return method_exists('Drupal\Core\Database\Database', 'getLog') && \Drupal::config('devel.settings')->get('query_display');
 }
 
 /**
  * Returns the query summary.
  */
 function devel_query_summary($queries) {
-  if (config('devel.settings')->get('query_display') && is_array($queries)) {
+  if (\Drupal::config('devel.settings')->get('query_display') && is_array($queries)) {
     $sum = 0;
     foreach ($queries as $query) {
       $text[] = $query['query'];
@@ -1287,7 +1287,7 @@ function devel_query_table($queries, $counts) {
   $version = DevelController::getCoreVersion(\Drupal::VERSION);
   $header = array('ms', '#', 'where', 'ops', 'query', 'target');
   $i = 0;
-  $config_devel = config('devel.settings');
+  $config_devel = \Drupal::config('devel.settings');
   $api = $config_devel->get('api_url');
   $realpath = realpath('.') . '/';
   foreach ($queries as $query) {
@@ -1344,7 +1344,7 @@ function devel_query_table($queries, $counts) {
     $i++;
     unset($diff, $count, $ops);
   }
-  if (config('devel.settings')->get('query_sort')) {
+  if (\Drupal::config('devel.settings')->get('query_sort')) {
     usort($cell, '_devel_table_sort');
   }
   return theme('devel_querylog', array('header' => $header, 'rows' => $cell));
@@ -1682,7 +1682,7 @@ function ddebug_backtrace($return = FALSE, $pop = 0, $options = DEBUG_BACKTRACE_
     // (This is Drupal's error_level, which is different from $error_level,
     // and we purposely ignore the difference between _SOME and _ALL,
     // see #970688!)
-    if (config('system.logging')->get('error_level') != 'hide') {
+    if (\Drupal::config('system.logging')->get('error_level') != 'hide') {
       while (!empty($backtrace)) {
         $call = array();
         if (isset($backtrace[0]['file'])) {
@@ -1779,7 +1779,7 @@ function devel_rebuild_node_comment_statistics() {
  * language-independent machine names and module base names.
  */
 function devel_form_user_admin_permissions_alter(&$form, &$form_state) {
-  if (user_access('access devel information') && config('devel.settings')->get('raw_names')) {
+  if (user_access('access devel information') && \Drupal::config('devel.settings')->get('raw_names')) {
     foreach ($form['permission'] as $perm => $data) {
       if (is_numeric($perm)) {
         $form['permission'][$perm]['#markup'] = '<span title="' . $form['permission'][$perm]['#id'] . '">' . $form['permission'][$perm]['#markup'] . '</span>';
@@ -1797,7 +1797,7 @@ function devel_form_user_admin_permissions_alter(&$form, &$form_state) {
  * Adds mouse-over hints on the Modules page to display module base names.
  */
 function devel_form_system_modules_alter(&$form, &$form_state) {
-  if (user_access('access devel information') && config('devel.settings')->get('raw_names', FALSE) && isset($form['modules']) && is_array($form['modules'])) {
+  if (user_access('access devel information') && \Drupal::config('devel.settings')->get('raw_names', FALSE) && isset($form['modules']) && is_array($form['modules'])) {
     foreach (element_children($form['modules']) as $key) {
       if (isset($form['modules'][$key]['name']['#markup'])) {
         $form['modules'][$key]['name']['#markup'] = '<span title="' . $key . '">' . $form['modules'][$key]['name']['#markup'] . '</span>';

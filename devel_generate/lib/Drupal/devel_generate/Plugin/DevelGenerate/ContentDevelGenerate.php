@@ -306,7 +306,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       return drush_set_error('DEVEL_GENERATE_NO_CONTENT_TYPES', dt('No content types available'));
     }
 
-    $values['node_types'] = drupal_map_assoc($selected_types);
+    $values['values']['node_types'] = array_combine($selected_types, $selected_types);
     $node_types = array_filter($values['node_types']);
 
     if (!empty($values['kill']) && empty($node_types)) {
