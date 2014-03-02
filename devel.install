@@ -13,7 +13,7 @@ function devel_enable() {
  */
 function devel_uninstall() {
   // Delete the development menu.
-  if (module_exists('menu')) {
+  if (\Drupal::moduleHandler()->moduleExists('menu')) {
     if ($devel_menu = menu_load('devel')) {
       $devel_menu->delete();
     }

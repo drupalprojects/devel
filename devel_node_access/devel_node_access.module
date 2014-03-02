@@ -54,7 +54,7 @@ function devel_node_access_help($path, $arg) {
 function devel_node_access_menu() {
   $items = array();
 
-  if (!module_exists('devel')) {
+  if (!\Drupal::moduleHandler()->moduleExists('devel')) {
     // We have to create the 'Devel settings' menu item ourselves.
     $items['admin/config/development/devel'] = array(
       'title'            => 'Devel settings',

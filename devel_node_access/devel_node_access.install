@@ -4,7 +4,7 @@
  * Implements hook_uninstall().
  */
 function devel_node_access_uninstall() {
-  if (!module_exists('devel') && ($devel_menu = menu_load('devel'))) {
+  if (!\Drupal::moduleHandler()->moduleExists('devel') && ($devel_menu = menu_load('devel'))) {
     // Delete the development menu.
     $devel_menu->delete();
   }

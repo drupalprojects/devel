@@ -79,7 +79,7 @@ function devel_generate_node_insert(EntityInterface $node) {
     }
 
     // Add node statistics.
-    if (!empty($results['add_statistics']) && module_exists('statistics')) {
+    if (!empty($results['add_statistics']) && \Drupal::moduleHandler()->moduleExists('statistics')) {
       devel_generate_add_statistics($node);
     }
   }

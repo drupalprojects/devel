@@ -133,7 +133,7 @@ function drush_devel_reinstall() {
  */
 function drush_devel_download($path = 'libraries') {
   $path = $path . '/FirePHPCore';
-  if (module_exists('libraries')) {
+  if (\Drupal::moduleHandler()->moduleExists('libraries')) {
     $path = libraries_get_path('FirePHPCore');
   }
   if (is_dir($path)) {
