@@ -90,8 +90,6 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
         }
       }
     }
-    // we cannot currently generate valid polls.
-    unset($options['poll']);
 
     if (empty($options)) {
       $this->setMessage(t('You do not have any content types that can be generated. <a href="@create-type">Go create a new content type</a> already!</a>', array('@create-type' => url('admin/structure/types/add'))), 'error', FALSE);
