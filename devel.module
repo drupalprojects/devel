@@ -34,131 +34,17 @@ function devel_help($section) {
 }
 
 /**
- * Implements hook_menu().
+ * Implements hook_menu_link_defaults().
  */
-function devel_menu() {
-  // Note: we can't dynamically append destination to querystring.
-  // Do so at theme layer. Fix in D7?
-  $items['devel/cache/clear'] = array(
-    'title' => 'Clear cache',
-    'description' => 'Clear the CSS cache and all database cache tables which store page, node, theme and variable caches.',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.cache_clear'
-  );
-
-  $items['devel/reference'] = array(
-    'title' => 'Function reference',
-    'description' => 'View a list of currently defined user functions with documentation links.',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.reference',
-  );
-  $items['devel/reinstall'] = array(
-    'title' => 'Reinstall modules',
-    'description' => 'Run hook_uninstall() and then hook_install() for a given module.',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.reinstall',
-  );
-  $items['devel/menu/reset'] = array(
-    'title' => 'Rebuild menus',
-    'description' => 'Rebuild menu based on hook_menu() and revert any custom changes. All menu items return to their default settings.',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.menu_rebuild',
-  );
-  $items['devel/menu/item'] = array(
-    'title' => 'Menu item',
-    'description' => 'Details about a given menu item.',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.menu_item',
-  );
-  $items['devel/config'] = array(
-    'title' => 'Config editor',
-    'description' => 'Edit and delete config system variables',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.configs_list',
-  );
-  $items['devel/config/%'] = array(
-    'title' => 'Config editor',
-    'description' => 'Edit and delete config system variables',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.configs_list',
-  );
-  $items['devel/config/edit/%'] = array(
-    'title' => 'Edit configuration object: !config_name',
-    'title arguments' => array('!config_name' => 3),
-    'menu_name' => 'devel',
-    'route_name' => 'devel.config_edit',
-  );
-  $items['devel/state'] = array(
-    'title' => 'State editor',
-    'description' => 'Edit and delete state system variables',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.state_system_page',
-  );
-  $items['devel/state/edit/%'] = array(
-    'title' => 'Edit state variable: !state_name',
-    'title arguments' => array('!state_name' => 3),
-    'menu_name' => 'devel',
-    'route_name' => 'devel.system_state_edit',
-  );
-  $items['devel/php'] = array(
-    'title' => 'Execute PHP Code',
-    'description' => 'Execute some PHP code',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.execute_php',
-  );
-  $items['devel/theme/registry'] = array(
-    'title' => 'Theme registry',
-    'description' => 'View a list of available theme functions across the whole site.',
-    'route_name' => 'devel.theme_registry',
-    'menu_name' => 'devel',
-  );
-  $items['devel/entity/info'] = array(
-    'title' => 'Entity info',
-    'description' => 'View entity information across the whole site.',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.entity_info_page',
-  );
-  $items['devel/field/info'] = array(
-    'title' => 'Field info',
-    'description' => 'View fields information across the whole site.',
-    'route_name' => 'devel.field_info_page',
-    'menu_name' => 'devel',
-  );
-  $items['devel/elements'] = array(
-    'title' => 'Hook_elements()',
-    'description' => 'View the active form/render elements for this site.',
-    'route_name' => 'devel.elements_page',
-    'menu_name' => 'devel',
-  );
-  $items['devel/session'] = array(
-    'title' => 'Session viewer',
-    'description' => 'List the contents of $_SESSION.',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.session',
-  );
-  $items['devel/explain'] = array(
-    'title' => 'Explain query',
-    'description' => 'Run an EXPLAIN on a given query. Used by query log',
-    'route_name' => 'devel.explain',
-  );
-  $items['devel/arguments'] = array(
-    'title' => 'Arguments query',
-    'description' => 'Return a given query, with arguments instead of placeholders. Used by query log',
-    'route_name' => 'devel.arguments',
-  );
-  $items['devel/run-cron'] = array(
-    'title' => 'Run cron',
-    'menu_name' => 'devel',
-    'route_name' => 'devel.run_cron',
-  );
-
-  $items['admin/config/development/devel'] = array(
-    'title' => 'Devel settings',
+function devel_menu_link_defaults() {
+  $links['devel.admin.config.development.testing'] = array(
+    'link_title' => 'Devel settings',
     'description' => 'Helper functions, pages, and blocks to assist Drupal developers. The devel blocks can be managed via the block administration page.',
     'route_name' => 'devel.admin_settings',
+    'parent' => 'system.admin.config.development',
   );
 
-  return $items;
+  return $links;
 }
 
 /**
