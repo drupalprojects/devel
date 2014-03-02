@@ -7,17 +7,20 @@
 namespace Drupal\devel_generate\Tests;
 
 use Drupal\simpletest\WebTestBase;
+use Drupal\Core\Language\Language;
 
 /**
  * class DevelGenerateTest
  */
 class DevelGenerateTest extends WebTestBase {
+
+  private $vocabulary;
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = array('devel', 'devel_generate', 'taxonomy', 'menu', 'comment');
+  public static $modules = array('devel_generate', 'taxonomy', 'menu', 'comment');
 
   /*
    * The getInfo() method provides information about the test.
@@ -38,6 +41,17 @@ class DevelGenerateTest extends WebTestBase {
   function setUp() {
     parent::setUp();
 
+    //creating vocabulary to associate taxonomy terms generated.
+    $vocabulary = entity_create('taxonomy_vocabulary', array(
+      'name' => $this->randomName(),
+      'description' => $this->randomName(),
+      'vid' => drupal_strtolower($this->randomName()),
+      'langcode' => Language::LANGCODE_NOT_SPECIFIED,
+      'weight' => mt_rand(0, 10),
+    ));
+    $vocabulary->save();
+    $this->vocabulary = $vocabulary;
+
     // Create Basic page and Article node types.
     if ($this->profile != 'standard') {
       $this->drupalCreateContentType(array('type' => 'page', 'name' => 'Basic Page'));
@@ -48,43 +62,60 @@ class DevelGenerateTest extends WebTestBase {
    * Tests generate commands
    */
   public function testGenerate() {
+
     $user = $this->drupalCreateUser(array(
-      'administer taxonomy',
-      'administer menu',
-      'administer nodes',
+      'administer devel_generate',
     ));
     $this->drupalLogin($user);
 
-    // Generate taxonomy vocabularies.
+    //Creating users.
     $edit = array(
-      'num_vocabs' => 5,
-      'title_length' => 12,
-      'kill_taxonomy' => 1,
+      'num' => 4,
     );
-    $this->drupalPostForm('admin/config/development/generate/vocabs',
-                          $edit, t('Generate'));
-    $this->assertText(t('Deleted existing vocabularies.'));
-    $this->assertText(t('Created the following new vocabularies:'));
+    $this->drupalPostForm('admin/config/development/generate/user', $edit, t('Generate'));
+    $this->assertText(t('4 users created.'));
+    $this->assertText(t('Generate process complete.'));
 
-    // Generate taxonomy terms.
-    $form = drupal_get_form('Drupal\devel_generate\Form\GenerateTerm');
-    $vids = array_keys($form['vids']['#options']);
+    //Creating content.
+    // Generate content.
+    // First we create a node in order to test the Delete content checkbox.
+    $this->drupalCreateNode(array());
+
     $edit = array(
-      'vids[]' => $vids,
-      'num_terms' => 5,
-      'title_length' => 12,
-      'kill_taxonomy' => 1,
+      'num' => 4,
+      'node_types[page]' => TRUE,
+      'time_range' => 604800,
+      'max_comments' => 3,
+      'title_length' => 4,
     );
-    $this->drupalPostForm('admin/config/development/generate/taxonomy',
-                          $edit, t('Generate'));
-    $this->assertText(t('Deleted existing terms.'));
+    $this->drupalPostForm('admin/config/development/generate/content', $edit, t('Generate'));
+    $this->assertText(t('Finished creating 4 nodes'));
+    $this->assertText(t('Generate process complete.'));
+
+    //Creating terms.
+    $edit = array(
+      'vids[]' => $this->vocabulary->vid,
+      'num' => 5,
+      'title_length' => 12,
+    );
+    $this->drupalPostForm('admin/config/development/generate/term', $edit, t('Generate'));
     $this->assertText(t('Created the following new terms: '));
+    $this->assertText(t('Generate process complete.'));
 
-    // Generate menus.
+    //Creating vocabularies.
     $edit = array(
-      'existing_menus[__new-menu__]' => 1,
-      'num_menus' => 2,
-      'num_links' => 50,
+      'num' => 5,
+      'title_length' => 12,
+      'kill' => TRUE,
+    );
+    $this->drupalPostForm('admin/config/development/generate/vocabs', $edit, t('Generate'));
+    $this->assertText(t('Created the following new vocabularies: '));
+    $this->assertText(t('Generate process complete.'));
+
+    //Creating menus.
+    $edit = array(
+      'num_menus' => 5,
+      'num_links' => 7,
       'title_length' => 12,
       'link_types[node]' => 1,
       'link_types[front]' => 1,
@@ -93,27 +124,10 @@ class DevelGenerateTest extends WebTestBase {
       'max_width' => 6,
       'kill' => 1,
     );
-    $this->drupalPostForm('admin/config/development/generate/menu',
-                          $edit, t('Generate'));
-    $this->assertText(t('Deleted existing menus and links.'));
-    $this->assertText(t('Created the following new menus:'));
-    $this->assertText(t('Created 50 new menu links.'));
-
-    // Generate content.
-    // First we create a node in order to test the Delete content checkbox.
-    $this->drupalCreateNode(array());
-
-    // Now submit the generate content form.
-    $edit = array(
-      'node_types[page]' => 1,
-      'kill_content' => 1,
-      'num_nodes' => 2,
-      'time_range' => 604800,
-      'max_comments' => 3,
-      'title_length' => 4,
-    );
-    $this->drupalPostForm('admin/config/development/generate/content', $edit, t('Generate'));
-    $this->assertText(t('Deleted 1 nodes.'));
-    $this->assertText(t('Finished creating 2 nodes'));
+    $this->drupalPostForm('admin/config/development/generate/menu', $edit, t('Generate'));
+    $this->assertText(t('Created the following new menus: '));
+    $this->assertText(t('Created 7 new menu links'));
+    $this->assertText(t('Generate process complete.'));
   }
+
 }

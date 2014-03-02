@@ -2,43 +2,50 @@
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\Language;
+use Drupal\devel_generate\DevelGenerateBase;
+use Drupal\devel_generate\DevelGenerateFieldBase;
 use Drupal\field\Field;
 
 /**
- * Implements hook_menu().
+ * Implements hook_menu_link_defaults().
  */
-function devel_generate_menu() {
+function devel_generate_menu_link_defaults() {
   $items = array();
 
-  $items['admin/config/development/generate/user'] = array(
-    'title' => 'Generate users',
-    'description' => 'Generate a given number of users. Optionally delete current users.',
-    'route_name' => 'devel_generate.user',
-  );
-  $items['admin/config/development/generate/content'] = array(
-    'title' => 'Generate content',
-    'description' => 'Generate a given number of nodes and comments. Optionally delete current items.',
-    'route_name' => 'devel_generate.content',
-  );
-  if (module_exists('taxonomy')) {
-    $items['admin/config/development/generate/taxonomy'] = array(
-      'title' => 'Generate terms',
-      'description' => 'Generate a given number of terms. Optionally delete current terms.',
-      'route_name' => 'devel_generate.taxonomy_term',
-    );
-    $items['admin/config/development/generate/vocabs'] = array(
-      'title' => 'Generate vocabularies',
-      'description' => 'Generate a given number of vocabularies. Optionally delete current vocabularies.',
-      'route_name' => 'devel_generate.vocabulary',
+  $devel_generate_plugins = $devel_generate_manager = \Drupal::service('plugin.manager.develgenerate')->getDefinitions();
+  foreach ($devel_generate_plugins as $id => $plugin) {
+    $label = $plugin['label'];
+    $items["devel_generate.$id"] = array(
+      'link_title' => "Generate $label",
+      'parent' => 'system.admin.config.development',
+      'description' => $plugin['description'],
+      'route_name' => "devel_generate.$id",
     );
   }
-  $items['admin/config/development/generate/menu'] = array(
-    'title' => 'Generate menus',
-    'description' => 'Generate a given number of menus and menu links. Optionally delete current menus.',
-    'route_name' => 'devel_generate.menu',
-  );
 
   return $items;
+}
+
+function devel_generate_permission() {
+  $permissions = array();
+
+  $devel_generate_plugins = $devel_generate_manager = \Drupal::service('plugin.manager.develgenerate')->getDefinitions();
+  foreach ($devel_generate_plugins as $plugin) {
+
+    $permission = $plugin['permission'];
+    $permissions[$permission] = array(
+      'title' => t($permission),
+      'description' => t($permission),
+    );
+
+    return $permissions;
+  }
+  return array(
+    'administer my module' => array(
+      'title' => t('Administer my module'),
+      'description' => t('Perform administration tasks for my module.'),
+    ),
+  );
 }
 
 /**
@@ -53,9 +60,6 @@ function devel_generate_node_insert(EntityInterface $node) {
     $results = $node->devel_generate;
 
     if (!empty($results['max_comments'])) {
-      // Disable entity statistics for comments created as it tries to insert
-      // them twice.
-      \Drupal::state()->set('comment.maintain_entity_statistics', FALSE);
       $instances = Field::fieldInfo()->getBundleInstances($node->getEntityTypeId(), $node->bundle());
       foreach ($instances as $instance) {
         $field = $instance->getField();
@@ -63,9 +67,7 @@ function devel_generate_node_insert(EntityInterface $node) {
           devel_generate_add_comments($node, $field, $results['users'], $results['max_comments'], $results['title_length']);
         }
       }
-      \Drupal::state()->set('comment.maintain_entity_statistics', TRUE);
     }
-
 
     // Add an url alias. Cannot happen before save because we don't know the nid.
     if (!empty($results['add_alias'])) {
@@ -83,18 +85,55 @@ function devel_generate_node_insert(EntityInterface $node) {
   }
 }
 
+function devel_generate_add_comments(EntityInterface $node, $field, $users, $max_comments, $title_length = 8) {
+  $field_name = $field->getName();
+  if ($node->{$field_name}->status >= COMMENT_OPEN) {
+    $num_comments = mt_rand(1, $max_comments);
+    for ($i = 1; $i <= $num_comments; $i++) {
+      switch ($i % 3) {
+        case 1:
+          $pid = db_query_range("SELECT cid FROM {comment} WHERE pid = 0 AND entity_id = :entity_id ORDER BY RAND()", 0, 1, array(':entity_id' => $node->id()))->fetchField();
+          break;
+        case 2:
+          $pid = db_query_range("SELECT cid FROM {comment} WHERE pid > 0 AND entity_id = :entity_id ORDER BY RAND()", 0, 1, array(':entity_id' => $node->id()))->fetchField();
+          break;
+        default:
+          $pid = 0;
+      }
+
+      $comment = entity_create('comment', array(
+        'entity_type' => $node->entityType(),
+        'entity_id' => $node->id(),
+        'field_id' => $node->entityType() . '__' . $field_name,
+        'name' => 'devel generate',
+        'mail' => 'devel_generate@example.com',
+        'timestamp' => mt_rand($node->created->value, REQUEST_TIME),
+        'subject' => substr(DevelGenerateBase::createGreeking(mt_rand(2, $title_length), TRUE), 0, 63),
+        'uid' => $users[array_rand($users)],
+        'langcode' => Language::LANGCODE_NOT_SPECIFIED,
+        'pid' => !empty($pid) ? $pid : 0,
+      ));
+
+      //Populate all core fields on behalf of field.module
+      DevelGenerateFieldBase::generateFields($node, 'node', $node->bundle());
+      $comment->save();
+    }
+  }
+}
+
+
 /**
- * Set a message for either drush or the web interface.
+ * Generate statistics information for a node.
  *
- * @param $msg
- *  The message to display.
- * @param $type
- *  The message type, as defined by drupal_set_message().
- *
- * @return
- *  Context-appropriate message output.
+ * @param $node
+ *   A node object.
  */
-function devel_generate_set_message($msg, $type = 'status') {
-  $function  = function_exists('drush_log') ? 'drush_log' : 'drupal_set_message';
-  $function($msg, $type);
+function devel_generate_add_statistics($node) {
+  $statistic = array(
+    'nid' => $node->id(),
+    'totalcount' => mt_rand(0, 500),
+    'timestamp' => REQUEST_TIME - mt_rand(0, $node->created),
+  );
+  $statistic['daycount'] = mt_rand(0, $statistic['totalcount']);
+  db_insert('node_counter')->fields($statistic)->execute();
 }

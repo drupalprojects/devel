@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  *  Generate content, taxonomy, menu, and users via drush framework.
@@ -9,10 +10,13 @@
  */
 function devel_generate_drush_command() {
   $items['generate-users'] = array(
-    'callback' => 'drush_devel_generate_users',
+    'callback' => 'drush_devel_generate',
+    'callback arguments' => array(
+      'plugin_id' => 'user',
+    ),
     'description' => 'Create users.',
     'arguments' => array(
-      'number_users' => 'Number of users to generate.',
+      'num' => 'Number of users to generate.',
     ),
     'options' => array(
       'kill' => 'Delete all users before generating new ones.',
@@ -22,11 +26,14 @@ function devel_generate_drush_command() {
     'aliases' => array('genu'),
   );
   $items['generate-terms'] = array(
-    'callback' => 'drush_devel_generate_terms',
+    'callback' => 'drush_devel_generate',
+    'callback arguments' => array(
+      'plugin_id' => 'term',
+    ),
     'description' => 'Create terms in specified vocabulary.',
     'arguments' => array(
       'machine_name' => 'Vocabulary machine name into which new terms will be inserted.',
-      'number_terms' => 'Number of terms to insert. Defaults to 10.',
+      'num' => 'Number of terms to insert. Defaults to 10.',
     ),
     'options' => array(
       'kill' => 'Delete all terms in specified vocabulary before generating.',
@@ -37,10 +44,13 @@ function devel_generate_drush_command() {
 
   );
   $items['generate-vocabs'] = array(
-    'callback' => 'drush_devel_generate_vocabs',
+    'callback' => 'drush_devel_generate',
+    'callback arguments' => array(
+      'plugin_id' => 'vocabulary',
+    ),
     'description' => 'Create vocabularies.',
     'arguments' => array(
-      'num_vocabs' => 'Number of vocabularies to create. Defaults to 1.',
+      'num' => 'Number of vocabularies to create. Defaults to 1.',
     ),
     'options' => array(
       'kill' => 'Delete all vocabularies before generating.',
@@ -49,12 +59,15 @@ function devel_generate_drush_command() {
     'aliases' => array('genv'),
   );
   $items['generate-content'] = array(
-    'callback' => 'drush_devel_generate_content',
+    'callback' => 'drush_devel_generate',
+    'callback arguments' => array(
+      'plugin_id' => 'content',
+    ),
     'description' => 'Create content.',
     'drupal dependencies' => array('devel_generate'),
     'arguments' => array(
-      'number_nodes' => 'Number of nodes to generate.',
-      'maximum_comments' => 'Maximum number of comments to generate.',
+      'num' => 'Number of nodes to generate.',
+      'max_comments' => 'Maximum number of comments to generate.',
     ),
     'options' => array(
       'kill' => 'Delete all content before generating new content.',
@@ -66,7 +79,10 @@ function devel_generate_drush_command() {
     'aliases' => array('genc'),
   );
   $items['generate-menus'] = array(
-    'callback' => 'drush_devel_generate_menus',
+    'callback' => 'drush_devel_generate',
+    'callback arguments' => array(
+      'plugin_id' => 'menu',
+    ),
     'description' => 'Create menus and menu items.',
     'drupal dependencies' => array('devel_generate'), // Remove these once devel.module is moved down a directory. http://drupal.org/node/925246
     'arguments' => array(
@@ -84,167 +100,90 @@ function devel_generate_drush_command() {
   return $items;
 }
 
-
 /**
- * Command callback. Generate a number of users.
+ * Implements drush_hook_COMMAND_validate().
  */
-function drush_devel_generate_users($num_users = NULL) {
-  if (drush_generate_is_number($num_users) == FALSE) {
-    return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', t('Invalid number of users.'));
-  }
-  drush_generate_include_devel();
-  $roles = drush_get_option('roles') ? explode(',', drush_get_option('roles')) : array();
-  $pass = drush_get_option('pass', NULL);
-  devel_create_users($num_users, drush_get_option('kill'), 0, $roles, $pass);
-  drush_log(t('Generated @number users.', array('@number' => $num_users)), 'success');
+function drush_devel_generate_generate_users_validate() {
+
+  //Array of "Callback arguments" and "command line args".
+  $params = func_get_args();
+  _drush_plugin_validate($params);
 }
 
 /**
- * Command callback. Generate a number of terms in given vocabs.
+ * Implements drush_hook_COMMAND_validate().
  */
-function drush_devel_generate_terms($vname = NULL, $num_terms = 10) {
-  // Try to convert machine name to a vocab ID
-  if (!$vocab = entity_load('taxonomy_vocabulary', $vname)) {
-    return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid vocabulary name: !name', array('!name' => $vname)));
-  }
-  if (drush_generate_is_number($num_terms) == FALSE) {
-    return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid number of terms: !num', array('!num' => $num_terms)));
-  }
+function drush_devel_generate_generate_terms_validate() {
 
-  drush_generate_include_devel();
-  if (drush_get_option('kill')) {
-    devel_generate_delete_vocabulary_terms($vocab->vid);
-    drush_log(dt('Deleted existing terms.'), 'success');
-  }
-  $new_terms = devel_generate_terms($num_terms, array($vocab->vid => $vocab), '12');
-  if (!empty($new_terms)) {
-    drush_log(dt("Created the following new terms:\n!terms", array('!terms' => implode("\n", $new_terms))), 'success');
-    drush_print_pipe($new_terms);
-  }
+  //Array of "Callback arguments" and "command line args".
+  $params = func_get_args();
+  _drush_plugin_validate($params);
 }
 
 /**
- * Command callback. Generate a number of vocabularies.
+ * Implements drush_hook_COMMAND_validate().
  */
-function drush_devel_generate_vocabs($num_vocab = 1) {
-  if (drush_generate_is_number($num_vocab) == FALSE) {
-    return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid number of vocabularies: !num.', array('!num' => $num_vocab)));
-  }
-  drush_generate_include_devel();
-  if (drush_get_option('kill')) {
-    devel_generate_delete_vocabularies();
-    drush_log(dt('Deleted existing vocabularies.'), 'success');
-  }
-  $new_vocs = devel_generate_vocabs($num_vocab, '12');
-  if (!empty($new_vocs)) {
-    drush_log(dt("Created the following new vocabularies:\n!vocs", array('!vocs' => implode("\n", $new_vocs))), 'success');
-    drush_print_pipe($new_vocs);
-  }
+function drush_devel_generate_generate_vocabs_validate() {
+
+  //Array of "Callback arguments" and "command line args".
+  $params = func_get_args();
+  _drush_plugin_validate($params);
 }
 
 /**
- * Command callback. Generate a number of nodes and comments.
+ * Implements drush_hook_COMMAND_validate().
  */
-function drush_devel_generate_content($num_nodes = NULL, $max_comments = NULL) {
-  if (drush_generate_is_number($num_nodes) == FALSE) {
-    return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid number of nodes'));
-  }
-  if (!empty($max_comments) && drush_generate_is_number($max_comments) == FALSE) {
-    return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid number of comments.'));
-  }
+function drush_devel_generate_generate_content_validate() {
 
-  $add_language = drush_get_option('languages');
-  if (!empty($add_language)) {
-    $add_language = explode(',', str_replace(' ', '', $add_language));
-    // Intersect with the enabled languages to make sure the language args
-    // passed are actually enabled.
-    $values['values']['add_language'] = array_intersect($add_language, array_keys(locale_language_list()));
-  }
-
-  // Load user 1; is needed for creating *published* comments.
-  // This code breaks D8 and is not needed there. Perhaps unneeded on D7 as well.
-  if ($max_comments && drush_drupal_major_version() <= 7) {
-    global $user;
-    $user_one = user_load(1);
-    $user = $user_one;
-    drupal_save_session(FALSE);
-  }
-
-  $values['values']['kill_content'] = drush_get_option('kill');
-  $values['values']['title_length'] = 6;
-  $values['values']['num_nodes'] = $num_nodes;
-  $values['values']['max_comments'] = $max_comments;
-  $all_types = array_keys(node_type_get_names());
-  $default_types = array_intersect(array('page', 'article'), $all_types);
-  $selected_types = _convert_csv_to_array(drush_get_option('types', $default_types));
-  if (empty($selected_types)) {
-    return drush_set_error('DEVEL_GENERATE_NO_CONTENT_TYPES', dt('No content types available'));
-  }
-  $values['values']['node_types'] = drupal_map_assoc($selected_types);
-  $node_types = array_filter($values['values']['node_types']);
-  if (!empty($values['values']['kill_content']) && empty($node_types)) {
-    return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Please provide content type (--types) in which you want to delete the content.'));
-  }
-  drush_generate_include_devel();
-  devel_generate_content($values);
-  drush_log(t('Generated @num_nodes nodes, @max_comments comments (or less) per node.', array('@num_nodes' => (int)$num_nodes, '@max_comments' => (int)$max_comments)), 'success');
+  //Array of "Callback arguments" and "command line args".
+  $params = func_get_args();
+  _drush_plugin_validate($params);
 }
 
 /**
- * Command callback. Generate a number of menus and menu links.
+ * Implements drush_hook_COMMAND_validate().
  */
-function drush_devel_generate_menus($number_menus = 2, $number_links = 50, $max_depth = 3, $max_width = 8) {
-  if (drush_generate_is_number($number_menus) == FALSE) {
-    return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid number of menus'));
-  }
-  if (drush_generate_is_number($number_links) == FALSE) {
-    return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid number of links'));
-  }
-  if (drush_generate_is_number($max_depth) == FALSE || $max_depth > 9 || $max_depth < 1) {
-    return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid maximum link depth. Use a value between 1 and 9'));
-  }
-  if (drush_generate_is_number($max_width) == FALSE || $max_width < 1) {
-    return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid maximum menu width. Use a positive numeric value.'));
-  }
+function drush_devel_generate_generate_menus_validate() {
 
-  global $user;
-  $user_one = user_load(1);
-  $user = $user_one;
-  drupal_save_session(FALSE);
-
-  drush_generate_include_devel();
-
-  // Delete custom menus.
-  if (drush_get_option('kill')) {
-    devel_generate_delete_menus();
-    drush_log(dt('Deleted existing menus and links.'), 'success');
-  }
-
-  // Generate new menus.
-  $new_menus = devel_generate_menus($number_menus, '12');
-  if (!empty($new_menus)) {
-    drush_log(dt("Created the following new menus:\n!menus", array('!menus' => implode("\n", $new_menus))), 'success');
-    drush_print_pipe($new_menus);
-  }
-
-  // Generate new menu links.
-  $link_types = drupal_map_assoc(array('node', 'front', 'external'));
-  $new_links = devel_generate_links($number_links, $new_menus, '12', $link_types, $max_depth, $max_width);
-  drush_log(dt('Created !count new menu links.', array('!count' => count($new_links))), 'success');
+  //Array of "Callback arguments" and "command line args".
+  $params = func_get_args();
+  _drush_plugin_validate($params);
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// Helper functions
+/**
+ * Helper function which returns an array with a plugin instance
+ * for a given id and the validated values ready to be used by
+ * the generate() function of the plugin.
+ */
+function _drush_plugin_validate($params) {
 
-// Verify if param is a number.
-function drush_generate_is_number($number) {
-  if ($number == NULL) return FALSE;
-  if (!is_numeric($number)) return FALSE;
-  return TRUE;
+  $instance_and_values = &drupal_static('drush_devel_generate_generate_validate');
+  //Getting plugin_id and leaving the command line args
+  $plugin_id = array_shift($params);
+
+  if (!isset($instance_and_values[$plugin_id])) {
+
+    $devel_generate_manager = \Drupal::service('plugin.manager.develgenerate');
+    $instance = $devel_generate_manager->createInstance($plugin_id, array());
+
+    //Plugin instance suit params in order to fit for generateElements
+    $values = $instance->validateDrushParams($params);
+    $instance_and_values[$plugin_id]['instance'] = $instance;
+    $instance_and_values[$plugin_id]['values'] = $values;
+  }
+
+  return $instance_and_values[$plugin_id];
 }
 
-// Include devel_generate.inc.
-function drush_generate_include_devel() {
-  $path = drupal_get_path('module', 'devel_generate');
-  require_once($path .'/devel_generate.inc');
+/**
+ * Command callback. Generate a number of elements.
+ */
+function drush_devel_generate() {
+  $params = func_get_args();
+  $plugin_id = array_shift($params);
+  $instance_and_values = drupal_static('drush_devel_generate_generate_validate');
+  $plugin_instance = $instance_and_values[$plugin_id]['instance'];
+  $values = $instance_and_values[$plugin_id]['values'];
+  $plugin_instance->generate($values);
+
 }
