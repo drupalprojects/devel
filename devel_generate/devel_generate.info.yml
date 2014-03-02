@@ -1,5 +1,5 @@
-name: 'Devel generate'
 type: module
+name: 'Devel generate'
 description: 'Generate dummy users, nodes, menus, taxonomy terms...'
 package: Development
 core: 8.x

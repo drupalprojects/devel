@@ -1,5 +1,5 @@
-name: 'Devel node access'
 type: module
+name: 'Devel node access'
 description: 'Developer blocks and page illustrating relevant node_access records.'
 package: Development
 core: 8.x
