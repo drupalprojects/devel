@@ -304,7 +304,7 @@ function merits_krumo($input) {
  * Calls the http://www.firephp.org/ fb() function if it is found.
  */
 function dfb() {
-  if (function_exists('fb') && user_access('access devel information') && !headers_sent()) {
+  if (function_exists('fb') && \Drupal::currentUser()->hasPermission('access devel information') && !headers_sent()) {
     $args = func_get_args();
     call_user_func_array('fb', $args);
   }
@@ -321,7 +321,7 @@ function dfbt($label) {
  * Wrapper for ChromePHP Class log method.
  */
 function dcp() {
-  if (class_exists('ChromePhp', FALSE) && user_access('access devel information')) {
+  if (class_exists('ChromePhp', FALSE) && \Drupal::currentUser()->hasPermission('access devel information')) {
     $args = func_get_args();
     call_user_func_array(array('ChromePhp', 'log'), $args);
   }
@@ -452,7 +452,7 @@ function devel_xhprof_is_enabled() {
  */
 function backtrace_error_handler($error_level, $message, $filename, $line, $context) {
   // Hide stack trace and parameters from unqualified users.
-  if (!user_access('access devel information')) {
+  if (!\Drupal::currentUser()->hasPermission('access devel information')) {
     // Do what core does in bootstrap.inc and errors.inc.
     // (We need to duplicate the core code here rather than calling it
     // to avoid having the backtrace_error_handler() on top of the call stack.)
@@ -561,10 +561,9 @@ function devel_permission() {
  * Provides the Switch user list.
  */
 function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
-  global $user;
 
   $links = array();
-  if (user_access('switch users', $user)) {
+  if (\Drupal::currentUser()->hasPermission('switch users')) {
     if ($include_anon) {
       --$list_size;
     }
@@ -630,7 +629,7 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
         'query' => $dest + array('token' => drupal_get_token($path . '/|' . $dest['destination'])),
         'attributes' => array('title' => t('Caution: the anonymous user will be unable to switch back.')),
       );
-      if (user_access('switch users', drupal_anonymous_user())) {
+      if (\Drupal::currentUser()->hasPermission('switch users')) {
         $link['title'] = drupal_placeholder($link['title']);
         $link['attributes'] = array('title' => t('This user can switch back.'));
         $link['html'] = TRUE;
@@ -715,7 +714,7 @@ function devel_drupal_goto_alter($path, $options, $http_response_code) {
     // The page we are leaving is a drupal_goto(). Present a redirection page
     // so that the developer can see the intermediate query log.
     // We don't want to load user module here, so keep function_exists() call.
-    if (isset($user) && function_exists('user_access') && user_access('access devel information') && \Drupal::config('devel.settings')->get('redirect_page')) {
+    if (isset($user) && \Drupal::currentUser()->hasPermission('access devel information') && \Drupal::config('devel.settings')->get('redirect_page')) {
       $destination = function_exists('url') ? url($path, $options) : $path;
       $output = t_safe('<p>The user is being redirected to <a href="@destination">@destination</a>.</p>', array('@destination' => $destination));
       drupal_deliver_page($output);
@@ -742,7 +741,7 @@ function devel_library_alter(&$libraries, $module) {
       );
     }
     else {
-      if (!devel_silent() && user_access('access devel information')) {
+      if (!devel_silent() && \Drupal::currentUser()->hasPermission('access devel information')) {
         drupal_set_message(t('jQuery could not be replaced with an uncompressed version of 1.4.4, because jQuery @version is running on the site.', array('@version' => $libraries['jquery']['version'])));
       }
 
@@ -772,7 +771,7 @@ function devel_shutdown() {
  * Implements hook_page_alter().
  */
 function devel_page_alter($page) {
-  if (user_access('access devel information')) {
+  if (\Drupal::currentUser()->hasPermission('access devel information')) {
     if (\Drupal::config('devel.settings')->get('page_alter')) {
       dpm($page, 'page');
     }
@@ -801,7 +800,6 @@ function devel_ajax_render_alter() {
  * devel_shutdown() registers this function as a shutdown function.
  */
 function devel_shutdown_real() {
-  global $user;
   $output = $txt = '';
 
   // Set $GLOBALS['devel_shutdown'] = FALSE in order to supress the
@@ -823,7 +821,7 @@ function devel_shutdown_real() {
       }
     }
 
-    if (isset($user) && user_access('access devel information')) {
+    if (\Drupal::currentUser()->hasPermission('access devel information')) {
       $queries = (devel_query_enabled() ? Drupal\Core\Database\Database::getLog('devel', 'default') : NULL);
       $output .= devel_shutdown_summary($queries);
       $output .= devel_shutdown_query($queries);
@@ -1420,7 +1418,7 @@ function dargs($always = TRUE) {
  *   The $query object, or the query string if $return was TRUE.
  */
 function dpq($query, $return = FALSE, $name = NULL) {
-  if (user_access('access devel information')) {
+  if (\Drupal::currentUser()->hasPermission('access devel information')) {
     if (method_exists($query, 'preExecute')) {
       $query->preExecute();
     }
@@ -1455,7 +1453,7 @@ function dpq($query, $return = FALSE, $name = NULL) {
  *   The unaltered input value.
  */
 function dpm($input, $name = NULL, $type = 'status') {
-  if (user_access('access devel information')) {
+  if (\Drupal::currentUser()->hasPermission('access devel information')) {
     $export = kprint_r($input, TRUE, $name);
     drupal_set_message($export, $type, TRUE);
   }
@@ -1476,7 +1474,7 @@ function dpm($input, $name = NULL, $type = 'status') {
  *   The unaltered input value.
  */
 function dvm($input, $name = NULL) {
-  if (user_access('access devel information')) {
+  if (\Drupal::currentUser()->hasPermission('access devel information')) {
     $export = dprint_r($input, TRUE, $name, 'drupal_var_export', FALSE);
     drupal_set_message($export, 'status', TRUE);
   }
@@ -1517,7 +1515,7 @@ function dvr($input, $return = FALSE, $name = NULL) {
 function kprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r') {
   // We do not want to krumo() strings and integers and such.
   if (merits_krumo($input)) {
-    if (user_access('access devel information')) {
+    if (\Drupal::currentUser()->hasPermission('access devel information')) {
       return $return ? (isset($name) ? $name . ' => ' : '') . krumo_ob($input) : krumo($input);
     }
   }
@@ -1533,7 +1531,7 @@ function kprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r') 
  * you want a string returned instead of a print, use the 2nd param.
  */
 function dprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r', $check= TRUE) {
-  if (user_access('access devel information')) {
+  if (\Drupal::currentUser()->hasPermission('access devel information')) {
     if ($name) {
       $name .= ' => ';
     }
@@ -1601,7 +1599,7 @@ function devel_render() {
  * @see http://php.net/manual/en/function.debug-backtrace.php
  */
 function ddebug_backtrace($return = FALSE, $pop = 0, $options = DEBUG_BACKTRACE_PROVIDE_OBJECT) {
-  if (user_access('access devel information')) {
+  if (\Drupal::currentUser()->hasPermission('access devel information')) {
     $backtrace = debug_backtrace($options);
     while ($pop-- > 0) {
       array_shift($backtrace);
@@ -1714,7 +1712,7 @@ function devel_rebuild_node_comment_statistics() {
  * language-independent machine names and module base names.
  */
 function devel_form_user_admin_permissions_alter(&$form, &$form_state) {
-  if (user_access('access devel information') && \Drupal::config('devel.settings')->get('raw_names')) {
+  if (\Drupal::currentUser()->hasPermission('access devel information') && \Drupal::config('devel.settings')->get('raw_names')) {
     foreach ($form['permission'] as $perm => $data) {
       if (is_numeric($perm)) {
         $form['permission'][$perm]['#markup'] = '<span title="' . $form['permission'][$perm]['#id'] . '">' . $form['permission'][$perm]['#markup'] . '</span>';
@@ -1732,7 +1730,7 @@ function devel_form_user_admin_permissions_alter(&$form, &$form_state) {
  * Adds mouse-over hints on the Modules page to display module base names.
  */
 function devel_form_system_modules_alter(&$form, &$form_state) {
-  if (user_access('access devel information') && \Drupal::config('devel.settings')->get('raw_names', FALSE) && isset($form['modules']) && is_array($form['modules'])) {
+  if (\Drupal::currentUser()->hasPermission('access devel information') && \Drupal::config('devel.settings')->get('raw_names', FALSE) && isset($form['modules']) && is_array($form['modules'])) {
     foreach (element_children($form['modules']) as $key) {
       if (isset($form['modules'][$key]['name']['#markup'])) {
         $form['modules'][$key]['name']['#markup'] = '<span title="' . $key . '">' . $form['modules'][$key]['name']['#markup'] . '</span>';

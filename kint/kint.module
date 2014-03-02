@@ -7,7 +7,7 @@
  */
 function kint() {
   kint_require();
-  if (Kint::enabled() && user_access('access kint')) {
+  if (Kint::enabled() && \Drupal::currentUser()->hasPermission('access kint')) {
     $args = func_get_args();
     call_user_func_array(drupal_is_cli() ? 's' : array('Kint', 'dump'), $args);
   }
@@ -19,13 +19,13 @@ function kint() {
  */
 function kint_trace() {
   kint_require();
-  if (Kint::enabled() && user_access('access kint')) {
+  if (Kint::enabled() && \Drupal::currentUser()->hasPermission('access kint')) {
     call_user_func_array(array('Kint', 'trace'), array());
   }
 }
 
 function kint_lite() {
-  if (Kint::enabled() && user_access('access kint')) {
+  if (Kint::enabled() && \Drupal::currentUser()->hasPermission('access kint')) {
     $args = func_get_args();
     call_user_func_array('kintLite', $args);
   }
@@ -33,7 +33,7 @@ function kint_lite() {
 
 function ksm() {
   kint_require();
-  if (Kint::enabled() && user_access('access kint')) {
+  if (Kint::enabled() && \Drupal::currentUser()->hasPermission('access kint')) {
     $args = func_get_args();
     $msg = @Kint::dump($args);
     drupal_set_message($msg);

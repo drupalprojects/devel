@@ -443,7 +443,7 @@ class DnaNode extends DnaBlockBase {
         '%uid'      => $user->id(),
       );
 
-      if (user_access('bypass node access')) {
+      if (\Drupal::currentUser()->hasPermission('bypass node access')) {
         $variables['%bypass_node_access'] = $tr('bypass node access');
         $output[] = array(
           '#markup' => t('!username has the %bypass_node_access permission and thus full access to all nodes.', $variables),

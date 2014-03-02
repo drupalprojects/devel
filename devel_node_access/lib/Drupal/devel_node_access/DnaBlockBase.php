@@ -77,7 +77,7 @@ abstract class DnaBlockBase extends BlockBase {
       '!access_content'     => t('access content'),
     );
 
-    if (user_access('bypass node access')) {
+    if (\Drupal::currentUser()->hasPermission('bypass node access')) {
       return array(
         TRUE,
         t('!YES: bypass node access', $variables),
@@ -85,7 +85,7 @@ abstract class DnaBlockBase extends BlockBase {
       );
     }
 
-    if (!user_access('access content')) {
+    if (!\Drupal::currentUser()->hasPermission('access content')) {
       return array(
         FALSE,
         t('!NO: access content', $variables),
@@ -139,7 +139,7 @@ abstract class DnaBlockBase extends BlockBase {
       );
     }
 
-    if ($op == 'view' && !$node->get('status', $langcode) && user_access('view own unpublished content') && $user->uid == $node->get('uid', $langcode) && $user->uid != 0) {
+    if ($op == 'view' && !$node->get('status', $langcode) && \Drupal::currentUser()->hasPermission('view own unpublished content') && $user->uid == $node->get('uid', $langcode) && $user->uid != 0) {
       return array(
         TRUE,
         t('!YES: view own unpublished content', $variables),
