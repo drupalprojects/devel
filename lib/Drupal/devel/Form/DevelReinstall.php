@@ -7,7 +7,6 @@
 
 namespace Drupal\devel\Form;
 
-use Drupal\Component\Utility\MapArray;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -56,10 +55,9 @@ class DevelReinstall extends FormBase {
   public function buildForm(array $form, array &$form_state) {
     $modules = array_keys($this->moduleHandler->getModuleList());
     sort($modules);
-    $options = MapArray::copyValuesToKeys($modules);
     $form['list'] = array(
       '#type' => 'checkboxes',
-      '#options' => $options,
+      '#options' => array_combine($modules, $modules),
       '#description' => t('Uninstall and then install the selected modules. <code>hook_uninstall()</code> and <code>hook_install()</code> will be executed and the schema version number will be set to the most recent update number. You may have to manually clear out any existing tables first if the module doesn\'t implement <code>hook_uninstall()</code>.'),
     );
     $form['submit'] = array(

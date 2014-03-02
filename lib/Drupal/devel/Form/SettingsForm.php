@@ -7,7 +7,6 @@
 
 namespace Drupal\devel\Form;
 
-use Drupal\Component\Utility\MapArray;
 use Drupal\Core\Form\ConfigFormBase;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -164,12 +163,12 @@ class SettingsForm extends ConfigFormBase {
       $this->demonstrateErrorHandlers($request->query->get('demo'));
     }
 
-    $options = MapArray::copyValuesToKeys(array('default', 'blue', 'green', 'orange', 'white', 'disabled'));
+    $options = array('default', 'blue', 'green', 'orange', 'white', 'disabled');
     $form['krumo_skin'] = array(
       '#type' => 'radios',
       '#title' => t('Krumo display'),
       '#description' => t('Select a skin for your debug messages or select <em>disabled</em> to display object and array output in standard PHP format.'),
-      '#options' => $options,
+      '#options' => array_combine($options, $options),
       '#default_value' => $devel_config->get('krumo_skin'),
     );
 
