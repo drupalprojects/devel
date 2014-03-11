@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\devel_generate\Plugin\DevelGenerate\UserDevelGenerate.
+ * Contains \Drupal\devel_generate_example\Plugin\DevelGenerate\ExampleDevelGenerate.
  */
 
 namespace Drupal\devel_generate_example\Plugin\DevelGenerate;
@@ -14,10 +14,10 @@ use Drupal\devel_generate\DevelGenerateFieldBase;
  * Provides a ExampleDevelGenerate plugin.
  *
  * @DevelGenerate(
- *   id = "example",
+ *   id = "devel_generate_example",
  *   label = "Example",
  *   description = "Generate a given number of examples. Optionally delete current examples.",
- *   url = "example",
+ *   url = "devel_generate_example",
  *   permission = "administer devel_generate",
  *   settings = {
  *     "num" = 50,
