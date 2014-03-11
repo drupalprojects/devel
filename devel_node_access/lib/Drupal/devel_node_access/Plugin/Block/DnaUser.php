@@ -72,7 +72,7 @@ class DnaUser extends DnaBlockBase {
       $rows = array();
       // Determine whether to use Ajax or pre-populate the tables.
       if ($ajax = \Drupal::config('devel_node_access.settings')->get('user_ajax')) {
-        $output['#attached']['library'][] = array('devel_node_access', 'node_access');
+        $output['#attached']['library'][] = 'devel_node_access/node_access';
       }
       // Find all users. The following operations are very inefficient, so we
       // limit the number of users returned.  It would be better to make a

@@ -121,7 +121,7 @@ function devel_theme() {
 function devel_page_build(&$page) {
   // Add CSS for query log if should be displayed.
   if (\Drupal::config('devel.settings')->get('query_display')) {
-    $page['#attached']['library'][] = array('devel', 'devel');
+    $page['#attached']['library'][] = 'devel/devel';
   }
 }
 
@@ -135,33 +135,6 @@ function devel_set_message($msg, $type = NULL) {
   else {
     drupal_set_message($msg, $type, TRUE);
   }
-}
-
-/**
- * Implements hook_library_info().
- */
-function devel_library_info() {
-  $path = drupal_get_path('module', 'devel');
-  $libraries['krumo_path'] = array(
-    'js' => array(
-      $path . '/js/devel_krumo_path.js',
-    ),
-  );
-  $libraries['devel'] = array(
-    'title' => 'Devel',
-    'version' => '0',
-    'js' => array(
-      $path . '/js/devel.js',
-    ),
-    'css' => array(
-      $path . '/css/devel.css',
-    ),
-    'dependencies' => array(
-      array('system', 'jquery'),
-      array('system', 'drupal'),
-    ),
-  );
-  return $libraries;
 }
 
 /**
@@ -664,7 +637,7 @@ function devel_page_alter($page) {
     }
 
     if (!devel_silent()) {
-      $page['#attached']['library'][] = array('devel', 'krumo_path');
+      $page['#attached']['library'][] = 'devel/krumo_path';
     }
   }
 }
