@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\Language;
 use Drupal\devel_generate\DevelGenerateBase;
@@ -90,7 +91,7 @@ function devel_generate_node_insert(EntityInterface $node) {
 
 function devel_generate_add_comments(EntityInterface $node, $field, $users, $max_comments, $title_length = 8) {
   $field_name = $field->getName();
-  if ($node->{$field_name}->status >= COMMENT_OPEN) {
+  if ($node->{$field_name}->status >= CommentItemInterface::OPEN) {
     $num_comments = mt_rand(1, $max_comments);
     for ($i = 1; $i <= $num_comments; $i++) {
       switch ($i % 3) {

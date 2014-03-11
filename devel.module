@@ -16,6 +16,7 @@ define('DEVEL_ERROR_HANDLER_BACKTRACE_DPM', 4);
 
 define('DEVEL_MIN_TEXTAREA', 50);
 
+use Drupal\comment\CommentInterface;
 use Drupal\Core\Template\Attribute;
 use Drupal\devel\Controller\DevelController;
 
@@ -1574,7 +1575,7 @@ function devel_rebuild_node_comment_statistics() {
         SELECT c.nid, MAX(c.created) AS created, COUNT(*) AS comment_count FROM {comment} c WHERE status = 1 GROUP BY c.nid
       ) AS c2 ON c.nid = c2.nid AND c.created = c2.created
     )";
-  db_query($sql, array(':published' => COMMENT_PUBLISHED));
+  db_query($sql, array(':published' => CommentInterface::PUBLISHED));
 
   // Insert records into the node_comment_statistics for nodes that are missing.
   $query = db_select('node', 'n');
