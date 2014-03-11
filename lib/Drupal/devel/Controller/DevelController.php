@@ -123,12 +123,24 @@ class DevelController extends ControllerBase {
   }
 
   /**
-   * Menu callback. $entity_type argument not currently used in the UI.
+   * Menu callback for devel/entity/info.
    */
-  public function entityInfoPage($entity_type = NULL) {
-    $info = $this->entityManager()->getDefinition($entity_type);
-    ksort($info);
-    return kprint_r($info, TRUE);
+  public function entityInfoPage() {
+    $types = $this->entityManager()->getEntityTypeLabels();
+    ksort($types);
+    $result = array();
+    foreach (array_keys($types) as $type) {
+      $definition = $this->entityManager()->getDefinition($type);
+      $reflected_definition = new \ReflectionClass($definition);
+      $props = array();
+      foreach ($reflected_definition->getProperties() as $property) {
+        $property->setAccessible(TRUE);
+        $value = $property->getValue($definition);
+        $props[$property->name] = $value;
+      }
+      $result[$type] = $props;
+    }
+    return kprint_r($result, TRUE);
   }
 
   /**
