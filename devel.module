@@ -17,6 +17,7 @@ define('DEVEL_ERROR_HANDLER_BACKTRACE_DPM', 4);
 define('DEVEL_MIN_TEXTAREA', 50);
 
 use Drupal\comment\CommentInterface;
+use Drupal\Component\Utility\Timer;
 use Drupal\Core\Template\Attribute;
 use Drupal\devel\Controller\DevelController;
 
@@ -1215,7 +1216,7 @@ function _devel_table_sort($a, $b) {
  * Displays page execution time at the bottom of the page.
  */
 function devel_timer() {
-  $time = timer_read('page');
+  $time = Timer::read('page');
   return t_safe(' Page execution time was @time ms.', array('@time' => $time));
 }
 
