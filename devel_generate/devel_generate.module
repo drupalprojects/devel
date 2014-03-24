@@ -18,7 +18,7 @@ function devel_generate_menu_link_defaults() {
     $label = $plugin['label'];
     $items["devel_generate.$id"] = array(
       'link_title' => "Generate $label",
-      'parent' => 'system.admin.config.development',
+      'parent' => 'system.admin_config_development',
       'description' => $plugin['description'],
       'route_name' => "devel_generate.$id",
     );
