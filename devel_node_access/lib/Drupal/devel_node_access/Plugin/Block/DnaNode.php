@@ -88,7 +88,7 @@ class DnaNode extends DnaBlockBase {
       $headers = array(t('node'), t('realm'), t('gid'), t('view'), t('update'), t('delete'), t('explained'));
       $rows = array();
       foreach ($query->execute() as $row) {
-        $explained = module_invoke_all('node_access_explain', $row);
+        $explained = \Drupal::moduleHandler()->invokeAll('node_access_explain', $row);
         $rows[] = array(
           (empty($row->nid) ? '0' : '<a href="#node-' . $row->nid . '">' . self::get_node_title($nodes[$row->nid], TRUE) . '</a>'),
           $row->realm,
@@ -294,7 +294,7 @@ class DnaNode extends DnaBlockBase {
         $row->grant_view = $record['grant_view'];
         $row->grant_update = $record['grant_update'];
         $row->grant_delete = $record['grant_delete'];
-        $row->explained = implode('<br />', module_invoke_all('node_access_explain', $row));
+        $row->explained = implode('<br />', \Drupal::moduleHandler()->invokeAll('node_access_explain', $row));
         unset($row->title);
         if ($row->nid == 0 && $row->gid == 0 && $row->realm == 'all' && count($all_records) > 1) {
           $row->state = array('data' => $states['unexpected'][0], 'title' => $states['unexpected'][2]);
@@ -516,8 +516,8 @@ class DnaNode extends DnaBlockBase {
   }
 
   /**
-   * Helper function to mimic module_invoke_all() and include the name of
-   * the responding module(s).
+   * Helper function to mimic \Drupal::moduleHandler()->invokeAll() and include
+   * the name of the responding module(s).
    *
    * @param $hook
    *   The name of the hook.
@@ -533,7 +533,7 @@ class DnaNode extends DnaBlockBase {
     // Remove $hook from the arguments.
     array_shift($args);
     $return = array();
-    foreach (module_implements($hook) as $module) {
+    foreach (\Drupal::moduleHandler()->getImplementations($hook) as $module) {
       $function = $module . '_' . $hook;
       $result = call_user_func_array($function, $args);
       if (isset($result)) {
@@ -582,7 +582,7 @@ class DnaNode extends DnaBlockBase {
     $data = self::build_node_access_records_data($records, $node, 'hook_node_access_records()');
 
     // Simulate drupal_alter('node_access_records', $records, $node).
-    foreach (module_implements($hook) as $module) {
+    foreach (\Drupal::moduleHandler()->getImplementations($hook) as $module) {
       // Call hook_node_access_records_alter() for one module at a time
       // and analyze.
       $function = $module . '_' . $hook;
@@ -733,7 +733,7 @@ class DnaNode extends DnaBlockBase {
     }
 
     // Simulate drupal_alter('node_grants', $grants, $account, $op).
-    foreach (module_implements($hook) as $module) {
+    foreach (\Drupal::moduleHandler()->getImplementations($hook) as $module) {
       // Call hook_node_grants_alter() for one module at a time and analyze.
       $function = $module . '_' . $hook;
       $function($grants, $account, $op);

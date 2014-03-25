@@ -155,7 +155,7 @@ function drush_devel_fn_hook($hook) {
   include_once './core/includes/install.inc';
   drupal_load_updates();
 
-  if ($hook_implementations = module_implements($hook)) {
+  if ($hook_implementations = \Drupal::moduleHandler()->getImplementations($hook)) {
     if ($choice = drush_choice(array_combine($hook_implementations, $hook_implementations), 'Enter the number of the hook implementation you wish to view.')) {
       return drush_devel_fn_view($choice . "_$hook");
     }

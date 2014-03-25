@@ -93,7 +93,7 @@ abstract class DnaBlockBase extends BlockBase {
       );
     }
 
-    foreach (module_implements('node_access') as $module) {
+    foreach (\Drupal::moduleHandler()->getImplementations('node_access') as $module) {
       $function = $module . '_node_access';
       if (function_exists($function)) {
         $result = $function($node, $op, $user, $langcode);
