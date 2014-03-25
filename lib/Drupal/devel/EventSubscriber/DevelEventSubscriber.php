@@ -8,6 +8,7 @@
 namespace Drupal\devel\EventSubscriber;
 
 use Drupal\Core\Config\ConfigFactory;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -42,7 +43,7 @@ class DevelEventSubscriber implements EventSubscriberInterface {
   /**
    * Constructs a DevelEventSubscriber object.
    */
-  public function __construct(ConfigFactory $config, AccountInterface $account, ModuleHandlerInterface $module_handler) {
+  public function __construct(ConfigFactoryInterface $config, AccountInterface $account, ModuleHandlerInterface $module_handler) {
     $this->config = $config->get('devel.settings');
     $this->account = $account;
     $this->moduleHandler = $module_handler;
