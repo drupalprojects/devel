@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Alias of Kint::dump(). Prints data using Kint debug tool.
+ * Alias of Kint::dump().
  *
- * Pass as many arguments as you wish.
+ * Prints passed argument(s) using Kint debug tool.
  */
 function kint() {
   kint_require();
-  if (Kint::enabled() && \Drupal::currentUser()->hasPermission('access kint')) {
+  if (\Drupal::currentUser()->hasPermission('access kint')) {
     $args = func_get_args();
     call_user_func_array(drupal_is_cli() ? 's' : array('Kint', 'dump'), $args);
   }
@@ -15,25 +15,35 @@ function kint() {
 
 /**
  * Alias of Kint::trace().
- * Print backtrace in Kint debug tool.
+ *
+ * Prints backtrace in Kint debug tool.
  */
 function kint_trace() {
   kint_require();
-  if (Kint::enabled() && \Drupal::currentUser()->hasPermission('access kint')) {
+  if (\Drupal::currentUser()->hasPermission('access kint')) {
     call_user_func_array(array('Kint', 'trace'), array());
   }
 }
 
+/**
+ * Alias of Kint::kintLite().
+ *
+ * Prints with lightweight formatting, using whitespace for formatting instead
+ * of HTML.
+ */
 function kint_lite() {
-  if (Kint::enabled() && \Drupal::currentUser()->hasPermission('access kint')) {
+  if (\Drupal::currentUser()->hasPermission('access kint')) {
     $args = func_get_args();
     call_user_func_array('kintLite', $args);
   }
 }
 
+/**
+ * Prints passed argument(s) to the 'message' area of the page.
+ */
 function ksm() {
   kint_require();
-  if (Kint::enabled() && \Drupal::currentUser()->hasPermission('access kint')) {
+  if (\Drupal::currentUser()->hasPermission('access kint')) {
     $args = func_get_args();
     $msg = @Kint::dump($args);
     drupal_set_message($msg);
@@ -53,11 +63,9 @@ function kint_permission() {
   );
 }
 
+/**
+ * Load the Kint class.
+ */
 function kint_require() {
-  require_once drupal_get_path('module', 'kint') . '/kint-0.9/Kint.class.php';
+  require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'kint') . '/kint/Kint.class.php';
 }
-
-
-
-
-
