@@ -14,6 +14,19 @@ function kint() {
 }
 
 /**
+ * Alias of @Kint::dump().
+ *
+ * Returns passed argument(s) using Kint debug tool.
+ */
+function kint_ob() {
+  kint_require();
+  if (\Drupal::currentUser()->hasPermission('access kint')) {
+    $args = func_get_args();
+    @call_user_func_array(drupal_is_cli() ? 's' : array('Kint', 'dump'), $args);
+  }
+}
+
+/**
  * Alias of Kint::trace().
  *
  * Prints backtrace in Kint debug tool.

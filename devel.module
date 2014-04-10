@@ -139,6 +139,13 @@ function devel_set_message($msg, $type = NULL) {
 }
 
 /**
+ * @return bool. No need for cache here.
+ */
+function has_kint() {
+  return \Drupal::moduleHandler()->moduleExists('kint');
+}
+
+/**
  * Returns boolean. No need for cache here.
  */
 function has_krumo() {
@@ -865,21 +872,11 @@ function devel_is_compatible_optimizer() {
  * @param array|object $object
  *   An array or object to print.
  * @param string $prefix
+ * @todo: this parameter is not needed with Kint.
  *   Prefix for output items.
  */
 function kdevel_print_object($object, $prefix = NULL) {
-  return has_krumo() ? krumo_ob($object) : devel_print_object($object, $prefix);
-}
-
-/**
- * Saves krumo html using output buffering.
- */
-function krumo_ob($object) {
-  ob_start();
-  krumo($object);
-  $output = ob_get_contents();
-  ob_end_clean();
-  return $output;
+  return has_kint() ? @Kint::dump($object) : devel_print_object($object, $prefix);
 }
 
 /**
@@ -893,7 +890,6 @@ function krumo_ob($object) {
  *   Set to FALSE to suppress the output of the h3 tag.
  */
 function devel_print_object($object, $prefix = NULL, $header = TRUE) {
-  drupal_add_css(drupal_get_path('module', 'devel') . '/devel.css');
   $output = '<div class="devel-obj-output">';
   if ($header) {
     $output .= '<h3>' . t('Display of !type !obj', array(
@@ -1100,7 +1096,8 @@ function devel_query_table($queries, $counts) {
   if (\Drupal::config('devel.settings')->get('query_sort')) {
     usort($cell, '_devel_table_sort');
   }
-  return theme('devel_querylog', array('header' => $header, 'rows' => $cell));
+  // @todo: quick fix for theme() disappearing.
+  return theme_devel_querylog(array('header' => $header, 'rows' => $cell));
 }
 
 /**
@@ -1140,7 +1137,8 @@ function theme_devel_querylog($variables) {
   $output = '';
   if (!empty($header)) {
     $output .= "<div class='devel-querylog devel-querylog-header clear-block'>";
-    $output .= theme('devel_querylog_row', array('row' => $header));
+    // @todo: quick fix for theme() disappearing.
+    $output .= theme_devel_querylog_row(array('row' => $header));
     $output .= "</div>";
   }
   if (!empty($rows)) {
@@ -1149,7 +1147,8 @@ function theme_devel_querylog($variables) {
       $i++;
       $zebra = ($i % 2) == 0 ? 'even' : 'odd';
       $output .= "<div class='devel-querylog devel-querylog-$zebra clear-block'>";
-      $output .= theme('devel_querylog_row', array('row' => $row));
+      // @todo: quick fix for theme() disappearing.
+      $output .= theme_devel_querylog_row(array('row' => $row));
       $output .= "</div>";
     }
   }

@@ -187,7 +187,7 @@ class DevelController extends ControllerBase {
 
   protected function loadObject($type, $object, $name = NULL) {
     $name = isset($name) ? $name : $type;
-    return kdevel_print_object((array) $object, '$' . $name . '->');
+    return kdevel_print_object($object, '$' . $name . '->');
   }
 
   protected function renderObject($type, $object, $name = NULL) {
