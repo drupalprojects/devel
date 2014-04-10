@@ -12,7 +12,7 @@ DRUSH_PATH="`which drush`"
 DRUSH_DIRNAME="`dirname -- "$DRUSH_PATH"`"
 
 if [ $# = 0 ] ; then
-   phpunit --bootstrap="$DRUSH_DIRNAME/tests/drush_testcase.inc" drush
+   phpunit --configuration="$DRUSH_DIRNAME/tests" drush
 else
    # If you pass arguments, you must specify a file or drush dir as first argument. Else you get simpletest error.
    phpunit --bootstrap="$DRUSH_DIRNAME/tests/drush_testcase.inc" "$@"
