@@ -871,7 +871,7 @@ function devel_is_compatible_optimizer() {
 }
 
 /**
- * Prints an object using either Krumo (if installed) or devel_print_object().
+ * Prints an object using either Kint (if enabled) or devel_print_object().
  *
  * @param array|object $object
  *   An array or object to print.
