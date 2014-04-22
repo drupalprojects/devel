@@ -2,11 +2,11 @@
 
 # This script will run phpunit-based test classes using Drush's
 # test framework.  First, the Drush executable is located, and
-# then phpunit is invoked, passing in drush_testcase.inc as
-# the bootstrap file.
+# then phpunit is invoked, pointing to Drush's phpunit.xml as
+# the configuration.
 #
-# Any parameters that may be passed to phpunit may also be used
-# with runtests.sh.
+# Any parameters that may be passed to `phpunit` may also be used
+# with this script.
 
 DRUSH_PATH="`which drush`"
 DRUSH_DIRNAME="`dirname -- "$DRUSH_PATH"`"
