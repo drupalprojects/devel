@@ -161,15 +161,15 @@ function has_krumo() {
 }
 
 /**
- * Decides whether or not to print a debug variable using krumo().
+ * Decides whether or not to print a debug variable using Kint.
  *
- * @param array|object $input
+ * @param mixed $input
  *   The value to check.
  *
  * @return boolean
  */
-function merits_krumo($input) {
-  return (is_object($input) || is_array($input)) && has_krumo() && \Drupal::config('devel.settings')->get('krumo_skin') != 'disabled';
+function merits_kint($input) {
+  return !is_scalar($input) && has_kint();
 }
 
 /**
@@ -1334,17 +1334,18 @@ function dvr($input, $return = FALSE, $name = NULL) {
 }
 
 /**
- * Krumo print.
+ * Kint print.
  */
 function kprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r') {
-  // We do not want to krumo() strings and integers and such.
-  if (merits_krumo($input)) {
-    if (\Drupal::currentUser()->hasPermission('access devel information')) {
-      return $return ? (isset($name) ? $name . ' => ' : '') . krumo_ob($input) : krumo($input);
+  if (\Drupal::currentUser()->hasPermission('access devel information')) {
+    // Kint is too heavy to bother with for scalars like strings and integers.
+    if (merits_kint($input)) {
+      // Had to use @d() instead of @Kint::dump() as the latter is ignoring @ modifier.
+      return $return ? (isset($name) ? $name . ' => ' : '') . @d($input) : Kint::dump($input);
     }
-  }
-  else {
-    return dprint_r($input, $return, $name, $function);
+    else {
+      return dprint_r($input, $return, $name, $function);
+    }
   }
 }
 
