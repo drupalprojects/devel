@@ -110,7 +110,7 @@ class UserDevelGenerate extends DevelGenerateBase {
           'uid'     => NULL,
           'name'    => $name,
           'pass'    => $pass,
-          'mail'    => $name . '@' . $url['host'] . '.invalid',
+          'mail'    => $name . '@example.com',
           'status'  => 1,
           'created' => REQUEST_TIME - mt_rand(0, $age),
           'roles' => array_combine($roles, $roles),
