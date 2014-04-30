@@ -27,7 +27,7 @@ class SettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, array &$form_state, Request $request = NULL) {
     $current_path = $request->attributes->get('system_path');
-    $devel_config = $this->configFactory->get('devel.settings');
+    $devel_config = $this->config('devel.settings');
 
     $form['queries'] = array('#type' => 'fieldset', '#title' => t('Query log'));
 
@@ -193,7 +193,7 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, array &$form_state) {
-    $this->configFactory->get('devel.settings')
+    $this->config('devel.settings')
       ->set('query_display', $form_state['values']['query_display'])
       ->set('query_sort', $form_state['values']['query_sort'])
       ->set('execution', $form_state['values']['execution'])
