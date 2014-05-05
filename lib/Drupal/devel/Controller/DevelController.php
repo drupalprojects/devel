@@ -271,10 +271,14 @@ class DevelController extends ControllerBase {
       $i++;
     }
     // @todo don't call theme() directly.
-    $output = theme('table', array('header' => $header, 'rows' => $rows));
+    $build['explain'] = array(
+      '#type' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+    );
 
     $GLOBALS['devel_shutdown'] = FALSE;
-    return new Response($output);
+    return new Response(drupal_render($build));
   }
 
   /**
