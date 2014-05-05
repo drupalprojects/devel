@@ -102,6 +102,7 @@ class DevelEventSubscriber implements EventSubscriberInterface {
 
     // Initialize XHProf.
     devel_xhprof_enable();
+
     if ($this->config->get('rebuild_theme_registry')) {
       drupal_theme_rebuild();
       if (\Drupal::service('flood')->isAllowed('devel.rebuild_registry_warning', 1)) {

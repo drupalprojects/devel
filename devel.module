@@ -583,7 +583,7 @@ function devel_library_alter(&$libraries, $module) {
 /**
  * Runs on shutdown to clean up and display developer information.
  *
- * devel_boot() registers this function as a shutdown function.
+ * DevelEventSubscriber::onRequest registers this function as a shutdown function.
  * The bulk of the work is done in devel_shutdown_real().
  */
 function devel_shutdown() {
@@ -732,11 +732,11 @@ function devel_shutdown_memory() {
   if (\Drupal::config('devel.settings')->get('memory')) {
     $memory_shutdown = memory_get_usage();
     $args = array(
-      '@memory_boot' => round($memory_init / 1024 / 1024, 2),
+      '@memory_onrequest' => round($memory_init / 1024 / 1024, 2),
       '@memory_shutdown' => round($memory_shutdown / 1024 / 1024, 2),
       '@memory_peak' => round(memory_get_peak_usage(TRUE) / 1024 / 1024, 2)
     );
-    $msg = '<span class="dev-memory-usages"> Memory used at: devel_boot()=<strong>@memory_boot</strong> MB, devel_shutdown()=<strong>@memory_shutdown</strong> MB, PHP peak=<strong>@memory_peak</strong> MB.</span>';
+    $msg = '<span class="dev-memory-usages"> Memory used at onRequest event=<strong>@memory_onrequest</strong> MB, devel_shutdown()=<strong>@memory_shutdown</strong> MB, PHP peak=<strong>@memory_peak</strong> MB.</span>';
     // theme() may not be available. not t() either.
     return t_safe($msg, $args);
   }
