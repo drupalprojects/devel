@@ -50,7 +50,7 @@ class ConfigsList extends FormBase {
   );
 
   // List all the variables filtered if any filter was provided.
-  $names = config_get_storage_names_with_prefix($filter);
+  $names = \Drupal::configFactory()->listAll($filter);
   foreach ($names as $key => $config_name) {
     $form['variables'][$key]['name'] = array('#markup' => $config_name);
     $form['variables'][$key]['operation'] = array('#markup' => l(t('Edit'), "devel/config/edit/$config_name"));
