@@ -53,7 +53,7 @@ class DevelRebuildMenus extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, array &$form_state) {
-    menu_router_rebuild();
+    \Drupal::service('router.builder')->rebuild();
     drupal_set_message(t('The menu router has been rebuilt.'));
     $form_state['redirect'] = '<front>';
   }
