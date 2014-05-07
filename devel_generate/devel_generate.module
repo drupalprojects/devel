@@ -79,7 +79,7 @@ function devel_generate_node_insert(EntityInterface $node) {
         'source' => 'node/' . $node->id(),
         'alias' => 'node-' . $node->id() . '-' . $node->bundle(),
       );
-      drupal_container()->get('path.crud')->save($path['source'], $path['alias']);
+      \Drupal::service('path.alias_storage')->save($path['source'], $path['alias']);
     }
 
     // Add node statistics.
