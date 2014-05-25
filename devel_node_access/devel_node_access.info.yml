@@ -6,6 +6,6 @@ core: 8.x
 configure: admin/config/development/devel
 dependencies:
  - devel
- - menu
+ - menu_ui
 tags:
  - developer

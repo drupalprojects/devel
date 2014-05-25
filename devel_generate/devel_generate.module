@@ -8,23 +8,20 @@ use Drupal\devel_generate\DevelGenerateFieldBase;
 use Drupal\field\Field;
 
 /**
- * Implements hook_menu_link_defaults().
+ * Implements hook_menu_link_defaults_alter().
  */
-function devel_generate_menu_link_defaults() {
-  $items = array();
+function devel_generate_menu_link_defaults_alter(&$links) {
 
   $devel_generate_plugins = $devel_generate_manager = \Drupal::service('plugin.manager.develgenerate')->getDefinitions();
   foreach ($devel_generate_plugins as $id => $plugin) {
     $label = $plugin['label'];
-    $items["devel_generate.$id"] = array(
-      'link_title' => "Generate $label",
+    $links["devel_generate.$id"] = array(
+      'title' => "Generate $label",
       'parent' => 'system.admin_config_development',
       'description' => $plugin['description'],
       'route_name' => "devel_generate.$id",
     );
   }
-
-  return $items;
 }
 
 /**

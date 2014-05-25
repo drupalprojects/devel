@@ -2,6 +2,7 @@ devel.admin_settings:
   path: '/admin/config/development/devel'
   defaults:
     _form: '\Drupal\devel\Form\SettingsForm'
+    _title: 'Devel settings'
   requirements:
     _permission: 'administer site configuration'
 
@@ -10,6 +11,8 @@ devel.reinstall:
   defaults:
     _form: '\Drupal\devel\Form\DevelReinstall'
     _title: 'Reinstall modules'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'administer site configuration'
 
@@ -18,11 +21,15 @@ devel.menu_rebuild:
   defaults:
     _form: '\Drupal\devel\Form\DevelRebuildMenus'
     _title: 'Rebuild menus'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'administer site configuration'
 
 devel.configs_list:
   path: '/devel/config/{filter}'
+  options:
+    _admin_route: TRUE
   defaults:
     _form: '\Drupal\devel\Form\ConfigsList'
     _title: 'Config editor'
@@ -35,6 +42,8 @@ devel.config_edit:
   defaults:
     _form: '\Drupal\devel\Form\ConfigEditor'
     _title: 'Edit configuration object: !config_name'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'administer site configuration'
 
@@ -43,6 +52,8 @@ devel.state_system_page:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::stateSystemPage'
     _title: 'State editor'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -51,6 +62,8 @@ devel.system_state_edit:
   defaults:
     _form: '\Drupal\devel\Form\SystemStateEdit'
     _title: 'Edit state variable: !state_name'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'administer site configuration'
 
@@ -59,6 +72,8 @@ devel.menu_item:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::menuItem'
     _title: 'Menu item'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -67,6 +82,8 @@ devel.theme_registry:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::themeRegistry'
     _title: 'Theme registry'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -75,6 +92,8 @@ devel.entity_info_page:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::entityInfoPage'
     _title: 'Entity info'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -83,6 +102,8 @@ devel.field_info_page:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::fieldInfoPage'
     _title: 'Field info'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -91,6 +112,8 @@ devel.reference:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::functionReference'
     _title: 'Function reference'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -99,6 +122,8 @@ devel.devel_node_load:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::nodeLoad'
     _title: 'Devel'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -107,6 +132,8 @@ devel.devel_node_render:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::nodeRender'
     _title: 'Devel'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -115,6 +142,8 @@ devel.devel_user_load:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::userLoad'
     _title: 'Devel'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -123,6 +152,8 @@ devel.devel_user_render:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::userRender'
     _title: 'Devel'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -131,6 +162,8 @@ devel.devel_comment_load:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::commentLoad'
     _title: 'Devel'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -139,6 +172,8 @@ devel.devel_comment_render:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::commentRender'
     _title: 'Devel'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -147,6 +182,8 @@ devel.devel_taxonomy_term_load:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::taxonomyTermLoad'
     _title: 'Devel'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -155,6 +192,8 @@ devel.devel_taxonomy_term_render:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::taxonomyTermRender'
     _title: 'Devel'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -163,6 +202,8 @@ devel.execute_php:
   defaults:
     _form: '\Drupal\devel\Form\ExecutePHP'
     _title: 'Execute PHP code'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'execute php code'
 
@@ -171,6 +212,8 @@ devel.session:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::session'
     _title: 'Session viewer'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -179,6 +222,8 @@ devel.switch:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::switchUser'
     _title: 'Switch user'
+  options:
+    _admin_route: TRUE
   requirements:
     _devel_switch_user_access: 'TRUE'
 
@@ -187,6 +232,8 @@ devel.elements_page:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::elementsPage'
     _title: 'Hook_elements()'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -195,6 +242,8 @@ devel.cache_clear:
   defaults:
     _content: '\Drupal\devel\Controller\DevelController::cacheClear'
     _title: 'Clear cache'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -203,6 +252,8 @@ devel.run_cron:
   defaults:
     _controller: '\Drupal\system\CronController::runManually'
     _title: 'Run cron'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'administer site configuration'
 
@@ -211,6 +262,8 @@ devel.explain:
   defaults:
     _controller: '\Drupal\devel\Controller\DevelController::queryLogExplain'
     _title: 'Explain query'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
 
@@ -219,5 +272,7 @@ devel.arguments:
   defaults:
     _controller: '\Drupal\devel\Controller\DevelController::queryLogArguments'
     _title: 'Explain query'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'access devel information'

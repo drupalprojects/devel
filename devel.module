@@ -36,38 +36,6 @@ function devel_help($section) {
 }
 
 /**
- * Implements hook_menu_link_defaults().
- */
-function devel_menu_link_defaults() {
-  $links['devel.admin_settings'] = array(
-    'link_title' => 'Devel settings',
-    'description' => 'Helper functions, pages, and blocks to assist Drupal developers. The devel blocks can be managed via the block administration page.',
-    'route_name' => 'devel.admin_settings',
-    'parent' => 'system.admin_config_development',
-  );
-
-  return $links;
-}
-
-/**
- * Implements hook_admin_paths().
- */
-function devel_admin_paths() {
-  $paths = array(
-    'devel/*' => TRUE,
-    'node/*/devel' => TRUE,
-    'node/*/devel/*' => TRUE,
-    'comment/*/devel' => TRUE,
-    'comment/*/devel/*' => TRUE,
-    'user/*/devel' => TRUE,
-    'user/*/devel/*' => TRUE,
-    'taxonomy/term/*/devel' => TRUE,
-    'taxonomy/term/*/devel/*' => TRUE,
-  );
-  return $paths;
-}
-
-/**
  * Returns destinations.
  */
 function devel_menu_need_destination() {
