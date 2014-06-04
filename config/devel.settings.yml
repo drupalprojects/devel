@@ -1,9 +1,6 @@
 query_display: FALSE
 query_sort: 0
 execution: 5
-xhprof_enabled: FALSE
-xhprof_directory: ''
-xhprof_url: ''
 api_url: 'api.drupal.org'
 timer: 0
 memory: 0
