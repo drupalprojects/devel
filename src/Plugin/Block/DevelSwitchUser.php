@@ -80,9 +80,12 @@ class DevelSwitchUser extends BlockBase {
   public function build() {
     $links = $this->switchUserList();
     if (!empty($links)) {
-      drupal_add_css(drupal_get_path('module', 'devel') . '/css/devel.css');
       $build = array(
         'devel_links' => array('#theme' => 'links', '#links' => $links),
+        '#attached' => array(
+          'css' => array(
+            drupal_get_path('module', 'devel') . '/css/devel.css')
+          )
       );
       if ($this->configuration['show_form']) {
         $form_state = array();
