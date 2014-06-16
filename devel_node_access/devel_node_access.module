@@ -244,7 +244,7 @@ function dna_summary() {
 /**
  * Implements hook_node_view().
  */
-function devel_node_access_node_view($node, $build_mode) {
+function devel_node_access_node_view($build, $node, $display, $view_mode, $langcode) {
   // Remember this node, for display in our block.
   DnaBlockBase::visible_nodes($node->id());
 }

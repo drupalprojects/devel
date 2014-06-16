@@ -7,13 +7,15 @@
 
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
+use Drupal\comment\CommentManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\devel_generate\DevelGenerateFieldBase;
-use Drupal\field\FieldInfo;
+use Drupal\field\Entity\FieldInstanceConfig;
+use Drupal\node\Entity\NodeType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 
 /**
  * Provides a ContentDevelGenerate plugin.
@@ -35,21 +37,31 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactoryPluginInterface {
 
   /**
-   * The field info service.
+   * The module handler.
    *
-   * @var \Drupal\field\FieldInfo
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
-  protected $fieldInfo;
+  protected $moduleHandler;
+
+  /**
+   * The comment manager service.
+   *
+   * @var \Drupal\comment\CommentManagerInterface
+   */
+  protected $commentManager;
 
   /**
    * {@inheritdoc}
    *
-   * @param \Drupal\field\FieldInfo $field_info
-   *   Field Info service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Drupal\comment\CommentManagerInterface $comment_manager
+   *   The comment manager service.
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, FieldInfo $field_info) {
-    $this->fieldInfo = $field_info;
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, CommentManagerInterface $comment_manager = NULL) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->moduleHandler = $module_handler;
+    $this->commentManager = $comment_manager;
   }
 
   /**
@@ -58,7 +70,8 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration, $plugin_id, $plugin_definition,
-      $container->get('field.info')
+      $container->get('module_handler'),
+      $container->has('comment.manager') ? $container->get('comment.manager') : NULL
     );
   }
 
@@ -76,18 +89,40 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       }
     }
     else {
-      $types = node_type_get_types();
+      $types = NodeType::loadMultiple();
+      $comment_fields = ($this->commentManager) ? $this->commentManager->getFields('node') : array();
+      $map = array(t('Hidden'), t('Closed'), t('Open'));
       foreach ($types as $type) {
         $options[$type->type] = array(
           'type' => array('#markup' => t($type->name)),
         );
-        if (\Drupal::moduleHandler()->moduleExists('comment') && ($instance = $this->fieldInfo->getInstance('node', $type->type, 'comment'))) {
-          //@TODO: Make this part support multiple comment fields.
-          $instance = $this->fieldInfo->getInstance('node', $type->type, 'comment');
-          $mode = $instance->getSetting('default_mode');
-          $map = array(t('Hidden'), t('Closed'), t('Open'));
-          $options[$type->type]['comments'] = array('#markup' => '<small>'. $map[$mode]. '</small>');
+        if ($this->commentManager) {
+          $fields = array();
+          foreach ($comment_fields as $field_name => $info) {
+            // Find all comment fields for the bundle.
+            if (in_array($type->type, $info['bundles'])) {
+              $instance = FieldInstanceConfig::loadByName('node', $type->type, 'comment');
+              $default_mode = reset($instance->default_value);
+              $fields[] = format_string('@field: !state', array(
+                '@field' => $instance->label(),
+                '!state' => $map[$default_mode['status']],
+              ));
+            }
+          }
         }
+
+        // @todo Refactor display of comment fields.
+        if (!empty($fields)) {
+          $options[$type->type]['comments'] = array('data' => array(
+            '#theme' => 'item_list',
+            '#items' => $fields,
+          ));
+        }
+        else {
+          $options[$type->type]['comments'] = t('No comment fields');
+        }
+
+
       }
     }
 
@@ -99,19 +134,19 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     $header = array(
       'type' => t('Content type'),
     );
-    if (\Drupal::moduleHandler()->moduleExists('comment')) {
-      $header['comments'] = t('Comments');
+    if ($this->commentManager) {
+      $header['comments'] = array(
+        'data' => t('Comments'),
+        'class' => array(RESPONSIVE_PRIORITY_MEDIUM),
+      );
     }
 
     $form['node_types'] = array(
-      '#type' => 'table',
+      '#type' => 'tableselect',
       '#header' => $header,
-      '#tableselect' => TRUE,
+      '#options' => $options,
     );
 
-    $form['node_types'] += $options;
-
-    if (\Drupal::moduleHandler()->moduleExists('checkall')) $form['node_types']['#checkall'] = TRUE;
     $form['kill'] = array(
       '#type' => 'checkbox',
       '#title' => t('<strong>Delete all content</strong> in these content types before generating new content.'),
@@ -137,12 +172,12 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     );
 
     $form['max_comments'] = array(
-      '#type' => \Drupal::moduleHandler()->moduleExists('comment') ? 'textfield' : 'value',
+      '#type' => $this->moduleHandler->moduleExists('comment') ? 'textfield' : 'value',
       '#title' => t('Maximum number of comments per node.'),
       '#description' => t('You must also enable comments for the content types you are generating. Note that some nodes will randomly receive zero comments. Some will receive the max.'),
       '#default_value' => $this->getSetting('max_comments'),
       '#size' => 3,
-      '#access' => \Drupal::moduleHandler()->moduleExists('comment'),
+      '#access' => $this->moduleHandler->moduleExists('comment'),
     );
     $form['title_length'] = array(
       '#type' => 'textfield',
@@ -152,7 +187,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     );
     $form['add_alias'] = array(
       '#type' => 'checkbox',
-      '#disabled' => !\Drupal::moduleHandler()->moduleExists('path'),
+      '#disabled' => !$this->moduleHandler->moduleExists('path'),
       '#description' => t('Requires path.module'),
       '#title' => t('Add an url alias for each node.'),
       '#default_value' => FALSE,
@@ -161,12 +196,11 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       '#type' => 'checkbox',
       '#title' => t('Add statistics for each node (node_counter table).'),
       '#default_value' => TRUE,
-      '#access' => \Drupal::moduleHandler()->moduleExists('statistics'),
+      '#access' => $this->moduleHandler->moduleExists('statistics'),
     );
 
-    unset($options);
-    $options[Language::LANGCODE_NOT_SPECIFIED] = t('Language neutral');
-    if (\Drupal::moduleHandler()->moduleExists('locale')) {
+    $options = array(Language::LANGCODE_NOT_SPECIFIED => t('Language neutral'));
+    if ($this->moduleHandler->moduleExists('locale')) {
       $languages = language_list();
       foreach ($languages as $langcode => $language) {
         $options[$langcode] = $language->name;
@@ -176,7 +210,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       '#type' => 'select',
       '#title' => t('Set language on nodes'),
       '#multiple' => TRUE,
-      '#disabled' => !\Drupal::moduleHandler()->moduleExists('locale'),
+      '#disabled' => !$this->moduleHandler->moduleExists('locale'),
       '#description' => t('Requires locale.module'),
       '#options' => $options,
       '#default_value' => array(Language::LANGCODE_NOT_SPECIFIED),
@@ -217,11 +251,12 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
    * the number of elements is less than 50.
    */
   private function generateContent($values) {
-    if (!empty($values['kill'])) {
+    $values['node_types'] = array_filter($values['node_types']);
+    if (!empty($values['kill']) && $values['node_types']) {
       $this->contentKill($values);
     }
 
-    if (count($values['node_types'])) {
+    if (!empty($values['node_types'])) {
       // Generate nodes.
       $this->develGenerateContentPreNode($values);
       $start = time();
@@ -364,17 +399,12 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       'langcode' => $this->getLangcode($results),
     );
 
-    if ($type->has_title) {
-      // We should not use the random function if the value is not random
-      if ($results['title_length'] < 2) {
-        $edit_node['title'] = $this->createGreeking(1, TRUE);
-      }
-      else {
-        $edit_node['title'] = $this->createGreeking(mt_rand(1, $results['title_length']), TRUE);
-      }
+    // We should not use the random function if the value is not random
+    if ($results['title_length'] < 2) {
+      $edit_node['title'] = $this->createGreeking(1, TRUE);
     }
     else {
-      $edit_node['title'] = '';
+      $edit_node['title'] = $this->createGreeking(mt_rand(1, $results['title_length']), TRUE);
     }
     $node = entity_create('node', $edit_node);
 
