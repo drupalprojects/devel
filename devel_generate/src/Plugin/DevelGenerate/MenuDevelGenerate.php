@@ -8,6 +8,7 @@
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
 use Drupal\devel_generate\DevelGenerateBase;
+use Drupal\system\Entity\Menu;
 
 /**
  * Provides a MenuDevelGenerate plugin.
@@ -30,9 +31,9 @@ use Drupal\devel_generate\DevelGenerateBase;
 class MenuDevelGenerate extends DevelGenerateBase {
 
   public function settingsForm(array $form, array &$form_state) {
-    $menu_enabled = \Drupal::moduleHandler()->moduleExists('menu');
+    $menu_enabled = \Drupal::moduleHandler()->moduleExists('menu_ui');
     if ($menu_enabled) {
-      $menus = array('__new-menu__' => t('Create new menu(s)')) + menu_get_menus();
+      $menus = array('__new-menu__' => t('Create new menu(s)')) + menu_ui_get_menus();
     }
     else {
       $menus = menu_list_system_menus();
@@ -179,10 +180,10 @@ class MenuDevelGenerate extends DevelGenerateBase {
    * Deletes custom generated menus
    */
   protected function deleteMenus() {
-    if (\Drupal::moduleHandler()->moduleExists('menu')) {
-      foreach (menu_get_menus(FALSE) as $menu => $menu_title) {
+    if (\Drupal::moduleHandler()->moduleExists('menu_ui')) {
+      foreach (menu_ui_get_menus(FALSE) as $menu => $menu_title) {
         if (strpos($menu, 'devel-') === 0) {
-          menu_load($menu)->delete();
+          Menu::load($menu)->delete();
         }
       }
     }
@@ -204,7 +205,7 @@ class MenuDevelGenerate extends DevelGenerateBase {
   protected function generateMenus($num_menus, $title_length = 12) {
     $menus = array();
 
-    if (!\Drupal::moduleHandler()->moduleExists('menu')) {
+    if (!\Drupal::moduleHandler()->moduleExists('menu_ui')) {
       $num_menus = 0;
     }
 

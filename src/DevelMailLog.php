@@ -18,8 +18,8 @@
 
 namespace Drupal\devel;
 
-use Drupal\Component\Utility\Settings;
 use Drupal\Core\Mail\Plugin\Mail\PhpMail;
+use Drupal\Core\Site\Settings;
 use Exception;
 
 class DevelMailLog extends PhpMail {

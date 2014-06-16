@@ -30,14 +30,10 @@ class DevelMailTest extends WebTestBase {
     );
   }
 
-  function setUp() {
-    parent::setUp();
-  }
-
   /**
    * Test mail logging functionality.
    */
-  function testMail() {
+  public function testDevelMail() {
     $message = array();
     $message['to'] = 'drupal@example.com';
     $message['subject'] = 'Test mail';

@@ -28,25 +28,21 @@ function devel_generate_menu_link_defaults_alter(&$links) {
  * Implements hook_permission().
  */
 function devel_generate_permission() {
-  $permissions = array();
-
-  $devel_generate_plugins = $devel_generate_manager = \Drupal::service('plugin.manager.develgenerate')->getDefinitions();
+  $devel_generate_plugins = \Drupal::service('plugin.manager.develgenerate')->getDefinitions();
   foreach ($devel_generate_plugins as $plugin) {
 
     $permission = $plugin['permission'];
     $permissions[$permission] = array(
       'title' => t($permission),
-      'description' => t($permission),
     );
-
-    return $permissions;
   }
-  return array(
-    'administer my module' => array(
-      'title' => t('Administer my module'),
-      'description' => t('Perform administration tasks for my module.'),
+
+  $permissions = array(
+    'administer devel_generate' => array(
+      'title' => t('Administer devel generate'),
     ),
   );
+  return $permissions;
 }
 
 /**

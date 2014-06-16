@@ -70,17 +70,11 @@ class DevelGenerateManagerTest extends UnitTestCase {
    * Test creating an instance of the DevelGenerateManager.
    */
   public function testCreateInstance() {
-    $language = new Language(array('id' => 'en'));
-    $language_manager = $this->getMock('Drupal\Core\Language\LanguageManagerInterface');
-    $language_manager->expects($this->once())
-      ->method('getCurrentLanguage')
-      ->with(Language::TYPE_INTERFACE)
-      ->will($this->returnValue($language));
     $namespaces = new \ArrayObject(array('Drupal\devel_generate_example' => realpath(dirname(__FILE__) . '/../../../modules/devel_generate_example/lib')));
     $cache_backend = $this->getMock('Drupal\Core\Cache\CacheBackendInterface');
 
     $module_handler = $this->getMock('Drupal\Core\Extension\ModuleHandlerInterface');
-    $manager = new TestDevelGeneratePluginManager($namespaces, $cache_backend, $language_manager, $module_handler);
+    $manager = new TestDevelGeneratePluginManager($namespaces, $cache_backend, $module_handler);
     $manager->setDiscovery($this->discovery);
 
     $example_instance = $manager->createInstance('devel_generate_example');

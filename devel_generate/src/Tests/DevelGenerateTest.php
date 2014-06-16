@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Implements tests for devel_generate submodule.
+ * Implements tests for devel_generate module.
  */
 
 namespace Drupal\devel_generate\Tests;
@@ -14,19 +14,17 @@ use Drupal\Core\Language\Language;
  */
 class DevelGenerateTest extends WebTestBase {
 
-  private $vocabulary;
+  protected $vocabulary;
+
+  protected $admin_user;
+
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = array('devel_generate', 'taxonomy', 'menu', 'comment');
+  public static $modules = array('menu_ui', 'node', 'comment', 'taxonomy', 'devel_generate');
 
-  /*
-   * The getInfo() method provides information about the test.
-   * In order for the test to be run, the getInfo() method needs
-   * to be implemented.
-   */
   public static function getInfo() {
     return array(
       'name' => t('Devel Generate'),
@@ -38,19 +36,20 @@ class DevelGenerateTest extends WebTestBase {
   /**
    * Prepares the testing environment
    */
-  function setUp() {
+  public function setUp() {
     parent::setUp();
 
-    //creating vocabulary to associate taxonomy terms generated.
-    $vocabulary = entity_create('taxonomy_vocabulary', array(
+    $this->admin_user = $this->drupalCreateUser(array('administer devel_generate'));
+
+    // Creating a vocabulary to associate taxonomy terms generated.
+    $this->vocabulary = entity_create('taxonomy_vocabulary', array(
       'name' => $this->randomName(),
       'description' => $this->randomName(),
       'vid' => drupal_strtolower($this->randomName()),
       'langcode' => Language::LANGCODE_NOT_SPECIFIED,
       'weight' => mt_rand(0, 10),
     ));
-    $vocabulary->save();
-    $this->vocabulary = $vocabulary;
+    $this->vocabulary->save();
 
     // Create Basic page and Article node types.
     if ($this->profile != 'standard') {
@@ -61,12 +60,9 @@ class DevelGenerateTest extends WebTestBase {
   /**
    * Tests generate commands
    */
-  public function testGenerate() {
+  public function testDevelGenerate() {
 
-    $user = $this->drupalCreateUser(array(
-      'administer devel_generate',
-    ));
-    $this->drupalLogin($user);
+    $this->drupalLogin($this->admin_user);
 
     //Creating users.
     $edit = array(
