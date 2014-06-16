@@ -415,7 +415,7 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
       $links[] = $link;
     }
   }
-  if (array_key_exists($uid = $user->id(), $links)) {
+  if (array_key_exists($uid = \Drupal::currentUser()->id(), $links)) {
     $links[$uid]['title'] = '<strong>' . $links[$uid]['title'] . '</strong>';
   }
   return $links;
