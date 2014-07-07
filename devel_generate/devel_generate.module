@@ -59,7 +59,7 @@ function devel_generate_node_insert(EntityInterface $node) {
     if (!empty($results['max_comments'])) {
       $instances = entity_load_multiple_by_properties('field_instance_config', array('entity_type' => $node->getEntityTypeId(), 'bundle' => $node->bundle()));
       foreach ($instances as $instance) {
-        $field = $instance->getField();
+        $field = $instance->getFieldStorageDefinition();
         if ($field->getType() == 'comment') {
           devel_generate_add_comments($node, $field, $results['users'], $results['max_comments'], $results['title_length']);
         }

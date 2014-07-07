@@ -3,8 +3,8 @@
 namespace Drupal\devel_generate;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\field\Field;
-use Drupal\Core\Field\FieldDefinitionInterface;
 
 abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface {
 
@@ -32,7 +32,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
     $object_field = array();
     $cardinality = $instance->getCardinality();
     switch ($cardinality) {
-      case FieldDefinitionInterface::CARDINALITY_UNLIMITED;
+      case FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED;
         $max = rand(0, 3); //just an arbitrary number for 'unlimited'
         break;
       default:
@@ -61,7 +61,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
     }
 
     foreach ($instances as $instance) {
-      $field = $instance->getField();
+      $field = $instance->getFieldStorageDefinition();
       $cardinality = $field->getCardinality();
       $field_name = $field->getName();
       $object_field = array();
@@ -74,7 +74,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
       }
       else {
         switch ($cardinality) {
-          case FieldDefinitionInterface::CARDINALITY_UNLIMITED;
+          case FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED;
             $max = rand(0, 3); //just an arbitrary number for 'unlimited'
             break;
           default:
