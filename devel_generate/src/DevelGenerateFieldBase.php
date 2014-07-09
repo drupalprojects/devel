@@ -30,7 +30,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
    */
   protected function generateMultiple($object, $instance, $plugin_definition, $form_display_options) {
     $object_field = array();
-    $cardinality = $instance->getCardinality();
+    $cardinality = $instance->getFieldStorageDefinition()->getCardinality();
     switch ($cardinality) {
       case FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED;
         $max = rand(0, 3); //just an arbitrary number for 'unlimited'
@@ -86,7 +86,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
       for ($i = 0; $i <= $max; $i++) {
         $provider = $field_types[$field->type]['provider'];
         if (!in_array($provider, array('file', 'image', 'taxonomy', 'number', 'text', 'options', 'email', 'link'))) {
-          return;
+          continue;
         }
         $devel_generate_field_factory = new DevelGenerateFieldFactory();
         $devel_generate_field_object = $devel_generate_field_factory->createInstance($provider, $namespace);

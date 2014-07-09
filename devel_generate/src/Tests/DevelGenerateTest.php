@@ -6,6 +6,7 @@
 
 namespace Drupal\devel_generate\Tests;
 
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\simpletest\WebTestBase;
 use Drupal\Core\Language\Language;
 
@@ -54,7 +55,44 @@ class DevelGenerateTest extends WebTestBase {
     // Create Basic page and Article node types.
     if ($this->profile != 'standard') {
       $this->drupalCreateContentType(array('type' => 'page', 'name' => 'Basic Page'));
+      $this->drupalCreateContentType(array('type' => 'article', 'name' => 'Article'));
     }
+
+    // Copied from /core/modules/taxonomy/src/Tests/TermTest.php::setup()
+    $field_name = 'taxonomy_' . $this->vocabulary->id();
+    $field = array(
+      'name' => $field_name,
+      'entity_type' => 'node',
+      'type' => 'taxonomy_term_reference',
+      'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
+      'settings' => array(
+        'allowed_values' => array(
+          array(
+            'vocabulary' => $this->vocabulary->id(),
+            'parent' => 0,
+          ),
+        ),
+      ),
+    );
+    entity_create('field_config', $field)->save();
+
+    $this->instance = entity_create('field_instance_config', array(
+      'field_name' => $field_name,
+      'bundle' => 'article',
+      'entity_type' => 'node',
+    ));
+    $this->instance->save();
+    entity_get_form_display('node', 'article', 'default')
+      ->setComponent($field_name, array(
+        'type' => 'options_select',
+      ))
+      ->save();
+    entity_get_display('node', 'article', 'default')
+      ->setComponent($field_name, array(
+        'type' => 'taxonomy_term_reference_link',
+      ))
+      ->save();
+
   }
 
   /**
@@ -72,19 +110,20 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('4 users created.'));
     $this->assertText(t('Generate process complete.'));
 
-    //Creating content.
-    // Generate content.
+    // Creating content.
     // First we create a node in order to test the Delete content checkbox.
-    $this->drupalCreateNode(array());
+    $this->drupalCreateNode(array('type' => 'article'));
 
     $edit = array(
       'num' => 4,
-      'node_types[page]' => TRUE,
+      'kill' => TRUE,
+      'node_types[article]' => TRUE,
       'time_range' => 604800,
       'max_comments' => 3,
       'title_length' => 4,
     );
     $this->drupalPostForm('admin/config/development/generate/content', $edit, t('Generate'));
+    $this->assertText(t('Deleted 1 nodes.'));
     $this->assertText(t('Finished creating 4 nodes'));
     $this->assertText(t('Generate process complete.'));
 

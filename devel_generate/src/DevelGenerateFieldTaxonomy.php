@@ -6,7 +6,7 @@ class DevelGenerateFieldTaxonomy extends DevelGenerateFieldBase {
 
   public function generateValues($object, $instance, $plugin_definition, $form_display_options) {
     $object_field = array();
-    $settings = $instance->getFieldSettings();
+    $settings = $instance->getSettings();
     // TODO: For free tagging vocabularies that do not already have terms, this
     // will not result in any tags being added.
     $machine_name = $settings['allowed_values'][0]['vocabulary'];
