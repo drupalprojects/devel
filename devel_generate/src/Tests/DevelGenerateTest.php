@@ -11,7 +11,9 @@ use Drupal\simpletest\WebTestBase;
 use Drupal\Core\Language\Language;
 
 /**
- * class DevelGenerateTest
+ * Tests the logic to generate data.
+ *
+ * @group devel_generate
  */
 class DevelGenerateTest extends WebTestBase {
 
@@ -25,14 +27,6 @@ class DevelGenerateTest extends WebTestBase {
    * @var array
    */
   public static $modules = array('menu_ui', 'node', 'comment', 'taxonomy', 'devel_generate');
-
-  public static function getInfo() {
-    return array(
-      'name' => t('Devel Generate'),
-      'description' => t('Tests the logic to generate data.'),
-      'group' => t('Devel'),
-    );
-  }
 
   /**
    * Prepares the testing environment

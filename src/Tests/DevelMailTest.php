@@ -11,7 +11,9 @@ use Drupal\simpletest\WebTestBase;
 use Drupal\devel\DevelMailLog;
 
 /**
- * Test devel mail functionality.
+ * Tests sending mails with debug interface.
+ *
+ * @group devel
  */
 class DevelMailTest extends WebTestBase {
   /**
@@ -21,14 +23,6 @@ class DevelMailTest extends WebTestBase {
    */
   public static $modules = array('devel');
   protected $profile = 'testing';
-
-  public static function getInfo() {
-    return array(
-      'name' => 'Devel Mail interface',
-      'description' => 'Test sending mails with debug interface',
-      'group' => 'Devel',
-    );
-  }
 
   /**
    * Test mail logging functionality.

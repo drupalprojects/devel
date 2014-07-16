@@ -7,22 +7,19 @@ use Drupal\devel_generate\DevelGeneratePluginManager;
 use Drupal\Tests\UnitTestCase;
 use Drupal\Core\Language\Language;
 
-/**
- * Tests the DevelGenerateManager.
- *
- */
-
 if (!defined('DRUPAL_ROOT')) {
-
   //Looping to find drupal root folder.
   $current_dir = dirname(__DIR__);
   while (!file_exists("$current_dir/index.php")) {
     $current_dir = dirname($current_dir);
   }
-
   define('DRUPAL_ROOT', $current_dir);
 }
 
+/**
+ * @coversDefaultClass \Drupal\devel_generate\DevelGeneratePluginManager
+ * @group devel_generate
+ */
 class DevelGenerateManagerTest extends UnitTestCase {
 
   /**
@@ -44,14 +41,6 @@ class DevelGenerateManagerTest extends UnitTestCase {
       'url' => 'devel_generate_example',
     ),
   );
-
-  public static function getInfo() {
-    return array(
-      'name' => 'DevelGenerate manager',
-      'description' => 'DevelGenerate manager',
-      'group' => 'DevelGenerate',
-    );
-  }
 
   /**
    * {@inheritdoc}
