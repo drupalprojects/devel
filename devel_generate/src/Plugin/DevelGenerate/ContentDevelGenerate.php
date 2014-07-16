@@ -8,6 +8,7 @@
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
 use Drupal\comment\CommentManagerInterface;
+use Drupal\Component\Utility\String;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -103,7 +104,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
             if (in_array($type->type, $info['bundles'])) {
               $instance = FieldInstanceConfig::loadByName('node', $type->type, 'comment');
               $default_mode = reset($instance->default_value);
-              $fields[] = format_string('@field: !state', array(
+              $fields[] = String::format('@field: !state', array(
                 '@field' => $instance->label(),
                 '!state' => $map[$default_mode['status']],
               ));

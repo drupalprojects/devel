@@ -45,7 +45,7 @@ function hook_node_access_explain($row) {
   if ($row->realm == 'mymodule_myrealm') {
     if ($row->grant_view) {
       $role = user_role_load($row->gid);
-      return 'Role ' . drupal_placeholder($role->name) . ' may view this node.';
+      return 'Role ' . String::placeholder($role->name) . ' may view this node.';
     }
     else {
       return 'No access.';

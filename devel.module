@@ -17,6 +17,7 @@ define('DEVEL_ERROR_HANDLER_BACKTRACE_DPM', 4);
 define('DEVEL_MIN_TEXTAREA', 50);
 
 use Drupal\comment\CommentInterface;
+use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Timer;
 use Drupal\Core\Template\Attribute;
 use Drupal\devel\Controller\DevelController;
@@ -374,7 +375,7 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
     foreach ($accounts as $account) {
       $path = 'devel/switch/' . $account->name->value;
       $links[$account->id()] = array(
-        'title' => drupal_placeholder(user_format_name($account)),
+        'title' => String::placeholder(user_format_name($account)),
         'href' => $path,
         'query' => $dest + array('token' => drupal_get_token($path . '|' . $dest['destination'])),
         'attributes' => array('title' => t('This user can switch back.')),
@@ -408,7 +409,7 @@ function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {
         'attributes' => array('title' => t('Caution: the anonymous user will be unable to switch back.')),
       );
       if (\Drupal::currentUser()->hasPermission('switch users')) {
-        $link['title'] = drupal_placeholder($link['title']);
+        $link['title'] = String::placeholder($link['title']);
         $link['attributes'] = array('title' => t('This user can switch back.'));
         $link['html'] = TRUE;
       }
@@ -999,9 +1000,9 @@ function devel_query_table($queries, $counts) {
     }
     $cell[$i][] = implode(' ', $ops);
     // 3 divs for each variation of the query. Last 2 are hidden by default.
-    $placeholders = '<div class="dev-placeholders">' . check_plain($query['query']) . "</div>\n";
+    $placeholders = '<div class="dev-placeholders">' . String::checkPlain($query['query']) . "</div>\n";
     $args = '<div class="dev-arguments" style="display: none;"></div>' . "\n";
-    $explain = '<div class="dev-explain" style="display: none;"></div>' . "\n";
+    $explain = '<div class="dev-explain" ºstyle="display: none;"></div>' . "\n";
     $cell[$i][] = array(
       'id' => "devel-query-$i",
       'data' => $placeholders . $args . $explain,
@@ -1283,7 +1284,7 @@ function dprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r', 
     }
 
     if ($check) {
-      $output = check_plain($output);
+      $output = String::checkPlain($output);
     }
     if (count($input, COUNT_RECURSIVE) > DEVEL_MIN_TEXTAREA) {
       // Don't use fapi here because sometimes fapi will not be loaded.
@@ -1455,7 +1456,7 @@ function devel_form_user_admin_permissions_alter(&$form, &$form_state) {
         $form['permission'][$perm]['#markup'] = '<span title="' . $form['permission'][$perm]['#id'] . '">' . $form['permission'][$perm]['#markup'] . '</span>';
       }
       else {
-        $form['permission'][$perm]['#markup'] = '<span title="' . check_plain($perm) . '">' . $form['permission'][$perm]['#markup'] . '</span>';
+        $form['permission'][$perm]['#markup'] = '<span title="' . String::checkPlain($perm) . '">' . $form['permission'][$perm]['#markup'] . '</span>';
       }
     }
   }
