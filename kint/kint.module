@@ -9,7 +9,7 @@ function kint() {
   kint_require();
   if (\Drupal::currentUser()->hasPermission('access kint')) {
     $args = func_get_args();
-    call_user_func_array(drupal_is_cli() ? 's' : array('Kint', 'dump'), $args);
+    call_user_func_array((PHP_SAPI === 'cli') ? 's' : array('Kint', 'dump'), $args);
   }
 }
 
