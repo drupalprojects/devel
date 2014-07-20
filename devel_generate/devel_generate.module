@@ -83,22 +83,24 @@ function devel_generate_node_insert(EntityInterface $node) {
 }
 
 function devel_generate_add_comments(EntityInterface $node, $field, $users, $max_comments, $title_length = 8) {
+  $parents = array();
   $field_name = $field->getName();
   if ($node->{$field_name}->status >= CommentItemInterface::OPEN) {
     $num_comments = mt_rand(1, $max_comments);
     for ($i = 1; $i <= $num_comments; $i++) {
       switch ($i % 3) {
+        case 0:
+          // No parent.
         case 1:
-          $pid = db_query_range("SELECT cid FROM {comment} WHERE pid = 0 AND entity_id = :entity_id ORDER BY RAND()", 0, 1, array(':entity_id' => $node->id()))->fetchField();
+          // Top level parent.
+          $parents = \Drupal::entityQuery('comment')->condition('pid', 0)->condition('entity_id', $node->id())->condition('entity_type', 'node')->range(0, 1)->execute();
           break;
         case 2:
-          $pid = db_query_range("SELECT cid FROM {comment} WHERE pid > 0 AND entity_id = :entity_id ORDER BY RAND()", 0, 1, array(':entity_id' => $node->id()))->fetchField();
+          // Non top level parent.
+          $parents = \Drupal::entityQuery('comment')->condition('pid', 0, '>')->condition('entity_id', $node->id())->condition('entity_type', 'node')->range(0, 1)->execute();
           break;
-        default:
-          $pid = 0;
       }
-
-      $comment = entity_create('comment', array(
+      $stub = array(
         'entity_type' => $node->getEntityTypeId(),
         'entity_id' => $node->id(),
         //'field_id' => $node->getEntityTypeId() . '__' . $field_name,
@@ -109,8 +111,11 @@ function devel_generate_add_comments(EntityInterface $node, $field, $users, $max
         'subject' => substr(DevelGenerateBase::createGreeking(mt_rand(2, $title_length), TRUE), 0, 63),
         'uid' => $users[array_rand($users)],
         'langcode' => Language::LANGCODE_NOT_SPECIFIED,
-        'pid' => !empty($pid) ? $pid : 0,
-      ));
+      );
+      if ($parents) {
+        $stub['pid'] = current($parents);
+      }
+      $comment = entity_create('comment', $stub);
 
       //Populate all core fields on behalf of field.module
       DevelGenerateFieldBase::generateFields($node, 'node', $node->bundle());
