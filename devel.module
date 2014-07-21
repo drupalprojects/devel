@@ -1002,7 +1002,7 @@ function devel_query_table($queries, $counts) {
     // 3 divs for each variation of the query. Last 2 are hidden by default.
     $placeholders = '<div class="dev-placeholders">' . String::checkPlain($query['query']) . "</div>\n";
     $args = '<div class="dev-arguments" style="display: none;"></div>' . "\n";
-    $explain = '<div class="dev-explain" ºstyle="display: none;"></div>' . "\n";
+    $explain = '<div class="dev-explain" style="display: none;"></div>' . "\n";
     $cell[$i][] = array(
       'id' => "devel-query-$i",
       'data' => $placeholders . $args . $explain,
