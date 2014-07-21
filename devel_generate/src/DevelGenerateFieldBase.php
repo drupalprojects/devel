@@ -12,7 +12,6 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
    * Implements Drupal\devel_generate\DevelGenerateFieldBaseInterface::generate().
    */
   public function generate($object, $instance, $plugin_definition, $form_display_options) {
-
     if (isset($plugin_definition['multiple_values']) && $plugin_definition['multiple_values'] === TRUE) {
       return $this->generateMultiple($object, $instance, $plugin_definition, $form_display_options);
     }
@@ -61,9 +60,10 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
     }
 
     foreach ($instances as $instance) {
-      $field = $instance->getFieldStorageDefinition();
-      $cardinality = $field->getCardinality();
-      $field_name = $field->getName();
+      /** @var \Drupal\field\FieldStorageConfigInterface $field_storage */
+      $field_storage = $instance->getFieldStorageDefinition();
+      $cardinality = $field_storage->getCardinality();
+      $field_name = $field_storage->getName();
       $object_field = array();
 
       // If module handles own multiples, then only call its hook once.
@@ -84,7 +84,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
       }
 
       for ($i = 0; $i <= $max; $i++) {
-        $provider = $field_types[$field->type]['provider'];
+        $provider = $field_types[$field_storage->getType()]['provider'];
         if (!in_array($provider, array('file', 'image', 'taxonomy', 'number', 'text', 'options', 'email', 'link'))) {
           continue;
         }

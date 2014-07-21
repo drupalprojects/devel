@@ -54,7 +54,7 @@ class DevelGenerateTest extends WebTestBase {
 
     // Copied from /core/modules/taxonomy/src/Tests/TermTest.php::setup()
     $field_name = 'taxonomy_' . $this->vocabulary->id();
-    $field = array(
+    entity_create('field_storage_config', array(
       'name' => $field_name,
       'entity_type' => 'node',
       'type' => 'taxonomy_term_reference',
@@ -67,8 +67,7 @@ class DevelGenerateTest extends WebTestBase {
           ),
         ),
       ),
-    );
-    entity_create('field_config', $field)->save();
+    ))->save();
 
     $this->instance = entity_create('field_instance_config', array(
       'field_name' => $field_name,

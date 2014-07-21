@@ -5,7 +5,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\Language;
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\devel_generate\DevelGenerateFieldBase;
-use Drupal\field\Field;
 
 /**
  * Implements hook_menu_link_defaults_alter().
@@ -52,16 +51,16 @@ function devel_generate_permission() {
  * @param $node
  *  The base node created on submit. Inspects $node->devel_generate.
  */
-function devel_generate_node_insert(EntityInterface $node) {
+function devel_generate_node_insert($node) {
   if (isset($node->devel_generate)) {
     $results = $node->devel_generate;
 
     if (!empty($results['max_comments'])) {
       $instances = entity_load_multiple_by_properties('field_instance_config', array('entity_type' => $node->getEntityTypeId(), 'bundle' => $node->bundle()));
       foreach ($instances as $instance) {
-        $field = $instance->getFieldStorageDefinition();
-        if ($field->getType() == 'comment') {
-          devel_generate_add_comments($node, $field, $results['users'], $results['max_comments'], $results['title_length']);
+        $field_storage = $instance->getFieldStorageDefinition();
+        if ($field_storage->getType() == 'comment') {
+          devel_generate_add_comments($node, $field_storage, $results['users'], $results['max_comments'], $results['title_length']);
         }
       }
     }
@@ -82,9 +81,23 @@ function devel_generate_node_insert(EntityInterface $node) {
   }
 }
 
-function devel_generate_add_comments(EntityInterface $node, $field, $users, $max_comments, $title_length = 8) {
+/**
+ * Create comments and add them to a node.
+ *
+ * @param EntityInterface $node
+ *   Node to add comments to.
+ * @param \Drupal\field\FieldStorageConfigInterface $field_storage
+ *   The field storage definition.
+ * @param array $users
+ *   Array of users to assign comment authors.
+ * @param int $max_comments
+ *   Max number of comments to generate per node.
+ * @param int $title_length
+ *   Max length of the title of the comments.
+ */
+function devel_generate_add_comments(EntityInterface $node, $field_storage, $users, $max_comments, $title_length = 8) {
   $parents = array();
-  $field_name = $field->getName();
+  $field_name = $field_storage->getName();
   if ($node->{$field_name}->status >= CommentItemInterface::OPEN) {
     $num_comments = mt_rand(1, $max_comments);
     for ($i = 1; $i <= $num_comments; $i++) {
@@ -103,7 +116,6 @@ function devel_generate_add_comments(EntityInterface $node, $field, $users, $max
       $stub = array(
         'entity_type' => $node->getEntityTypeId(),
         'entity_id' => $node->id(),
-        //'field_id' => $node->getEntityTypeId() . '__' . $field_name,
         'field_name' => $field_name,
         'name' => 'devel generate',
         'mail' => 'devel_generate@example.com',
@@ -124,11 +136,10 @@ function devel_generate_add_comments(EntityInterface $node, $field, $users, $max
   }
 }
 
-
 /**
  * Generate statistics information for a node.
  *
- * @param $node
+ * @param EntityInterface $node
  *   A node object.
  */
 function devel_generate_add_statistics($node) {
