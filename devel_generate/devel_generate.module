@@ -130,7 +130,7 @@ function devel_generate_add_comments(EntityInterface $node, $field_storage, $use
       $comment = entity_create('comment', $stub);
 
       //Populate all core fields on behalf of field.module
-      DevelGenerateFieldBase::generateFields($comment, 'node', $comment->bundle());
+      DevelGenerateFieldBase::generateFields($comment, 'comment', $comment->bundle());
       $comment->save();
     }
   }
