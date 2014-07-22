@@ -119,7 +119,7 @@ class UserDevelGenerate extends DevelGenerateBase {
         $account = entity_create('user', $edit);
 
         // Populate all core fields on behalf of field.module
-        DevelGenerateFieldBase::generateFields($account, 'user', 'user', 'register');
+        DevelGenerateFieldBase::generateFields($account, 'user', $account->bundle());
         $account->save();
       }
     }
