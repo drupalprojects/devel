@@ -102,7 +102,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
           foreach ($comment_fields as $field_name => $info) {
             // Find all comment fields for the bundle.
             if (in_array($type->type, $info['bundles'])) {
-              $instance = FieldInstanceConfig::loadByName('node', $type->type, 'comment');
+              $instance = FieldInstanceConfig::loadByName('node', $type->type, $field_name);
               $default_mode = reset($instance->default_value);
               $fields[] = String::format('@field: !state', array(
                 '@field' => $instance->label(),
