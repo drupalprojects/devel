@@ -8,6 +8,7 @@
 namespace Drupal\devel\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
+use Drupal\Core\Url;
 
 /**
  * Provides a deletion confirmation form for devel_menu_rebuild.
@@ -31,8 +32,8 @@ class DevelRebuildMenus extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getCancelRoute() {
-    return array('route_name' => 'devel.menu_rebuild');
+  public function getCancelUrl() {
+    return new Url('devel.menu_rebuild');
   }
 
   /**
