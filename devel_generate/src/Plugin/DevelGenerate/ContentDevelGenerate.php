@@ -7,14 +7,14 @@
 
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
-use Drupal\comment\CommentManagerInterface;
 use Drupal\Component\Utility\String;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\comment\CommentManagerInterface;
+use Drupal\field\Entity\FieldInstanceConfig;
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\devel_generate\DevelGenerateFieldBase;
-use Drupal\field\Entity\FieldInstanceConfig;
 use Drupal\node\Entity\NodeType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -76,42 +76,32 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function settingsForm(array $form, array &$form_state) {
     $options = array();
 
-    if (\Drupal::moduleHandler()->moduleExists('content')) {
-      $types = content_types();
-      foreach ($types as $type) {
-        $warn = '';
-        if (count($type['fields'])) {
-          $warn = t('. This type contains CCK fields which will only be populated by fields that implement the content_generate hook.');
-        }
-        $options[$type['type']] = array('#markup' => t($type['name']). $warn);
-      }
-    }
-    else {
-      $types = NodeType::loadMultiple();
-      $comment_fields = ($this->commentManager) ? $this->commentManager->getFields('node') : array();
-      $map = array(t('Hidden'), t('Closed'), t('Open'));
-      foreach ($types as $type) {
-        $options[$type->type] = array(
-          'type' => array('#markup' => t($type->name)),
-        );
-        if ($this->commentManager) {
-          $fields = array();
-          foreach ($comment_fields as $field_name => $info) {
-            // Find all comment fields for the bundle.
-            if (in_array($type->type, $info['bundles'])) {
-              $instance = FieldInstanceConfig::loadByName('node', $type->type, $field_name);
-              $default_mode = reset($instance->default_value);
-              $fields[] = String::format('@field: !state', array(
-                '@field' => $instance->label(),
-                '!state' => $map[$default_mode['status']],
-              ));
-            }
+    $types = NodeType::loadMultiple();
+    $comment_fields = ($this->commentManager) ? $this->commentManager->getFields('node') : array();
+    $map = array(t('Hidden'), t('Closed'), t('Open'));
+    foreach ($types as $type) {
+      $options[$type->type] = array(
+        'type' => array('#markup' => t($type->name)),
+      );
+      if ($this->commentManager) {
+        $fields = array();
+        foreach ($comment_fields as $field_name => $info) {
+          // Find all comment fields for the bundle.
+          if (in_array($type->type, $info['bundles'])) {
+            $instance = FieldInstanceConfig::loadByName('node', $type->type, $field_name);
+            $default_mode = reset($instance->default_value);
+            $fields[] = String::format('@field: !state', array(
+              '@field' => $instance->label(),
+              '!state' => $map[$default_mode['status']],
+            ));
           }
         }
-
         // @todo Refactor display of comment fields.
         if (!empty($fields)) {
           $options[$type->type]['comments'] = array('data' => array(
@@ -122,8 +112,6 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
         else {
           $options[$type->type]['comments'] = t('No comment fields');
         }
-
-
       }
     }
 
@@ -231,20 +219,12 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
    * {@inheritdoc}
    */
   protected function generateElements(array $values) {
-    // Disable entity statistics for comments created as it tries to insert
-    // them twice.
-    // @see comment_entity_insert()
-    $comment_statistics = \Drupal::state()->get('comment.maintain_entity_statistics');
-    \Drupal::state()->set('comment.maintain_entity_statistics', FALSE);
     if ($values['num'] <= 50 && $values['max_comments'] <= 10) {
       $this->generateContent($values);
     }
     else {
       $this->generateBatchContent($values);
     }
-    // Restore entity statistics.
-    // @see ContentDevelGenerate
-    \Drupal::state()->set('comment.maintain_entity_statistics', $comment_statistics);
   }
 
   /**
@@ -386,7 +366,6 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     $users = $results['users'];
 
     $node_type = array_rand(array_filter($results['node_types']));
-    $type = node_type_load($node_type);
     $uid = $users[array_rand($users)];
 
     $edit_node = array(

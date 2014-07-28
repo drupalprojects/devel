@@ -3,8 +3,11 @@
 namespace Drupal\devel_generate;
 
 use Drupal\Component\Plugin\PluginBase;
+use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 
 abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBaseInterface {
+
+  use DependencySerializationTrait;
 
   /**
    * The plugin settings.
