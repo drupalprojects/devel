@@ -9,6 +9,7 @@ namespace Drupal\devel\Form;
 
 use Drupal\Component\Utility\String;
 use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Form that displays all the config variables to edit them.
@@ -25,7 +26,7 @@ class ConfigsList extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, array &$form_state, $filter = '') {
+  public function buildForm(array $form, FormStateInterface $form_state, $filter = '') {
     $form['filter'] = array(
     '#type' => 'details',
     '#title' => t('Filter variables'),
@@ -57,13 +58,13 @@ class ConfigsList extends FormBase {
     $form['variables'][$key]['operation'] = array('#markup' => l(t('Edit'), "devel/config/edit/$config_name"));
   }
 
-  return $form;
+  return parent::buildForm($form, $form_state);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, array &$form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state['redirect'] = 'devel/config/' . String::checkPlain($form_state['values']['name']);
   }
 

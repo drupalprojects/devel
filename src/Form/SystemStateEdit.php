@@ -10,6 +10,7 @@ namespace Drupal\devel\Form;
 use Drupal\Core\Form\FormBase;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Form API form to edit a state.
@@ -26,7 +27,7 @@ class SystemStateEdit extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, array &$form_state, $key = '') {
+  public function buildForm(array $form, FormStateInterface $form_state, $key = '') {
     // Get the old value
     $old_value = \Drupal::state()->get($key);
     // First we will show the user the content of the variable about to be edited
@@ -75,13 +76,13 @@ class SystemStateEdit extends FormBase {
       '#href' => 'devel/state',
     );
 
-    return $form;
+    return parent::buildForm($form, $form_state);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, array &$form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     // Save the state
     $name = $form_state['values']['state_name'];
     switch ($form_state['values']['transport']) {

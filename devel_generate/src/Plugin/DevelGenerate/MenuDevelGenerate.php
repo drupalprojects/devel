@@ -9,6 +9,7 @@ namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\system\Entity\Menu;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a MenuDevelGenerate plugin.
@@ -30,7 +31,7 @@ use Drupal\system\Entity\Menu;
  */
 class MenuDevelGenerate extends DevelGenerateBase {
 
-  public function settingsForm(array $form, array &$form_state) {
+  public function settingsForm(array $form, FormStateInterface $form_state) {
     $menu_enabled = \Drupal::moduleHandler()->moduleExists('menu_ui');
     if ($menu_enabled) {
       $menus = array('__new-menu__' => t('Create new menu(s)')) + menu_ui_get_menus();

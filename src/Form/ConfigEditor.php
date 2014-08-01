@@ -10,6 +10,7 @@ namespace Drupal\devel\Form;
 use Drupal\Core\Form\FormBase;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Edit config variable form.
@@ -26,7 +27,7 @@ class ConfigEditor extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, array &$form_state, $config_name = '') {
+  public function buildForm(array $form, FormStateInterface $form_state, $config_name = '') {
     $data = $this->config($config_name)->get();
     if ($data === FALSE) {
       drupal_set_message(t('Config !name does not exist in the system.', array('!name' => $config_name)), 'error');
@@ -69,13 +70,13 @@ class ConfigEditor extends FormBase {
       '#href' => 'devel/config',
     );
 
-    return $form;
+    return parent::buildForm($form, $form_state);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, array &$form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $parser = new Parser();
     $new_config = $parser->parse($form_state['values']['new']);
     $this->config($form_state['values']['name'])->setData($new_config)->save();

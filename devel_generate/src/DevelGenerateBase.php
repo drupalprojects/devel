@@ -4,6 +4,7 @@ namespace Drupal\devel_generate;
 
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+use Drupal\Core\Form\FormStateInterface;
 
 abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBaseInterface {
 
@@ -45,7 +46,7 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
   /**
    * Implements Drupal\devel_generate\DevelGenerateBaseInterface::settingsForm().
    */
-  public function settingsForm(array $form, array &$form_state) {
+  public function settingsForm(array $form, FormStateInterface $form_state) {
     return array();
   }
 

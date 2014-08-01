@@ -9,6 +9,7 @@ namespace Drupal\devel_generate_example\Plugin\DevelGenerate;
 
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\devel_generate\DevelGenerateFieldBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a ExampleDevelGenerate plugin.
@@ -27,7 +28,7 @@ use Drupal\devel_generate\DevelGenerateFieldBase;
  */
 class ExampleDevelGenerate extends DevelGenerateBase {
 
-  public function settingsForm(array $form, array &$form_state) {
+  public function settingsForm(array $form, FormStateInterface $form_state) {
 
     $form['num'] = array(
       '#type' => 'textfield',

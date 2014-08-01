@@ -10,6 +10,7 @@ namespace Drupal\devel_generate\Plugin\DevelGenerate;
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\Core\Language\Language;
 use Drupal\devel_generate\DevelGenerateFieldBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a TermDevelGenerate plugin.
@@ -29,7 +30,7 @@ use Drupal\devel_generate\DevelGenerateFieldBase;
  */
 class TermDevelGenerate extends DevelGenerateBase {
 
-  public function settingsForm(array $form, array &$form_state) {
+  public function settingsForm(array $form, FormStateInterface $form_state) {
     $options = array();
     foreach (entity_load_multiple('taxonomy_vocabulary') as $vid => $vocab) {
       $options[$vid] = $vocab->vid;

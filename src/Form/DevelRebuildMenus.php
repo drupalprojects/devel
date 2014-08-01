@@ -9,6 +9,7 @@ namespace Drupal\devel\Form;
 
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Url;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a deletion confirmation form for devel_menu_rebuild.
@@ -53,7 +54,7 @@ class DevelRebuildMenus extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, array &$form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     \Drupal::service('router.builder')->rebuild();
     drupal_set_message(t('The menu router has been rebuilt.'));
     $form_state['redirect'] = '<front>';

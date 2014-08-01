@@ -17,6 +17,7 @@ use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\devel_generate\DevelGenerateFieldBase;
 use Drupal\node\Entity\NodeType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a ContentDevelGenerate plugin.
@@ -79,7 +80,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
   /**
    * {@inheritdoc}
    */
-  public function settingsForm(array $form, array &$form_state) {
+  public function settingsForm(array $form, FormStateInterface $form_state) {
     $options = array();
 
     $types = NodeType::loadMultiple();

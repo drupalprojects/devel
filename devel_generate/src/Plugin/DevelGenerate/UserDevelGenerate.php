@@ -9,6 +9,7 @@ namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\devel_generate\DevelGenerateFieldBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a UserDevelGenerate plugin.
@@ -28,7 +29,7 @@ use Drupal\devel_generate\DevelGenerateFieldBase;
  */
 class UserDevelGenerate extends DevelGenerateBase {
 
-  public function settingsForm(array $form, array &$form_state) {
+  public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['num'] = array(
       '#type' => 'textfield',
       '#title' => t('How many users would you like to generate?'),

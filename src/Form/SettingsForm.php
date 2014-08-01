@@ -9,6 +9,7 @@ namespace Drupal\devel\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Symfony\Component\HttpFoundation\Request;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Defines a form that configures devel settings.
@@ -25,7 +26,7 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, array &$form_state, Request $request = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
     $current_path = $request->attributes->get('system_path');
     $devel_config = $this->config('devel.settings');
 
@@ -148,7 +149,7 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, array &$form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('devel.settings')
       ->set('query_display', $form_state['values']['query_display'])
       ->set('query_sort', $form_state['values']['query_sort'])

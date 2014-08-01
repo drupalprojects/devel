@@ -10,6 +10,7 @@ namespace Drupal\devel\Form;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Display a dropdown of installed modules with the option to reinstall them.
@@ -52,7 +53,7 @@ class DevelReinstall extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, array &$form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $modules = array_keys($this->moduleHandler->getModuleList());
     sort($modules);
     $form['list'] = array(
@@ -64,13 +65,13 @@ class DevelReinstall extends FormBase {
       '#value' => t('Reinstall'),
       '#type' => 'submit',
     );
-    return $form;
+    return parent::buildForm($form, $form_state);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, array &$form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $modules = array_filter($form_state['values']['list']);
     $this->moduleHandler->uninstall($modules, FALSE);
     $this->moduleHandler->install($modules, FALSE);

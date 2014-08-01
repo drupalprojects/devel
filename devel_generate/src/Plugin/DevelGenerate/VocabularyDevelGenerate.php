@@ -9,6 +9,7 @@ namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\Core\Language\Language;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Provides a VocabularyDevelGenerate plugin.
@@ -28,7 +29,7 @@ use Drupal\Core\Language\Language;
  */
 class VocabularyDevelGenerate extends DevelGenerateBase {
 
-  public function settingsForm(array $form, array &$form_state) {
+  public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['num'] = array(
       '#type' => 'textfield',
       '#title' => t('Number of vocabularies?'),
