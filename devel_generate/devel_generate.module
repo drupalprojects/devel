@@ -8,10 +8,9 @@ use Drupal\devel_generate\DevelGenerateFieldBase;
 use Drupal\node\NodeInterface;
 
 /**
- * Implements hook_menu_link_defaults_alter().
+ * Implements hook_menu_links_discovered_alter().
  */
-function devel_generate_menu_link_defaults_alter(&$links) {
-
+function devel_generate_menu_links_discovered_alter(&$links) {
   $devel_generate_plugins = $devel_generate_manager = \Drupal::service('plugin.manager.develgenerate')->getDefinitions();
   foreach ($devel_generate_plugins as $id => $plugin) {
     $label = $plugin['label'];
