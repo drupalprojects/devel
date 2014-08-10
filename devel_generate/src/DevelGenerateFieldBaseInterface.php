@@ -6,6 +6,7 @@
  */
 
 namespace Drupal\devel_generate;
+use Drupal\field\Entity\FieldInstanceConfig;
 
 /**
  * Base interface definition for generating fields for plugins functionality.
@@ -24,11 +25,11 @@ interface DevelGenerateFieldBaseInterface {
    *
    * @see generateFields().
    */
-  public function generate($object, $instance, $plugin_definition, $form_display_options);
+  public function generate($object, FieldInstanceConfig $instance, $plugin_definition, $form_display_options);
 
   /**
    * Business logic to add values to some field.
    */
-  public function generateValues($object, $instance, $plugin_definition, $form_display_options);
+  public function generateValues($object, FieldInstanceConfig $instance, $plugin_definition, $form_display_options);
 
 }

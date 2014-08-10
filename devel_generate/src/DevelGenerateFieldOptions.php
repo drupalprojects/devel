@@ -2,9 +2,11 @@
 
 namespace Drupal\devel_generate;
 
+use Drupal\field\Entity\FieldInstanceConfig;
+
 class DevelGenerateFieldOptions extends DevelGenerateFieldBase {
 
-  public function generateValues($entity, $instance, $plugin_definition, $form_display_options) {
+  public function generateValues($entity, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
     $object_field = array();
     $field_name = $instance->getFieldStorageDefinition()->getName();
     $definition = $entity->getFieldDefinition($field_name);

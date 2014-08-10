@@ -2,11 +2,13 @@
 
 namespace Drupal\devel_generate;
 
+use Drupal\field\Entity\FieldInstanceConfig;
+
 define('DEVEL_GENERATE_IMAGE_MAX', 5);
 
 class DevelGenerateFieldImage extends DevelGenerateFieldBase {
 
-  function generateValues($object, $instance, $plugin_definition, $form_display_options) {
+  function generateValues($object, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
     $object_field = array();
     static $images = array();
       $settings = $instance->getSettings();

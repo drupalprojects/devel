@@ -4,6 +4,7 @@ namespace Drupal\devel_generate;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\field\Entity\FieldInstanceConfig;
 use Drupal\field\Field;
 
 abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface {
@@ -11,7 +12,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
   /**
    * Implements Drupal\devel_generate\DevelGenerateFieldBaseInterface::generate().
    */
-  public function generate($object, $instance, $plugin_definition, $form_display_options) {
+  public function generate($object, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
     if (isset($plugin_definition['multiple_values']) && $plugin_definition['multiple_values'] === TRUE) {
       return $this->generateMultiple($object, $instance, $plugin_definition, $form_display_options);
     }
@@ -27,7 +28,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
    * values handling. This will call the field generation function
    * a random number of times and compile the results into a node array.
    */
-  protected function generateMultiple($object, $instance, $plugin_definition, $form_display_options) {
+  protected function generateMultiple($object, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
     $object_field = array();
     $cardinality = $instance->getFieldStorageDefinition()->getCardinality();
     switch ($cardinality) {
@@ -85,7 +86,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
 
       for ($i = 0; $i <= $max; $i++) {
         $provider = $field_types[$field_storage->getType()]['provider'];
-        if (!in_array($provider, array('file', 'image', 'taxonomy', 'number', 'text', 'options', 'email', 'link', 'entity_reference'))) {
+        if (!in_array($provider, array('file', 'image', 'taxonomy', 'number', 'text', 'options', 'email', 'link', 'entity_reference', 'datetime'))) {
           continue;
         }
         $devel_generate_field_factory = new DevelGenerateFieldFactory();
