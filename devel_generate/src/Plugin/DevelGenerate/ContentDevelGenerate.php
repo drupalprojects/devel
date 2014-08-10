@@ -151,7 +151,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
 
     $options = array(1 => t('Now'));
     foreach (array(3600, 86400, 604800, 2592000, 31536000) as $interval) {
-      $options[$interval] = \Drupal::service('date')->formatInterval($interval, 1) . ' ' . t('ago');
+      $options[$interval] = \Drupal::service('date.formatter')->formatInterval($interval, 1) . ' ' . t('ago');
     }
     $form['time_range'] = array(
       '#type' => 'select',
