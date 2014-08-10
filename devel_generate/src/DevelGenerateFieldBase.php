@@ -84,8 +84,13 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
         }
       }
 
+      $field_storage_type = $field_storage->getType();
       for ($i = 0; $i <= $max; $i++) {
-        $provider = $field_types[$field_storage->getType()]['provider'];
+        $provider = $field_types[$field_storage_type]['provider'];
+        // Workaround to keep numeric fields working once moved to core.
+        if ($field_storage_type == 'float' || $field_storage_type == 'decimal' || $field_storage_type == 'integer') {
+          $provider = 'number';
+        }
         if (!in_array($provider, array('file', 'image', 'taxonomy', 'number', 'text', 'options', 'email', 'link', 'entity_reference', 'datetime'))) {
           continue;
         }
@@ -106,11 +111,8 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
             }
 
           }
-
         }
-
       }
-
       $object->{$field_name} = $object_field;
     }
   }
