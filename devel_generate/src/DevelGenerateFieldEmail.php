@@ -2,11 +2,12 @@
 
 namespace Drupal\devel_generate;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\field\Entity\FieldInstanceConfig;
 
 class DevelGenerateFieldEmail extends DevelGenerateFieldBase {
 
-  public function generateValues($object, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
+  public function generateValues(EntityInterface $entity, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
     $object_field = array();
 
     // Set of possible top-level domains.

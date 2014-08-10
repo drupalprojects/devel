@@ -6,6 +6,7 @@
  */
 
 namespace Drupal\devel_generate;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\field\Entity\FieldInstanceConfig;
 
 /**
@@ -24,12 +25,22 @@ interface DevelGenerateFieldBaseInterface {
    * from Drupal\devel_generate\DevelGenerateFieldBase.
    *
    * @see generateFields().
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   * @param \Drupal\field\Entity\FieldInstanceConfig $instance
+   * @param $plugin_definition
+   * @param $form_display_options
+   * @return
    */
-  public function generate($object, FieldInstanceConfig $instance, $plugin_definition, $form_display_options);
+  public function generate(EntityInterface $entity, FieldInstanceConfig $instance, $plugin_definition, $form_display_options);
 
   /**
    * Business logic to add values to some field.
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   * @param \Drupal\field\Entity\FieldInstanceConfig $instance
+   * @param $plugin_definition
+   * @param $form_display_options
+   * @return
    */
-  public function generateValues($object, FieldInstanceConfig $instance, $plugin_definition, $form_display_options);
+  public function generateValues(EntityInterface $entity, FieldInstanceConfig $instance, $plugin_definition, $form_display_options);
 
 }

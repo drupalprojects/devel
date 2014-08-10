@@ -11,13 +11,18 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
 
   /**
    * Implements Drupal\devel_generate\DevelGenerateFieldBaseInterface::generate().
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   * @param \Drupal\field\Entity\FieldInstanceConfig $instance
+   * @param $plugin_definition
+   * @param $form_display_options
+   * @return array
    */
-  public function generate($object, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
+  public function generate(EntityInterface $entity, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
     if (isset($plugin_definition['multiple_values']) && $plugin_definition['multiple_values'] === TRUE) {
-      return $this->generateMultiple($object, $instance, $plugin_definition, $form_display_options);
+      return $this->generateMultiple($entity, $instance, $plugin_definition, $form_display_options);
     }
     else {
-      return $this->generateValues($object, $instance, $plugin_definition, $form_display_options);
+      return $this->generateValues($entity, $instance, $plugin_definition, $form_display_options);
     }
 
   }
@@ -28,7 +33,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
    * values handling. This will call the field generation function
    * a random number of times and compile the results into a node array.
    */
-  protected function generateMultiple($object, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
+  protected function generateMultiple(EntityInterface $entity, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
     $object_field = array();
     $cardinality = $instance->getFieldStorageDefinition()->getCardinality();
     switch ($cardinality) {
@@ -40,7 +45,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
         break;
     }
     for ($i = 0; $i <= $max; $i++) {
-      $result = $this->generateValues($object, $instance, $plugin_definition, $form_display_options);
+      $result = $this->generateValues($entity, $instance, $plugin_definition, $form_display_options);
       if (!empty($result)) {
         $object_field[$i] = $result;
       }
@@ -49,10 +54,10 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
   }
 
   /**
-   * Enrich the $object that is about to be saved with arbitrary
+   * Enrich the $entity that is about to be saved with arbitrary
    * information in each of its fields.
    */
-  public static function generateFields(EntityInterface &$object, $entity_type, $bundle_name, $form_mode = 'default', $namespace = 'devel_generate') {
+  public static function generateFields(EntityInterface &$entity, $entity_type, $bundle_name, $form_mode = 'default', $namespace = 'devel_generate') {
     $instances = entity_load_multiple_by_properties('field_instance_config', array('entity_type' => $entity_type, 'bundle' => $bundle_name));
     $field_types = \Drupal::service('plugin.manager.field.field_type')->getDefinitions();
     $skips = function_exists('drush_get_option') ? drush_get_option('skip-fields', '') : @$_REQUEST['skip-fields'];
@@ -83,7 +88,6 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
             break;
         }
       }
-
       $field_storage_type = $field_storage->getType();
       for ($i = 0; $i <= $max; $i++) {
         $provider = $field_types[$field_storage_type]['provider'];
@@ -99,7 +103,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
 
         if ($devel_generate_field_object instanceof DevelGenerateFieldBaseInterface) {
 
-          if ($result = $devel_generate_field_object->generate($object, $instance, $plugin_definition, $form_display_options)) {
+          if ($result = $devel_generate_field_object->generate($entity, $instance, $plugin_definition, $form_display_options)) {
 
             if (isset($plugin_definition['multiple_values']) && $plugin_definition['multiple_values'] === TRUE) {
               // Fields that handle their own multiples will add their own deltas.
@@ -111,9 +115,12 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
             }
 
           }
+
         }
+
       }
-      $object->{$field_name} = $object_field;
+
+      $entity->{$field_name} = $object_field;
     }
   }
 

@@ -4,10 +4,11 @@ namespace Drupal\devel_generate;
 
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItem;
 use Drupal\field\Entity\FieldInstanceConfig;
+use Drupal\Core\Entity\EntityInterface;
 
 class DevelGenerateFieldDatetime extends DevelGenerateFieldBase {
 
-  public function generateValues($object, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
+  public function generateValues(EntityInterface $entity, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
     $object_field = array();
     $type = $instance->getSetting('datetime_type');
 
