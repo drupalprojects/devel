@@ -85,7 +85,7 @@ abstract class DevelGenerateFieldBase implements DevelGenerateFieldBaseInterface
 
       for ($i = 0; $i <= $max; $i++) {
         $provider = $field_types[$field_storage->getType()]['provider'];
-        if (!in_array($provider, array('file', 'image', 'taxonomy', 'number', 'text', 'options', 'email', 'link'))) {
+        if (!in_array($provider, array('file', 'image', 'taxonomy', 'number', 'text', 'options', 'email', 'link', 'entity_reference'))) {
           continue;
         }
         $devel_generate_field_factory = new DevelGenerateFieldFactory();
