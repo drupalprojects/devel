@@ -76,7 +76,7 @@ class SystemStateEdit extends FormBase {
       '#href' => 'devel/state',
     );
 
-    return parent::buildForm($form, $form_state);
+    return $form;
   }
 
   /**

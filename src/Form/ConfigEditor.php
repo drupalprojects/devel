@@ -70,7 +70,7 @@ class ConfigEditor extends FormBase {
       '#href' => 'devel/config',
     );
 
-    return parent::buildForm($form, $form_state);
+    return $form;
   }
 
   /**

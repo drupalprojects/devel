@@ -65,7 +65,7 @@ class DevelReinstall extends FormBase {
       '#value' => t('Reinstall'),
       '#type' => 'submit',
     );
-    return parent::buildForm($form, $form_state);
+    return $form;
   }
 
   /**

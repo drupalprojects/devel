@@ -43,7 +43,7 @@ class ExecutePHP extends FormBase {
       unset($_SESSION['devel_execute_code']);
     }
 
-    return parent::buildForm($form, $form_state);
+    return $form;
   }
 
   /**
