@@ -38,9 +38,9 @@ class DevelGenerateTest extends WebTestBase {
 
     // Creating a vocabulary to associate taxonomy terms generated.
     $this->vocabulary = entity_create('taxonomy_vocabulary', array(
-      'name' => $this->randomName(),
-      'description' => $this->randomName(),
-      'vid' => drupal_strtolower($this->randomName()),
+      'name' => $this->randomMachineName(),
+      'description' => $this->randomMachineName(),
+      'vid' => drupal_strtolower($this->randomMachineName()),
       'langcode' => Language::LANGCODE_NOT_SPECIFIED,
       'weight' => mt_rand(0, 10),
     ));
