@@ -7,7 +7,7 @@ use Drupal\field\Entity\FieldInstanceConfig;
 
 class DevelGenerateFieldFile extends DevelGenerateFieldBase {
 
-  public function generateValues(EntityInterface $entity, FieldInstanceConfig , $plugin_definition, $form_display_options) {
+  public function generateValues(EntityInterface $entity, FieldInstanceConfig $instance, $plugin_definition, $form_display_options) {
     static $file;
     $settings = $instance->getFieldSettings();
 
