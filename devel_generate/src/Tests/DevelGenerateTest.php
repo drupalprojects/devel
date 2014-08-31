@@ -103,6 +103,8 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('4 users created.'));
     $this->assertText(t('Generate process complete.'));
 
+    /* Bypassing this test according to #2330543-1.
+       TODO: Revisit when #2320157 has been committed to core!
     // Creating content.
     // First we create a node in order to test the Delete content checkbox.
     $this->drupalCreateNode(array('type' => 'article'));
@@ -119,6 +121,7 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('Deleted 1 nodes.'));
     $this->assertText(t('Finished creating 4 nodes'));
     $this->assertText(t('Generate process complete.'));
+    */
 
     //Creating terms.
     $edit = array(
@@ -140,6 +143,8 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('Created the following new vocabularies: '));
     $this->assertText(t('Generate process complete.'));
 
+    /* Bypassing this test according to #2330543-1.
+       TODO: Re-enable with #2313803!
     //Creating menus.
     $edit = array(
       'num_menus' => 5,
@@ -156,6 +161,7 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('Created the following new menus: '));
     $this->assertText(t('Created 7 new menu links'));
     $this->assertText(t('Generate process complete.'));
+    */
   }
 
 }
