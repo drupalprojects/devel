@@ -309,8 +309,7 @@ function backtrace_error_handler($error_level, $message, $filename, $line, $cont
     }
 
     $watchdog = 'watchdog';
-    watchdog('php', $msg, NULL, $type[1]);
-    \Drupal::logger('php')->log($type[1], $msg, NULL);
+    $watchdog('php', $msg, array(), $type[1]);
   }
 }
 
