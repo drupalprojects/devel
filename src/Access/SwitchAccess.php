@@ -50,7 +50,7 @@ class SwitchAccess implements RoutingAccessInterface {
     $name = $request->attributes->get('name');
     $token = $request->query->get('token');
     $destination = $request->query->get('destination');
-    return $account->hasPermission('switch users') && $this->csrfToken->validate($token, "devel/switch/$name|" . $destination, TRUE) ? static::ALLOW : static::DENY;
+    return $account->hasPermission('switch users') && $this->csrfToken->validate($token, "devel/switch/$name", TRUE) ? static::ALLOW : static::DENY;
   }
 
 }
