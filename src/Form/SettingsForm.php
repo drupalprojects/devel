@@ -27,7 +27,7 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
-    $current_path = $request->attributes->get('system_path');
+    $current_path = $request->attributes->get('_system_path');
     $devel_config = $this->config('devel.settings');
 
     $form['queries'] = array('#type' => 'fieldset', '#title' => t('Query log'));
@@ -113,11 +113,18 @@ class SettingsForm extends ConfigFormBase {
           '<li>' . t('<em>Standard Drupal</em> does not display all the information that is often needed to resolve an issue.') . '</li>' .
           '<li>' . t('<em>Krumo backtrace</em> displays nice debug information when any type of error is noticed, but only to users with the %perm permission.', array('%perm' => t('Access developer information'))) . '</li></ul>' .
           t('Depending on the situation, the theme, the size of the call stack and the arguments, etc., some handlers may not display their messages, or display them on the subsequent page. Select <em>Standard Drupal</em> <strong>and</strong> <em>Krumo backtrace above the rendered page</em> to maximize your chances of not missing any messages.') . '<br />' .
-          t('Demonstrate the current error handler(s):') . ' ' . l('notice+warning', $current_path, array('query' => array('demo' => 'warning'))) . ', ' . l('notice+warning+error', $current_path, array('query' => array('demo' => 'error'))) . ' ' . t('(The presentation of the @error is determined by PHP.)', array('@error' => 'error')),
+          t('Demonstrate the current error handler(s):') . ' ' .
+          l('notice', $current_path, array('query' => array('demo' => 'notice'))) . ', ' .
+          l('notice+warning', $current_path, array('query' => array('demo' => 'warning'))) . ', ' .
+          l('notice+warning+error', $current_path, array('query' => array('demo' => 'error'))) . ' ' .
+          t('(The presentation of the @error is determined by PHP.)', array('@error' => 'error')),
     );
     $form['error_handlers']['#size'] = count($form['error_handlers']['#options']);
-    if ($request->request->all() && $request->query->has('demo')) {
-      $this->demonstrateErrorHandlers($request->query->get('demo'));
+    if ($request->query->has('demo')) {
+      if ($request->getMethod() == 'GET') {
+        $this->demonstrateErrorHandlers($request->query->get('demo'));
+      }
+      $request->query->remove('demo');
     }
 
     $options = array('default', 'blue', 'green', 'orange', 'white', 'disabled');
@@ -173,6 +180,9 @@ class SettingsForm extends ConfigFormBase {
    */
   protected function demonstrateErrorHandlers($severity) {
     switch ($severity) {
+      case 'notice':
+        $undefined = $undefined;
+        break;
       case 'warning':
         $undefined = $undefined;
         1/0;
