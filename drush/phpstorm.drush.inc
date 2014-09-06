@@ -5,9 +5,6 @@
  * Generate PhpStorm metadata file.
  */
 
-use Drupal\Core\DrupalKernel;
-use Symfony\Component\HttpFoundation\Request;
-
 /**
  * Implements of hook_drush_command().
  */
