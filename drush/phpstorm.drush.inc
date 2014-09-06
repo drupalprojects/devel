@@ -5,6 +5,9 @@
  * Generate PhpStorm metadata file.
  */
 
+use Drupal\Core\DrupalKernel;
+use Symfony\Component\HttpFoundation\Request;
+
 /**
  * Implements of hook_drush_command().
  */
@@ -14,27 +17,28 @@ function phpstorm_drush_command() {
   $items['phpstorm-metadata'] = array(
     'description' => 'Save the PhpStorm Metadata file to Drupal root.',
     'core' => array('8+'),
-  );
-
-  $items['phpstorm-symfony2-metadata'] = array(
-    'description' => 'Save Metadata file for PhpStorm\'s Symfony2 Plugin to Drupal root.',
-    'core' => array('8+'),
+    'aliases' => array('phpm'),
   );
 
   return $items;
 }
 
 /**
- * Generate a fully bootstrapped kernel.
- *
- * @return \Drupal\Core\DrupalKernel
+ * Implements hook_drush_help_alter().
  */
-function _phpstorm_bootstrap_kernel() {
-  $kernel = new \Drupal\Core\DrupalKernel('prod', drupal_classloader(), FALSE);
-  $kernel->boot();
-  $request = \Symfony\Component\HttpFoundation\Request::createFromGlobals();
-  \Drupal::getContainer()->set('request', $request);
-  return $kernel;
+function phpstorm_drush_help_alter(&$command) {
+  if ($command['command'] == 'cache-rebuild') {
+    $command['options']['storm'] = 'Write a new PHPstorm metadata file to Drupal root.';
+  }
+}
+
+/*
+ * Implements drush_hook_post_COMMAND().
+ */
+function drush_phpstorm_post_cache_rebuild() {
+  if (drush_get_option('storm')) {
+    drush_invoke_process('@self', 'phpstorm-metadata');
+  }
 }
 
 /**
@@ -96,15 +100,4 @@ namespace PHPSTORM_META {
   ';
 
   return $file;
-}
-
-/**
- * Generate PhpStorm Metadata file.
- *
- * @see http://confluence.jetbrains.com/display/PhpStorm/PhpStorm+Advanced+Metadata
- */
-function drush_phpstorm_symfony2_metadata() {
-  $kernel = _phpstorm_bootstrap_kernel();
-  $dump = new Symfony\Component\DependencyInjection\Dumper\XmlDumper($kernel->getContainer());
-  file_put_contents(DRUPAL_ROOT . '/container.xml', $dump->dump());
 }
