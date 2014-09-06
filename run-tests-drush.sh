@@ -10,6 +10,8 @@
 
 DRUSH_PATH="`which drush`"
 DRUSH_DIRNAME="`dirname -- "$DRUSH_PATH"`"
+# The following line is needed is you use a `drush` that differs from `which drush`
+# export UNISH_DRUSH=$DRUSH_PATH
 
 if [ $# = 0 ] ; then
    phpunit --configuration="$DRUSH_DIRNAME/tests" drush
