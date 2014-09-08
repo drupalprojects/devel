@@ -15,6 +15,7 @@ function phpstorm_drush_command() {
     'description' => 'Save the PhpStorm Metadata file to Drupal root.',
     'core' => array('8+'),
     'aliases' => array('phpm'),
+    'category' => 'devel',
   );
 
   return $items;
