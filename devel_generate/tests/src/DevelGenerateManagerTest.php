@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\devel_generate\Tests;
+namespace Drupal\Tests\devel_generate;
 
 use Drupal\Component\Plugin\Discovery\DiscoveryInterface;
 use Drupal\devel_generate\DevelGeneratePluginManager;
