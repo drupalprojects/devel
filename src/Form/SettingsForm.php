@@ -136,11 +136,11 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $devel_config->get('krumo_skin'),
     );
 
-    $form['rebuild_theme_registry'] = array(
+    $form['rebuild_theme'] = array(
      '#type' => 'checkbox',
-     '#title' => t('Rebuild the theme registry on every page load'),
-     '#description' => t('While creating new templates and theme_ overrides the theme registry needs to be rebuilt.'),
-     '#default_value' => $devel_config->get('rebuild_theme_registry'),
+     '#title' => t('Rebuild the theme information like the registry'),
+     '#description' => t('While creating new templates, change the $theme.info.yml and theme_ overrides the theme information needs to be rebuilt.'),
+     '#default_value' => $devel_config->get('rebuild_theme'),
     );
 
     $form['use_uncompressed_jquery'] = array(
@@ -169,7 +169,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('raw_names', $form_state['values']['raw_names'])
       ->set('error_handlers', $form_state['values']['error_handlers'])
       ->set('krumo_skin', $form_state['values']['krumo_skin'])
-      ->set('rebuild_theme_registry', $form_state['values']['rebuild_theme_registry'])
+      ->set('rebuild_theme', $form_state['values']['rebuild_theme'])
       ->set('use_uncompressed_jquery', $form_state['values']['use_uncompressed_jquery'])
       ->save();
   }

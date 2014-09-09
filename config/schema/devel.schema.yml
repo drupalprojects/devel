@@ -44,9 +44,9 @@ devel.settings:
     krumo_skin:
       type: string
       label: 'Krumo skin'
-    rebuild_theme_registry:
+    rebuild_theme:
       type: boolean
-      label: 'Rebuild theme registry'
+      label: 'Rebuild theme information'
     use_uncompressed_jquery:
       type: boolean
       label: 'Use uncompressed jquery'

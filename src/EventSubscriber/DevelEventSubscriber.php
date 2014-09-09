@@ -100,12 +100,25 @@ class DevelEventSubscriber implements EventSubscriberInterface {
       }
     }
 
-    if ($this->config->get('rebuild_theme_registry')) {
+    if ($this->config->get('rebuild_theme')) {
       drupal_theme_rebuild();
-      if (\Drupal::service('flood')->isAllowed('devel.rebuild_registry_warning', 1)) {
-        \Drupal::service('flood')->register('devel.rebuild_registry_warning');
+
+      // Ensure that the active theme object is cleared.
+      $theme_name = \Drupal::theme()->getActiveTheme()->getName();
+      \Drupal::state()->delete('theme.active_theme.' . $theme_name);
+      \Drupal::theme()->resetActiveTheme();
+
+      /** @var \Drupal\Core\Extension\ThemeHandlerInterface $theme_handler*/
+      $theme_handler = \Drupal::service('theme_handler');
+      $theme_handler->refreshInfo();
+      // @todo This is not needed after https://www.drupal.org/node/2330755
+      $list = $theme_handler->listInfo();
+      $theme_handler->addTheme($list[$theme_name]);
+
+      if (\Drupal::service('flood')->isAllowed('devel.rebuild_theme_warning', 1)) {
+        \Drupal::service('flood')->register('devel.rebuild_theme_warning');
         if (!devel_silent() && $this->account->hasPermission('access devel information')) {
-          drupal_set_message(t('The theme registry is being rebuilt on every request. Remember to <a href="!url">turn off</a> this feature on production websites.', array("!url" => url('admin/config/development/devel'))));
+          drupal_set_message(t('The theme information is being rebuilt on every request. Remember to <a href="!url">turn off</a> this feature on production websites.', array("!url" => url('admin/config/development/devel'))));
         }
       }
     }

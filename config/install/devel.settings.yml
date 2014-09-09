@@ -10,7 +10,7 @@ raw_names: FALSE
 error_handlers:
   1: 1
 krumo_skin: 'default'
-rebuild_theme_registry: FALSE
+rebuild_theme: FALSE
 use_uncompressed_jquery: FALSE
 debug_mail_file_format: '%to-%subject-%datetime.mail.txt'
 debug_mail_directory: 'temporary://devel-mails'
