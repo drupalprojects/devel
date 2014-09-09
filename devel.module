@@ -21,6 +21,7 @@ use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Timer;
 use Drupal\Core\Template\Attribute;
 use Drupal\devel\Controller\DevelController;
+use Drupal\Component\Utility\SafeMarkup;
 
 /**
  * Implements hook_help().
@@ -1254,11 +1255,13 @@ function kprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r') 
     // Kint is too heavy to bother with for scalars like strings and integers.
     if (merits_kint($input)) {
       // Had to use @d() instead of @Kint::dump() as the latter is ignoring @ modifier.
-      return $return ? (isset($name) ? $name . ' => ' : '') . @d($input) : Kint::dump($input);
+      $output = $return ? (isset($name) ? $name . ' => ' : '') . @d($input) : Kint::dump($input);
     }
     else {
-      return dprint_r($input, $return, $name, $function);
+      $output = dprint_r($input, $return, $name, $function);
     }
+
+    return SafeMarkup::set($output);
   }
 }
 
