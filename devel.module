@@ -87,16 +87,6 @@ function devel_theme() {
 }
 
 /**
- * Implements hook_page_build().
- */
-function devel_page_build(&$page) {
-  // Add CSS for query log if should be displayed.
-  if (\Drupal::config('devel.settings')->get('query_display')) {
-    $page['#attached']['library'][] = 'devel/devel';
-  }
-}
-
-/**
  * Sets message.
  */
 function devel_set_message($msg, $type = NULL) {
@@ -544,7 +534,7 @@ function devel_shutdown() {
 /**
  * Implements hook_page_alter().
  */
-function devel_page_alter($page) {
+function devel_page_alter(&$page) {
   if (\Drupal::currentUser()->hasPermission('access devel information')) {
     if (\Drupal::config('devel.settings')->get('page_alter')) {
       dpm($page, 'page');
@@ -553,6 +543,12 @@ function devel_page_alter($page) {
     if (!devel_silent()) {
       $page['#attached']['library'][] = 'devel/krumo_path';
     }
+  }
+
+  // Add CSS for query log if should be displayed.
+  // This used to be in hook_page_build() but thats not called when redirect page is shown.
+  if (\Drupal::config('devel.settings')->get('query_display')) {
+    $page['#attached']['library'][] = 'devel/devel';
   }
 }
 
