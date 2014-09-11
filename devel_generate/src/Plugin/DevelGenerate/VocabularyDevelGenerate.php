@@ -92,8 +92,10 @@ class VocabularyDevelGenerate extends DevelGenerateBase {
         'required' => 0,
         'relations' => 1,
       ));
+      // Populate all fields with sample values.
+      $this->populateFields($vocabulary);
       $vocabulary->save();
-      $vocs[] = $vocabulary->name;
+      $vocs[] = $vocabulary->id();
 
       unset($vocabulary);
     }

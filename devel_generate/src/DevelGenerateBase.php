@@ -4,6 +4,8 @@ namespace Drupal\devel_generate;
 
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBaseInterface {
@@ -66,6 +68,33 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
    */
   protected function generateElements(array $values) {
 
+  }
+
+  /**
+   * Populate the fields on a given entity with sample values.
+   *
+   * @param $entity
+   *  The entity to be enriched with sample field values.
+   */
+  public function populateFields(EntityInterface $entity) {
+    $instances = entity_load_multiple_by_properties('field_instance_config', array('entity_type' => $entity->getEntityType()->id(), 'bundle' => $entity->bundle()));
+    if ($skips = function_exists('drush_get_option') ? drush_get_option('skip-fields', '') : @$_REQUEST['skip-fields']) {
+      foreach (explode(',', $skips) as $skip) {
+        unset($instances[$skip]);
+      }
+    }
+
+    foreach ($instances as $instance) {
+      /** @var \Drupal\field\FieldStorageConfigInterface $field_storage */
+      $field_storage = $instance->getFieldStorageDefinition();
+      $max = $cardinality = $field_storage->getCardinality();
+      if ($cardinality == FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED) {
+        // Just an arbitrary number for 'unlimited'
+        $max = rand(1, 3);
+      }
+      $field_name = $field_storage->getName();
+      $entity->$field_name->generateSampleItems($max);
+    }
   }
 
   /**

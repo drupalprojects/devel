@@ -155,8 +155,8 @@ class TermDevelGenerate extends DevelGenerateBase {
       $values['langcode'] = Language::LANGCODE_NOT_SPECIFIED;
       $term = entity_create('taxonomy_term', $values);
 
-      // Populate all core fields on behalf of field.module
-      DevelGenerateFieldBase::generateFields($term, 'taxonomy_term', $values['vocabulary_machine_name']);
+      // Populate all fields with sample values.
+      $this->populateFields($term);
 
       if ($status = $term->save()) {
         $max += 1;

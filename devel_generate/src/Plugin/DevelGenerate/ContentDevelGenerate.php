@@ -393,8 +393,8 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     // generated node.
     $node->devel_generate = $results;
 
-    // Populate all core fields on behalf of field.module
-    DevelGenerateFieldBase::generateFields($node, 'node', $node->bundle());
+    // Populate all fields with sample values.
+    $this->populateFields($node);
 
     // See devel_generate_node_insert() for actions that happen before and after
     // this save.
