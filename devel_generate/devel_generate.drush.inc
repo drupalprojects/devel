@@ -4,6 +4,8 @@
  * @file
  *  Generate content, taxonomy, menu, and users via drush framework.
  */
+use Drupal\devel_generate\DevelGenerateBaseInterface;
+use Drupal\devel_generate\DevelGeneratePluginManager;
 
 /**
  * Implementation of hook_drush_command().
@@ -163,8 +165,11 @@ function _drush_plugin_validate($params) {
 
   if (!isset($instance_and_values[$plugin_id])) {
 
-    $devel_generate_manager = \Drupal::service('plugin.manager.develgenerate');
-    $instance = $devel_generate_manager->createInstance($plugin_id, array());
+    /** @var DevelGeneratePluginManager $manager */
+    $manager = \Drupal::service('plugin.manager.develgenerate');
+
+    /** @var DevelGenerateBaseInterface $instance */
+    $instance = $manager->createInstance($plugin_id, array());
 
     //Plugin instance suit params in order to fit for generateElements
     $values = $instance->validateDrushParams($params);
@@ -182,8 +187,10 @@ function drush_devel_generate() {
   $params = func_get_args();
   $plugin_id = array_shift($params);
   $instance_and_values = drupal_static('drush_devel_generate_generate_validate');
-  $plugin_instance = $instance_and_values[$plugin_id]['instance'];
+
+  /** @var DevelGenerateBaseInterface $instance */
+  $instance = $instance_and_values[$plugin_id]['instance'];
   $values = $instance_and_values[$plugin_id]['values'];
-  $plugin_instance->generate($values);
+  $instance->generate($values);
 
 }
