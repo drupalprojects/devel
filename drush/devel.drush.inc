@@ -19,12 +19,12 @@ function devel_drush_command() {
     ),
   );
   $items['devel-reinstall'] = array(
-    'description' => dt('Disable, Uninstall, and Install a list of projects.'),
+    'description' => dt('Uninstall, and Install a list of projects.'),
     'drush dependencies' => array('pm'),
     'arguments' => array(
       'projects' => dt('A space-separated list of project names.'),
     ),
-    'allow-additional-options' => array('pm-disable', 'pm-uninstall', 'pm-enable'),
+    'allow-additional-options' => array('pm-uninstall', 'pm-enable'),
     'required-arguments' => 1,
     'aliases' => array('dre'),
   );
@@ -117,9 +117,6 @@ function devel_drush_command() {
  */
 function drush_devel_reinstall() {
   $projects = func_get_args();
-
-  $args = array_merge(array('pm-disable'), $projects);
-  call_user_func_array('drush_invoke', $args);
 
   $args = array_merge(array('pm-uninstall'), $projects);
   call_user_func_array('drush_invoke', $args);
