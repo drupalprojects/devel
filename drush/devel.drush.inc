@@ -166,7 +166,7 @@ function drush_devel_fn_hook($hook) {
  * Command handler. Show hook implementations.
  */
 function drush_devel_fn_event($event = NULL) {
-  $dispatcher = drupal_container()->get('dispatcher');
+  $dispatcher = Drupal::service('event_dispatcher');
   if (empty($event)) {
     $events = array('kernel.controller', 'kernel.exception', 'kernel.request', 'kernel.response', 'kernel.terminate', 'kernel.view');
     $events = array_combine($events, $events);
