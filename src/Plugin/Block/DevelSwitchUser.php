@@ -17,7 +17,7 @@ use Drupal\Core\Session\AccountInterface;
  *
  * @Block(
  *   id = "devel_switch_user",
- *   admin_label = @Translation("Switch user")
+ *   admin_label = @Translation("Switch user"),
  *   category = @Translation("Forms")
  * )
  */
