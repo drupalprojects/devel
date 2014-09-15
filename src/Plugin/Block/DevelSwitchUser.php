@@ -18,6 +18,7 @@ use Drupal\Core\Session\AccountInterface;
  * @Block(
  *   id = "devel_switch_user",
  *   admin_label = @Translation("Switch user")
+ *   category = @Translation("Forms")
  * )
  */
 class DevelSwitchUser extends BlockBase {
@@ -70,7 +71,7 @@ class DevelSwitchUser extends BlockBase {
   /**
    * {@inheritdoc}
    */
-  public function access(AccountInterface $account) {
+  public function blockAccess(AccountInterface $account) {
     return $account->hasPermission('switch users');
   }
 
