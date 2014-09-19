@@ -51,8 +51,9 @@ class ExecutePHP extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     ob_start();
-    print eval($form_state['values']['code']);
-    $_SESSION['devel_execute_code'] = $form_state['values']['code'];
+    $code = $form_state->getValue('code');
+    print eval($code);
+    $_SESSION['devel_execute_code'] = $code;
     dpm(ob_get_clean());
   }
 
