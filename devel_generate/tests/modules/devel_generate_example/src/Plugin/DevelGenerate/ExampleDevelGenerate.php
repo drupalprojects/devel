@@ -75,8 +75,9 @@ class ExampleDevelGenerate extends DevelGenerateBase {
       $account = entity_create('user', $edit);
     }
 
-    // Populate all core fields on behalf of field.module
-    DevelGenerateFieldBase::generateFields($account, 'user', 'user', 'register', 'devel_generate_example');
+    // Populate all fields with sample values.
+    $this->populateFields($node);
+
     $account->save();
 
     $this->setMessage(t('!num_examples created.', array('!num_examples' => \Drupal::translation()->formatPlural($num, '1 example', '@count examples'))));
