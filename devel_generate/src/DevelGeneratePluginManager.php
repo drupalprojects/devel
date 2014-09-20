@@ -28,7 +28,7 @@ Class DevelGeneratePluginManager extends DefaultPluginManager {
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/DevelGenerate', $namespaces, $module_handler, 'Drupal\devel_generate\Annotation\DevelGenerate');
+    parent::__construct('Plugin/DevelGenerate', $namespaces, $module_handler, NULL, 'Drupal\devel_generate\Annotation\DevelGenerate');
     $this->alterInfo('devel_generate_info');
     $this->setCacheBackend($cache_backend, 'devel_generate_plugins');
   }
