@@ -8,7 +8,6 @@
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
 use Drupal\devel_generate\DevelGenerateBase;
-use Drupal\devel_generate\DevelGenerateFieldBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**

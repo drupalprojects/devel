@@ -14,7 +14,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\comment\CommentManagerInterface;
 use Drupal\field\Entity\FieldInstanceConfig;
 use Drupal\devel_generate\DevelGenerateBase;
-use Drupal\devel_generate\DevelGenerateFieldBase;
 use Drupal\node\Entity\NodeType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;

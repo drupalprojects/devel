@@ -4,7 +4,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
 use Drupal\devel_generate\DevelGenerateBase;
-use Drupal\devel_generate\DevelGenerateFieldBase;
 use Drupal\node\NodeInterface;
 
 /**
@@ -143,7 +142,7 @@ function devel_generate_add_comments(NodeInterface $node, FieldDefinitionInterfa
     $comment = entity_create('comment', $stub);
 
     //Populate all core fields on behalf of field.module
-    DevelGenerateFieldBase::generateFields($comment, 'comment', $comment->bundle());
+    DevelGenerateBase::populateFields($comment);
     $comment->save();
   }
 }

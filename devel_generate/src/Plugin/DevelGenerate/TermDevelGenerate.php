@@ -9,7 +9,6 @@ namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\Core\Language\Language;
-use Drupal\devel_generate\DevelGenerateFieldBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**

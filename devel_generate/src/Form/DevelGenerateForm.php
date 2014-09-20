@@ -75,7 +75,6 @@ class DevelGenerateForm extends FormBase {
     $plugin_id = $this->getPluginIdFromRequest();
     $instance = $this->getPluginInstance($plugin_id);
     $form = $instance->settingsForm($form, $form_state);
-    $form_state['instance'] = $instance;
     $form['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Generate'),
@@ -89,9 +88,9 @@ class DevelGenerateForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     try {
-      $values = $form_state['values'];
-      $instance = $form_state['instance'];
-      $instance->generate($values);
+      $plugin_id = $this->getPluginIdFromRequest();
+      $instance = $this->getPluginInstance($plugin_id);
+      $instance->generate($form_state->getValues());
     }
     catch (DevelGenerateException $e) {
       watchdog('DevelGenerate', 'Failed to generate elements due to "%error".', array('%error' => $e->getMessage()), WATCHDOG_WARNING);
