@@ -69,7 +69,7 @@ class DevelGenerateTest extends WebTestBase {
       ),
     ))->save();
 
-    $this->instance = entity_create('field_instance_config', array(
+    $this->instance = entity_create('field_config', array(
       'field_name' => $field_name,
       'bundle' => 'article',
       'entity_type' => 'node',

@@ -12,7 +12,7 @@ use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\comment\CommentManagerInterface;
-use Drupal\field\Entity\FieldInstanceConfig;
+use Drupal\field\Entity\FieldConfig;
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\node\Entity\NodeType;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -94,7 +94,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
         foreach ($comment_fields as $field_name => $info) {
           // Find all comment fields for the bundle.
           if (in_array($type->type, $info['bundles'])) {
-            $instance = FieldInstanceConfig::loadByName('node', $type->type, $field_name);
+            $instance = FieldConfig::loadByName('node', $type->type, $field_name);
             $default_mode = reset($instance->default_value);
             $fields[] = String::format('@field: !state', array(
               '@field' => $instance->label(),
