@@ -9,7 +9,7 @@ namespace Drupal\devel\Controller;
 
 use Drupal\comment\CommentInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\field\Field;
+use Drupal\Core\Field;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\TermInterface;
 use Drupal\user\UserInterface;
