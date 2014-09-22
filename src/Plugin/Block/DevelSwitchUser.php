@@ -10,7 +10,10 @@ namespace Drupal\devel\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\Annotation\Block;
 use Drupal\Core\Annotation\Translation;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\AnonymousUserSession;
+use Drupal\Tests\Core\Session\AnonymousUserSessionTest;
 
 /**
  * Provides a block for switching users.
@@ -38,7 +41,8 @@ class DevelSwitchUser extends BlockBase {
   /**
    * {@inheritdoc}
    */
-  public function blockForm($form, &$form_state) {
+  public function blockForm($form, FormStateInterface $form_state) {
+    $anon = new AnonymousUserSession();
     $form['list_size'] = array(
       '#type' => 'textfield',
       '#title' => t('Number of users to display in the list'),
@@ -48,7 +52,7 @@ class DevelSwitchUser extends BlockBase {
     );
     $form['include_anon'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Include %anonymous', array('%anonymous' => user_format_name(drupal_anonymous_user()))),
+      '#title' => t('Include %anonymous', array('%anonymous' => $anon->getUsername())),
       '#default_value' => $this->configuration['include_anon'],
     );
     $form['show_form'] = array(
@@ -62,10 +66,10 @@ class DevelSwitchUser extends BlockBase {
   /**
    * {@inheritdoc}
    */
-  public function blockSubmit($form, &$form_state) {
-    $this->configuration['list_size'] = $form_state['values']['list_size'];
-    $this->configuration['include_anon'] = $form_state['values']['include_anon'];
-    $this->configuration['show_form'] = $form_state['values']['show_form'];
+  public function blockSubmit($form, FormStateInterface $form_state) {
+    $this->configuration['list_size'] = $form_state->getValue('list_size');
+    $this->configuration['include_anon'] = $form_state->getValue('include_anon');
+    $this->configuration['show_form'] = $form_state->getValue('show_form');
   }
 
   /**
@@ -73,6 +77,14 @@ class DevelSwitchUser extends BlockBase {
    */
   public function blockAccess(AccountInterface $account) {
     return $account->hasPermission('switch users');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isCacheable() {
+    // Perhaps this can be improved. Low priority.
+    return FALSE;
   }
 
   /**
