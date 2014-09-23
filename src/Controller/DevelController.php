@@ -226,7 +226,7 @@ class DevelController extends ControllerBase {
         // Switch from anonymous to authorized.
         $session_manager->regenerate();
       }
-      
+
       $module_handler->invokeAll('user_login', array($user));
     }
 //    elseif ($uid) {
