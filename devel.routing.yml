@@ -225,7 +225,8 @@ devel.switch:
   options:
     _admin_route: TRUE
   requirements:
-    _devel_switch_user_access: 'TRUE'
+    _permission: 'switch users'
+  _csrf_token: 'TRUE'
 
 devel.elements_page:
   path: '/devel/elements'

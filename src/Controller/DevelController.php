@@ -210,26 +210,31 @@ class DevelController extends ControllerBase {
    */
   public function switchUser($name = NULL) {
     global $user;
+
     $module_handler = $this->moduleHandler();
+    $session_manager = \Drupal::service('session_manager');
 
     if ($uid = $this->currentUser()->id()) {
-      $module_handler->invokeAll('user_logout', array($user));
+      user_logout();
     }
     if (isset($name) && $account = user_load_by_name($name)) {
+      \Drupal::currentUser()->setAccount($account);
       $old_uid = $uid;
       $user = $account;
       $user->timestamp = time() - 9999;
       if (!$old_uid) {
         // Switch from anonymous to authorized.
-        drupal_session_regenerate();
+        $session_manager->regenerate();
       }
+      
       $module_handler->invokeAll('user_login', array($user));
     }
-    elseif ($uid) {
-      session_destroy();
-    }
+//    elseif ($uid) {
+//      session_destroy();
+    //}
+
     $destination = drupal_get_destination();
-    $url = $this->urlGenerator()->generateFromPath($destination['destination'], array('absolute' => TRUE));
+    $url = $this->getUrlGenerator()->generateFromPath($destination['destination'], array('absolute' => TRUE));
     return new RedirectResponse($url);
   }
 
