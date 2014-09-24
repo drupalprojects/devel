@@ -19,6 +19,7 @@ define('DEVEL_MIN_TEXTAREA', 50);
 use Drupal\comment\CommentInterface;
 use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Timer;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\Template\Attribute;
 use Drupal\devel\Controller\DevelController;
@@ -75,6 +76,7 @@ function devel_translated_menu_link_alter(&$item) {
 
 /**
  * Implements hook_theme().
+ * @todo Not used but these items are not themed properly for the moment. Help wanted.
  */
 function devel_theme() {
   return array(
@@ -190,6 +192,7 @@ function devel_set_handler($handlers) {
 
 /**
  * Checks whether Devel may be active.
+ * @todo: port to D8.
  */
 function devel_silent() {
   // Don't interfere with private files/images.
