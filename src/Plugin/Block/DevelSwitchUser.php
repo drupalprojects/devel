@@ -8,13 +8,17 @@
 namespace Drupal\devel\Plugin\Block;
 
 use Drupal\Component\Utility\String;
+use Drupal\Core\Access\CsrfTokenGenerator;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\Annotation\Block;
 use Drupal\Core\Annotation\Translation;
+use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Session\AnonymousUserSession;
-use Drupal\Tests\Core\Session\AnonymousUserSessionTest;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a block for switching users.
@@ -25,7 +29,62 @@ use Drupal\Tests\Core\Session\AnonymousUserSessionTest;
  *   category = @Translation("Forms")
  * )
  */
-class DevelSwitchUser extends BlockBase {
+class DevelSwitchUser extends BlockBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The csrf token generator.
+   *
+   * @var \Drupal\Core\Access\CsrfTokenGenerator
+   */
+  protected $csrfTokenGenerator;
+
+  /**
+   * The FormBuilder object.
+   *
+   * @var \Drupal\Core\Form\FormBuilderInterface
+   */
+  protected $formBuilder;
+
+  /**
+   * The Cuurent User object.
+   *
+   * @var
+   */
+  protected $currentUser;
+
+  /**
+   * Constructs a new DevelSwitchUser object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Access\CsrfTokenGenerator $csrf_token_generator
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   * @param \Drupal\Core\Session\AccountProxyInterface $current_user
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, CsrfTokenGenerator $csrf_token_generator, FormBuilderInterface $form_builder, AccountProxyInterface $current_user) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->csrfTokenGenerator = $csrf_token_generator;
+    $this->formBuilder = $form_builder;
+    $this->currentUser = $current_user;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('csrf_token'),
+      $container->get('form_builder'),
+      $container->get('current_user')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -102,13 +161,7 @@ class DevelSwitchUser extends BlockBase {
           )
       );
       if ($this->configuration['show_form']) {
-//        $form_state = array();
-//        $build_info = array(
-//          'args' => array(),
-//          'callback' => array($this, 'switchForm'),
-//        );
-//        $form_state->setBuildInfo($build_info);
-        $build['devel_form'] = \Drupal::formBuilder()->getForm('\Drupal\devel\Form\SwitchUserForm');
+        $build['devel_form'] = $this->formBuilder->getForm('\Drupal\devel\Form\SwitchUserForm');
       }
       return $build;
     }
@@ -122,7 +175,7 @@ class DevelSwitchUser extends BlockBase {
     $include_anon = $this->configuration['include_anon'];
     $anon = new AnonymousUserSession();
     $links = array();
-    if (\Drupal::currentUser()->hasPermission('switch users')) {
+    if ($this->currentUser->hasPermission('switch users')) {
       if ($include_anon) {
         --$list_size;
       }
@@ -158,7 +211,7 @@ class DevelSwitchUser extends BlockBase {
         $links[$account->id()] = array(
           'title' => String::placeholder(user_format_name($account)),
           'href' => $path,
-          'query' => $dest + array('token' => \Drupal::csrfToken()->get($path)),
+          'query' => $dest + array('token' => $this->csrfTokenGenerator->get($path)),
           'attributes' => array('title' => t('This user can switch back.')),
           'html' => TRUE,
           'last_access' => $account->access->value,
@@ -174,7 +227,7 @@ class DevelSwitchUser extends BlockBase {
           $links[$account->id()] = array(
             'title' => user_format_name($account),
             'href' => $path,
-            'query' => $dest + array('token' => \Drupal::csrfToken()->get($path)),
+            'query' => $dest + array('token' => $this->csrfTokenGenerator->get($path)),
             'attributes' => array('title' => t('Caution: this user will be unable to switch back.')),
             'last_access' => $account->access->value,
           );
@@ -186,18 +239,18 @@ class DevelSwitchUser extends BlockBase {
         $link = array(
           'title' => $anon->getUsername(),
           'href' => $path,
-          'query' => $dest + array('token' => \Drupal::csrfToken()->get($path)),
+          'query' => $dest + array('token' => $this->csrfTokenGenerator->get($path)),
           'attributes' => array('title' => t('Caution: the anonymous user will be unable to switch back.')),
         );
-        if (\Drupal::currentUser()->hasPermission('switch users')) {
+        if ($this->currentUser->hasPermission('switch users')) {
           $link['title'] = String::placeholder($link['title']);
           $link['attributes'] = array('title' => t('This user can switch back.'));
           $link['html'] = TRUE;
         }
-        $links[] = $link;
+        $links[$anon->id()] = $link;
       }
     }
-    if (array_key_exists($uid = \Drupal::currentUser()->id(), $links)) {
+    if (array_key_exists($uid = $this->currentUser->id(), $links)) {
       $links[$uid]['title'] = '<strong>' . $links[$uid]['title'] . '</strong>';
     }
     return $links;
