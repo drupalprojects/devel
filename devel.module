@@ -306,29 +306,6 @@ function backtrace_error_handler($error_level, $message, $filename, $line, $cont
 }
 
 /**
- * Implements hook_permission().
- */
-function devel_permission() {
-  return array(
-    'access devel information' => array(
-      'description' => t('View developer output like variable printouts, query log, etc.'),
-      'title' => t('Access developer information'),
-      'restrict access' => TRUE,
-    ),
-    'execute php code' => array(
-      'title' => t('Execute PHP code'),
-      'description' => t('Run arbitrary PHP from a block.'),
-      'restrict access' => TRUE,
-    ),
-    'switch users' => array(
-      'title' => t('Switch users'),
-      'description' => t('Become any user on the site with just a click.'),
-      'restrict access' => TRUE,
-    ),
-  );
-}
-
-/**
  * Provides the Switch user list.
  */
 function devel_switch_user_list($list_size = 12, $include_anon = TRUE) {

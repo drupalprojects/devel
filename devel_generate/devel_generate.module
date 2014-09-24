@@ -23,27 +23,6 @@ function devel_generate_menu_links_discovered_alter(&$links) {
 }
 
 /**
- * Implements hook_permission().
- */
-function devel_generate_permission() {
-  $devel_generate_plugins = \Drupal::service('plugin.manager.develgenerate')->getDefinitions();
-  foreach ($devel_generate_plugins as $plugin) {
-
-    $permission = $plugin['permission'];
-    $permissions[$permission] = array(
-      'title' => t($permission),
-    );
-  }
-
-  $permissions = array(
-    'administer devel_generate' => array(
-      'title' => t('Administer devel generate'),
-    ),
-  );
-  return $permissions;
-}
-
-/**
  * Implements hook_entity_insert().
  *
  * Inserts nodes properly based on generation options.
