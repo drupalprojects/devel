@@ -7,6 +7,7 @@
 
 namespace Drupal\devel\Plugin\Block;
 
+use Drupal\Component\Utility\String;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\Annotation\Block;
 use Drupal\Core\Annotation\Translation;
@@ -101,43 +102,104 @@ class DevelSwitchUser extends BlockBase {
           )
       );
       if ($this->configuration['show_form']) {
-        $form_state = array();
-        $build_info = array(
-          'args' => array(),
-          'callback' => array($this, 'switchForm'),
-        );
-        $form_state->setBuildInfo($build_info);
-        $build['devel_form'] = drupal_build_form('devel_switch_user_form', $form_state);
+//        $form_state = array();
+//        $build_info = array(
+//          'args' => array(),
+//          'callback' => array($this, 'switchForm'),
+//        );
+//        $form_state->setBuildInfo($build_info);
+        $build['devel_form'] = \Drupal::formBuilder()->getForm('\Drupal\devel\Form\SwitchUserForm');
       }
       return $build;
     }
   }
 
   /**
-   * Provides the Switch user form.
-   */
-  public function switchForm() {
-    $form['username'] = array(
-      '#type' => 'textfield',
-      '#description' => t('Enter username'),
-      '#autocomplete_path' => 'user/autocomplete',
-      '#maxlength' => USERNAME_MAX_LENGTH,
-      '#size' => 16,
-    );
-    $form['submit'] = array(
-      '#type' => 'submit',
-      '#value' => t('Switch'),
-      '#button_type' => 'primary',
-    );
-    $form['#attributes'] = array('class' => array('clearfix'));
-    return $form;
-  }
-
-  /**
    * Provides the Switch user list.
    */
   public function switchUserList() {
-    return devel_switch_user_list($this->configuration['list_size'], $this->configuration['include_anon']);
-  }
+    $list_size = $this->configuration['list_size'];
+    $include_anon = $this->configuration['include_anon'];
+    $anon = new AnonymousUserSession();
+    $links = array();
+    if (\Drupal::currentUser()->hasPermission('switch users')) {
+      if ($include_anon) {
+        --$list_size;
+      }
+      $dest = drupal_get_destination();
+      // Try to find at least $list_size users that can switch.
+      // Inactive users are omitted from all of the following db selects.
+      $roles = user_roles(TRUE, 'switch users');
+      $query = db_select('users', 'u');
+      $query->join('users_field_data', 'ufd');
+      $query->addField('u', 'uid');
+      $query->addField('ufd', 'access');
+      $query->distinct();
+      $query->condition('u.uid', 0, '>');
+      $query->condition('ufd.status', 0, '>');
+      $query->orderBy('ufd.access', 'DESC');
+      $query->range(0, $list_size);
 
+      if (!isset($roles[DRUPAL_AUTHENTICATED_RID])) {
+        $query->leftJoin('users_roles', 'r', 'u.uid = r.uid');
+        $or_condition = db_or();
+        $or_condition->condition('u.uid', 1);
+        if (!empty($roles)) {
+          $or_condition->condition('r.rid', array_keys($roles), 'IN');
+        }
+        $query->condition($or_condition);
+      }
+
+      $uids = $query->execute()->fetchCol();
+      $accounts = user_load_multiple($uids);
+
+      foreach ($accounts as $account) {
+        $path = 'devel/switch/' . $account->name->value;
+        $links[$account->id()] = array(
+          'title' => String::placeholder(user_format_name($account)),
+          'href' => $path,
+          'query' => $dest + array('token' => \Drupal::csrfToken()->get($path)),
+          'attributes' => array('title' => t('This user can switch back.')),
+          'html' => TRUE,
+          'last_access' => $account->access->value,
+        );
+      }
+      $num_links = count($links);
+      if ($num_links < $list_size) {
+        // If we don't have enough, add distinct uids until we hit $list_size.
+        $uids = db_query_range('SELECT u.uid FROM {users} u INNER JOIN {users_field_data} ufd WHERE u.uid > 0 AND u.uid NOT IN (:uids) AND ufd.status > 0 ORDER BY ufd.access DESC', 0, $list_size - $num_links, array(':uids' => array_keys($links)))->fetchCol();
+        $accounts = user_load_multiple($uids);
+        foreach ($accounts as $account) {
+          $path = 'devel/switch/' . $account->name->value;
+          $links[$account->id()] = array(
+            'title' => user_format_name($account),
+            'href' => $path,
+            'query' => $dest + array('token' => \Drupal::csrfToken()->get($path)),
+            'attributes' => array('title' => t('Caution: this user will be unable to switch back.')),
+            'last_access' => $account->access->value,
+          );
+        }
+        uasort($links, '_devel_switch_user_list_cmp');
+      }
+      if ($include_anon) {
+        $path = 'devel/switch';
+        $link = array(
+          'title' => $anon->getUsername(),
+          'href' => $path,
+          'query' => $dest + array('token' => \Drupal::csrfToken()->get($path)),
+          'attributes' => array('title' => t('Caution: the anonymous user will be unable to switch back.')),
+        );
+        if (\Drupal::currentUser()->hasPermission('switch users')) {
+          $link['title'] = String::placeholder($link['title']);
+          $link['attributes'] = array('title' => t('This user can switch back.'));
+          $link['html'] = TRUE;
+        }
+        $links[] = $link;
+      }
+    }
+    if (array_key_exists($uid = \Drupal::currentUser()->id(), $links)) {
+      $links[$uid]['title'] = '<strong>' . $links[$uid]['title'] . '</strong>';
+    }
+    return $links;
+  }
 }
