@@ -8,6 +8,7 @@
 namespace Drupal\devel\Form;
 
 use Drupal\Core\Form\FormBase;
+use Drupal\Core\Url;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
 use Drupal\Core\Form\FormStateInterface;
@@ -84,19 +85,20 @@ class SystemStateEdit extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Save the state
-    $name = $form_state['values']['state_name'];
-    switch ($form_state['values']['transport']) {
+    $values = $form_state->getValues();
+    $name = $values['state_name'];
+    switch ($values['transport']) {
       case 'yaml':
         $parser = new Parser();
-        $new_value = $parser->parse($form_state['values']['new_value']);
+        $new_value = $parser->parse($values['new_value']);
         break;
 
       default:
-        $new_value = $form_state['values']['new_value'];
+        $new_value = $values['new_value'];
         break;
     }
     \Drupal::state()->set($name, $new_value);
-    $form_state['redirect'] = 'devel/state';
+    $form_state->setRedirectUrl(Url::createFromPath('devel/state'));
     drupal_set_message(t('Variable %var was successfully edited.', array('%var' => $name)));
   }
 

@@ -10,6 +10,7 @@ namespace Drupal\devel\Form;
 use Drupal\Component\Utility\String;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 
 /**
  * Form that displays all the config variables to edit them.
@@ -66,6 +67,7 @@ class ConfigsList extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state['redirect'] = 'devel/config/' . String::checkPlain($form_state['values']['name']);
+    $form_state->setRedirectUrl(Url::createFromPath('devel/config/' . String::checkPlain($form_state['values']['name'])));
   }
 
 }

@@ -424,17 +424,18 @@ function devel_doc_function_form() {
  * Submit handler for the API lookup form.
  */
 function devel_doc_function_form_submit($form, &$form_state) {
-  $version = $form_state['values']['version'];
-  $function = $form_state['values']['function'];
+  $values = $form_state->getValues();
+  $version = $values['version'];
+  $function = $values['function'];
   $api = \Drupal::config('devel.settings')->get('api_url');
-  $form_state['redirect'] = "http://$api/api/function/$function/$version";
+  $form_state->setRedirectUrl(Url::createFromPath("http://$api/api/function/$function/$version"));
 }
 
 /**
  * Validate handler for the Switch user form.
  */
 function devel_switch_user_form_validate($form, &$form_state) {
-  if (!$account = user_load_by_name($form_state['values']['username'])) {
+  if (!$account = user_load_by_name($form_state->getValues()['username'])) {
     form_set_error('username', t('Username not found'));
   }
 }
@@ -443,14 +444,8 @@ function devel_switch_user_form_validate($form, &$form_state) {
  * Submit handler for the Switch user form.
  */
 function devel_switch_user_form_submit($form, &$form_state) {
-  $path = 'devel/switch/' . $form_state['values']['username'];
-  $form_state['redirect'] = array(
-    $path,
-    array(
-      'query' => array(
-        'destination' => '',
-        'token' => drupal_get_token($path),
-    )));
+  $path = 'devel/switch/' . $form_state->getValues()['username'];
+  $form_state->setRedirect($path, array( 'query' => array( 'destination' => '', 'token' => drupal_get_token($path))));
 }
 
 /**

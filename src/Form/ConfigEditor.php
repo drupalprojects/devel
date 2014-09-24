@@ -8,6 +8,7 @@
 namespace Drupal\devel\Form;
 
 use Drupal\Core\Form\FormBase;
+use Drupal\Core\Url;
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
 use Drupal\Core\Form\FormStateInterface;
@@ -78,12 +79,13 @@ class ConfigEditor extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $parser = new Parser();
-    $new_config = $parser->parse($form_state['values']['new']);
-    $this->config($form_state['values']['name'])->setData($new_config)->save();
+    $values = $form_state->getValues();
+    $new_config = $parser->parse($values['new']);
+    $this->config($values['name'])->setData($new_config)->save();
 
-    drupal_set_message(t('Configuration variable %variable was successfully saved.', array('%variable' => $form_state['values']['name'])));
+    drupal_set_message(t('Configuration variable %variable was successfully saved.', array('%variable' => $values['name'])));
 
-    $form_state['redirect'] = 'devel/config';
+    $form_state->setRedirectUrl(Url::createFromPath('devel/config'));
   }
 
 }

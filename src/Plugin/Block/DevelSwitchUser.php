@@ -102,8 +102,11 @@ class DevelSwitchUser extends BlockBase {
       );
       if ($this->configuration['show_form']) {
         $form_state = array();
-        $form_state['build_info']['args'] = array();
-        $form_state['build_info']['callback'] = array($this, 'switchForm');
+        $build_info = array(
+          'args' => array(),
+          'callback' => array($this, 'switchForm'),
+        );
+        $form_state->setBuildInfo($build_info);
         $build['devel_form'] = drupal_build_form('devel_switch_user_form', $form_state);
       }
       return $build;

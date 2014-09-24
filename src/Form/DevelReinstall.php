@@ -72,7 +72,7 @@ class DevelReinstall extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $modules = array_filter($form_state['values']['list']);
+    $modules = array_filter($form_state->getValues()['list']);
     $this->moduleHandler->uninstall($modules, FALSE);
     $this->moduleHandler->install($modules, FALSE);
     drupal_set_message(t('Uninstalled and installed: %names.', array('%names' => implode(', ', $modules))));

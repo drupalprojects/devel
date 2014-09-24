@@ -103,9 +103,10 @@ function devel_node_access_admin_settings($form, &$form_state) {
  * Submit handler for the DNA settings form.
  */
 function devel_node_access_admin_settings_submit($form, &$form_state) {
+  $values = $form_state->getValues();
   \Drupal::config('devel_node_access.settings')
-    ->set('debug_mode', $form_state['values']['debug_mode'])
-    ->set('user_ajax', $form_state['values']['user_ajax'])
+    ->set('debug_mode', $values['debug_mode'])
+    ->set('user_ajax', $values['user_ajax'])
     ->save();
 }
 

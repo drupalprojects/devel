@@ -35,8 +35,8 @@ class DnaNode extends DnaBlockBase {
    */
   public function build() {
     $form_state = array();
-    $form_state['build_info']['args'] = array();
-    $form_state['build_info']['callback'] = array($this, 'buildForm');
+    $form_state->addBuildInfo('args', array());
+    $form_state->addBuildInfo('callback', array($this, 'buildForm'));
     $form = drupal_build_form('devel_node_access_form', $form_state);
     return $form;
   }

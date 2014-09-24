@@ -157,20 +157,21 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
     $this->config('devel.settings')
-      ->set('query_display', $form_state['values']['query_display'])
-      ->set('query_sort', $form_state['values']['query_sort'])
-      ->set('execution', $form_state['values']['execution'])
-      ->set('api_url', $form_state['values']['api_url'])
-      ->set('timer', $form_state['values']['timer'])
-      ->set('memory', $form_state['values']['memory'])
-      ->set('redirect_page', $form_state['values']['redirect_page'])
-      ->set('page_alter', $form_state['values']['page_alter'])
-      ->set('raw_names', $form_state['values']['raw_names'])
-      ->set('error_handlers', $form_state['values']['error_handlers'])
-      ->set('krumo_skin', $form_state['values']['krumo_skin'])
-      ->set('rebuild_theme', $form_state['values']['rebuild_theme'])
-      ->set('use_uncompressed_jquery', $form_state['values']['use_uncompressed_jquery'])
+      ->set('query_display', $values['query_display'])
+      ->set('query_sort', $values['query_sort'])
+      ->set('execution', $values['execution'])
+      ->set('api_url', $values['api_url'])
+      ->set('timer', $values['timer'])
+      ->set('memory', $values['memory'])
+      ->set('redirect_page', $values['redirect_page'])
+      ->set('page_alter', $values['page_alter'])
+      ->set('raw_names', $values['raw_names'])
+      ->set('error_handlers', $values['error_handlers'])
+      ->set('krumo_skin', $values['krumo_skin'])
+      ->set('rebuild_theme', $values['rebuild_theme'])
+      ->set('use_uncompressed_jquery', $values['use_uncompressed_jquery'])
       ->save();
   }
 
