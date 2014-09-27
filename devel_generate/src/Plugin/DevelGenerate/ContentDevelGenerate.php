@@ -10,6 +10,7 @@ namespace Drupal\devel_generate\Plugin\DevelGenerate;
 use Drupal\Component\Utility\String;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\Language;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\comment\CommentManagerInterface;
 use Drupal\field\Entity\FieldConfig;
@@ -188,21 +189,24 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       '#access' => $this->moduleHandler->moduleExists('statistics'),
     );
 
-    $options = array(Language::LANGCODE_NOT_SPECIFIED => t('Language neutral'));
-    if ($this->moduleHandler->moduleExists('locale')) {
-      $languages = language_list();
-      foreach ($languages as $langcode => $language) {
-        $options[$langcode] = $language->name;
-      }
+    $options = array();
+    // We always need a language
+    $languages = \Drupal::languageManager()->getLanguages(LanguageInterface::STATE_ALL);
+    foreach ($languages as $langcode => $language) {
+      $options[$langcode] = $language->name;
     }
+
+    $default_language = \Drupal::service('language.default')->get();
+    $default_langcode = $default_language->id;
     $form['add_language'] = array(
       '#type' => 'select',
       '#title' => t('Set language on nodes'),
       '#multiple' => TRUE,
-      '#disabled' => !$this->moduleHandler->moduleExists('locale'),
       '#description' => t('Requires locale.module'),
       '#options' => $options,
-      '#default_value' => array(Language::LANGCODE_NOT_SPECIFIED),
+      '#default_value' => array(
+        $default_langcode,
+      ),
     );
 
     $form['submit'] = array(
@@ -409,9 +413,9 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       $langcode = $langcodes[array_rand($langcodes)];
     }
     else {
-      $langcode = language_default()->id;
+      $langcode = \Drupal::languageManager()->getDefaultLanguage()->id;
     }
-    return $langcode == 'en' ? Language::LANGCODE_NOT_SPECIFIED : $langcode;
+    return $langcode;
   }
 
   /**
