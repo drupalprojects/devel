@@ -7,6 +7,7 @@
 
 namespace Drupal\devel\Form;
 
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Form\ConfigFormBase;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Form\FormStateInterface;
@@ -104,7 +105,7 @@ class SettingsForm extends ConfigFormBase {
       ),
       '#multiple' => TRUE,
       '#default_value' => empty($error_handlers) ? DEVEL_ERROR_HANDLER_NONE : $error_handlers,
-      '#description' => t('Select the error handler(s) to use, in case you <a href="@choose">choose to show errors on screen</a>.', array('@choose' => url('admin/config/development/logging'))) . '<ul>' .
+      '#description' => SafeMarkup::set(t('Select the error handler(s) to use, in case you <a href="@choose">choose to show errors on screen</a>.', array('@choose' => url('admin/config/development/logging'))) . '<ul>' .
           '<li>' . t('<em>None</em> is a good option when stepping through the site in your debugger.') . '</li>' .
           '<li>' . t('<em>Standard Drupal</em> does not display all the information that is often needed to resolve an issue.') . '</li>' .
           '<li>' . t('<em>Krumo backtrace</em> displays nice debug information when any type of error is noticed, but only to users with the %perm permission.', array('%perm' => t('Access developer information'))) . '</li></ul>' .
@@ -113,7 +114,7 @@ class SettingsForm extends ConfigFormBase {
           l('notice', $current_path, array('query' => array('demo' => 'notice'))) . ', ' .
           l('notice+warning', $current_path, array('query' => array('demo' => 'warning'))) . ', ' .
           l('notice+warning+error', $current_path, array('query' => array('demo' => 'error'))) . ' ' .
-          t('(The presentation of the @error is determined by PHP.)', array('@error' => 'error')),
+          t('(The presentation of the @error is determined by PHP.)', array('@error' => 'error'))),
     );
     $form['error_handlers']['#size'] = count($form['error_handlers']['#options']);
     if ($request->query->has('demo')) {
