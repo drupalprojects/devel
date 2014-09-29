@@ -142,8 +142,6 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('Created the following new vocabularies: '));
     $this->assertText(t('Generate process complete.'));
 
-    /* Bypassing this test according to #2330543-1.
-       TODO: Re-enable with #2313803!
     //Creating menus.
     $edit = array(
       'num_menus' => 5,
@@ -160,6 +158,5 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('Created the following new menus: '));
     $this->assertText(t('Created 7 new menu links'));
     $this->assertText(t('Generate process complete.'));
-    */
   }
 }
