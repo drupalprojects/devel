@@ -107,16 +107,6 @@ devel.field_info_page:
   requirements:
     _permission: 'access devel information'
 
-devel.reference:
-  path: '/devel/reference'
-  defaults:
-    _content: '\Drupal\devel\Controller\DevelController::functionReference'
-    _title: 'Function reference'
-  options:
-    _admin_route: TRUE
-  requirements:
-    _permission: 'access devel information'
-
 devel.devel_node_load:
   path: '/node/{node}/devel'
   defaults:

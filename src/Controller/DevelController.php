@@ -31,23 +31,6 @@ class DevelController extends ControllerBase {
     return $this->redirect('<front>');
   }
 
-  /**
-   * Returns a list of all currently defined user functions in the current
-   * request lifecycle, with links their documentation.
-   */
-  public function functionReference() {
-    $functions = get_defined_functions();
-    $version = static::getCoreVersion(\Drupal::VERSION);
-    $ufunctions = $functions['user'];
-    sort($ufunctions);
-    $api = $this->config('devel.settings')->get('api_url');
-    $links = array();
-    foreach ($ufunctions as $function) {
-      $links[] = l($function, "http://$api/api/$version/function/$function");
-    }
-    return theme('item_list', array('items' => $links));
-  }
-
   public function menuItem() {
     $item = menu_get_item(current_path());
     return kdevel_print_object($item);

@@ -30,8 +30,6 @@ use Drupal\Component\Utility\SafeMarkup;
  */
 function devel_help($section) {
   switch ($section) {
-    case 'devel/reference':
-      return '<p>' . t('This is a list of defined user functions that generated this current request lifecycle. Click on a function name to view its documention.') . '</p>';
     case 'devel/session':
       return '<p>' . t('Here are the contents of your <code>$_SESSION</code> variable.') . '</p>';
     case 'devel/reinstall':
@@ -317,36 +315,6 @@ function backtrace_error_handler($error_level, $message, $filename, $line, $cont
  */
 function _devel_switch_user_list_cmp($a, $b) {
   return $b['last_access'] - $a['last_access'];
-}
-
-/**
- * Provides the devel docs form.
- */
-function devel_doc_function_form() {
-  $version = DevelController::getCoreVersion(\Drupal::VERSION);
-  $form['function'] = array(
-    '#type' => 'textfield',
-    '#description' => t('Enter function name for api lookup'),
-    '#size' => 16,
-    '#maxlength' => 255,
-  );
-  $form['version'] = array('#type' => 'value', '#value' => $version);
-  $form['submit_button'] = array(
-    '#type' => 'submit',
-    '#value' => t('Submit'),
-  );
-  return $form;
-}
-
-/**
- * Submit handler for the API lookup form.
- */
-function devel_doc_function_form_submit($form, &$form_state) {
-  $values = $form_state->getValues();
-  $version = $values['version'];
-  $function = $values['function'];
-  $api = \Drupal::config('devel.settings')->get('api_url');
-  $form_state->setRedirectUrl(Url::createFromPath("http://$api/api/function/$function/$version"));
 }
 
 /**
