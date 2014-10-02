@@ -209,6 +209,7 @@ class MenuDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
     $max_width = array_shift($args);
     $values['max_depth'] =  $max_depth ? $max_depth : 3;
     $values['max_width'] =  $max_width ? $max_width : 8;
+    $values['title_length'] = $this->getSetting('title_length');
     $values['existing_menus']['__new-menu__'] = TRUE;
 
     if ($this->isNumber($values['num_menus']) == FALSE) {
@@ -287,18 +288,15 @@ class MenuDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
       // Pick a random menu.
       $menu_name = $menus[array_rand($menus)];
       // Build up our link.
+      $link_title = $this->generateWord(mt_rand(2, max(2, $title_length)));
       $link = entity_create('menu_link_content', array(
         'menu_name'   => $menu_name,
         'weight'      => mt_rand(-50, 50),
-        'title'       => $this->generateWord(mt_rand(2, max(2, $title_length))),
+        'title'       => $link_title,
         'bundle'      => 'menu_link_content',
+        'description' => t('Description of @title.', array('@title' => $link_title)),
       ));
-      $link->setOptions(array(
-        'devel' => TRUE,
-        'attributes' => array(
-          'title' => t('Description of @title.', array('@title' => $link->getTitle())),
-        ),
-      ));
+      $link->setOptions(array('devel' => TRUE));
 
       // For the first $max_width items, make first level links.
       if ($i <= $max_width) {
