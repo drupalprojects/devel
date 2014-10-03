@@ -13,6 +13,7 @@ use Drupal\Core\Language\Language;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\comment\CommentManagerInterface;
+use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\node\Entity\NodeType;
@@ -53,6 +54,11 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
   protected $commentManager;
 
   /**
+   * The url generator service.
+   */
+  protected $urlGenerator;
+
+  /**
    * {@inheritdoc}
    *
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
@@ -60,10 +66,11 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
    * @param \Drupal\comment\CommentManagerInterface $comment_manager
    *   The comment manager service.
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, CommentManagerInterface $comment_manager = NULL) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, CommentManagerInterface $comment_manager = NULL, UrlGeneratorInterface $urlGenerator) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->moduleHandler = $module_handler;
     $this->commentManager = $comment_manager;
+    $this->urlGenerator = $urlGenerator;
   }
 
   /**
@@ -73,7 +80,8 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     return new static(
       $configuration, $plugin_id, $plugin_definition,
       $container->get('module_handler'),
-      $container->has('comment.manager') ? $container->get('comment.manager') : NULL
+      $container->has('comment.manager') ? $container->get('comment.manager') : NULL,
+      $container->get('url_generator')
     );
   }
 
@@ -117,7 +125,8 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     }
 
     if (empty($options)) {
-      $this->setMessage(t('You do not have any content types that can be generated. <a href="@create-type">Go create a new content type</a> already!</a>', array('@create-type' => url('admin/structure/types/add'))), 'error', FALSE);
+      $create_url = $this->urlGenerator->generateFromRoute('node.type_add');
+      $this->setMessage(t('You do not have any content types that can be generated. <a href="@create-type">Go create a new content type</a> already!</a>', array('@create-type' => $create_url)), 'error', FALSE);
       return;
     }
 

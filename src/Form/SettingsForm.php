@@ -64,6 +64,12 @@ class SettingsForm extends ConfigFormBase {
       '#description' => t('Enter an integer in milliseconds. Any query which takes longer than this many milliseconds will be highlighted in the query log. This indicates a possibly inefficient query, or a candidate for caching.'),
     );
 
+    $form['api_url'] = array('#type' => 'textfield',
+      '#title' => t('API Site'),
+      '#default_value' => $devel_config->get('api_url'),
+      '#description' => t('The base URL for your developer documentation links. You might change this if you run <a href="!url">api.module</a> locally.', array('!url' => Url::fromUri('http://drupal.org/project/api')->toString())));
+
+
     $form['timer'] = array('#type' => 'checkbox',
       '#title' => t('Display page timer'),
       '#default_value' => $devel_config->get('timer'),

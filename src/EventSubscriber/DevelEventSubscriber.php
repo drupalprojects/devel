@@ -11,6 +11,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Page\DefaultHtmlPageRenderer;
+use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -43,12 +44,18 @@ class DevelEventSubscriber implements EventSubscriberInterface {
   protected $moduleHandler;
 
   /**
+   * @var \Drupal\Core\Routing\UrlGeneratorInterface
+   */
+  protected $urlGenerator;
+
+  /**
    * Constructs a DevelEventSubscriber object.
    */
-  public function __construct(ConfigFactoryInterface $config, AccountInterface $account, ModuleHandlerInterface $module_handler) {
+  public function __construct(ConfigFactoryInterface $config, AccountInterface $account, ModuleHandlerInterface $module_handler, UrlGeneratorInterface $urlGenerator) {
     $this->config = $config->get('devel.settings');
     $this->account = $account;
     $this->moduleHandler = $module_handler;
+    $this->urlGenerator = $urlGenerator;
   }
 
   /**
@@ -120,7 +127,7 @@ class DevelEventSubscriber implements EventSubscriberInterface {
       if (\Drupal::service('flood')->isAllowed('devel.rebuild_theme_warning', 1)) {
         \Drupal::service('flood')->register('devel.rebuild_theme_warning');
         if (!devel_silent() && $this->account->hasPermission('access devel information')) {
-          drupal_set_message(t('The theme information is being rebuilt on every request. Remember to <a href="!url">turn off</a> this feature on production websites.', array("!url" => url('admin/config/development/devel'))));
+          drupal_set_message(t('The theme information is being rebuilt on every request. Remember to <a href="!url">turn off</a> this feature on production websites.', array("!url" => $this->urlGenerator->generateFromRoute('devel.admin_settings'))));
         }
       }
     }
