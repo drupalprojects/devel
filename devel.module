@@ -19,11 +19,10 @@ define('DEVEL_MIN_TEXTAREA', 50);
 use Drupal\comment\CommentInterface;
 use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Timer;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\Template\Attribute;
 use Drupal\devel\Controller\DevelController;
 use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Url;
 
 /**
  * Implements hook_help().
@@ -751,30 +750,16 @@ function devel_query_table($queries, $counts) {
       $cell[$i][] = $diff;
     }
     $cell[$i][] = $count;
-    $cell[$i][] = l($function, "http://$api/api/drupal/$file/function/$function_name/$version", array(
+    $url = Url::fromUri("http://$api/api/drupal/$file/function/$function_name/$version");
+    $cell[$i][] = \Drupal::l($function, $url, array(
       'attributes' => array(
         'target' => '_blank'))
     );
-    $ops[] = l(t('P'), '#', array(
-      'attributes' => array(
-        'title' => t('Show placeholders'),
-        'class' => array('dev-placeholders'),
-        'qid' => $i,
-    )));
-    $ops[] = l(t('A'), '#', array(
-        'attributes' => array(
-          'title' => t('Show arguments'),
-          'class' => array('dev-arguments'),
-          'qid' => $i,
-    )));
+    $ops[] = '<a href="#" title="' . t('Show placeholders') . '" class="dev-placeholders" qid="' . $i . '">P</a>';
+    $ops[] = '<a href="#" title="' . t('Show arguments') . '" class="dev-arguments" qid="' . $i . '">A</a>';
     // EXPLAIN only valid for select queries.
     if (strpos($query['query'], 'UPDATE') === FALSE && strpos($query['query'], 'INSERT') === FALSE && strpos($query['query'], 'DELETE') === FALSE) {
-      $ops[] = l(t('E'), '#', array(
-        'attributes' => array(
-          'title' => t('Show explain'),
-          'class' => array('dev-explain'),
-          'qid' => $i,
-      )));
+      $ops[] = '<a href="#" title="' . t('Show explain') . '" class="dev-explain" qid="' . $i . '">E</a>';
     }
     $cell[$i][] = implode(' ', $ops);
     // 3 divs for each variation of the query. Last 2 are hidden by default.
