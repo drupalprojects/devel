@@ -56,7 +56,8 @@ class ConfigsList extends FormBase {
     $names = \Drupal::configFactory()->listAll($filter);
     foreach ($names as $key => $config_name) {
       $form['variables'][$key]['name'] = array('#markup' => $config_name);
-      $form['variables'][$key]['operation'] = array('#markup' => l(t('Edit'), "devel/config/edit/$config_name"));
+      $url = new Url('devel.config_edit', array('config_name' => $config_name));
+      $form['variables'][$key]['operation'] = array('#markup' => \Drupal::l(t('Edit'), $url));
     }
 
     return $form;
@@ -66,8 +67,7 @@ class ConfigsList extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $form_state['redirect'] = 'devel/config/' . String::checkPlain($form_state['values']['name']);
-    $form_state->setRedirectUrl(Url::createFromPath('devel/config/' . String::checkPlain($form_state['values']['name'])));
+    $form_state->setRedirectUrl(Url::FromRoute('devel.config_edit', array('config_name' => String::checkPlain($form_state->getvalue('name')))));
   }
 
 }
