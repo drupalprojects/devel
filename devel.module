@@ -509,8 +509,8 @@ function devel_query_put_contents($queries) {
 
   $path .= "/$request_id.txt";
   $path = file_stream_wrapper_uri_normalize($path);
-  // Save queries as a json array. Suppress errors due to recursion ()
-  file_put_contents($path, @json_encode($queries));
+  // Save queries as a json array. No longer supressing errors per https://www.drupal.org/node/2267407.
+  file_put_contents($path, json_encode($queries));
   $settings['devel'] = array(
     // A random string that is sent to the browser.
     // It enables the AJAX to retrieve queries from this request.
