@@ -206,7 +206,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     }
 
     $default_language = \Drupal::service('language.default')->get();
-    $default_langcode = $default_language->id;
+    $default_langcode = $default_language->getId();
     $form['add_language'] = array(
       '#type' => 'select',
       '#title' => t('Set language on nodes'),
