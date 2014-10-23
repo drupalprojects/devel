@@ -202,7 +202,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     // We always need a language
     $languages = \Drupal::languageManager()->getLanguages(LanguageInterface::STATE_ALL);
     foreach ($languages as $langcode => $language) {
-      $options[$langcode] = $language->name;
+      $options[$langcode] = $language->getName();
     }
 
     $default_language = \Drupal::service('language.default')->get();
@@ -422,7 +422,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       $langcode = $langcodes[array_rand($langcodes)];
     }
     else {
-      $langcode = \Drupal::languageManager()->getDefaultLanguage()->id;
+      $langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
     }
     return $langcode;
   }
