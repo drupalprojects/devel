@@ -350,9 +350,9 @@ function devel_shutdown() {
 }
 
 /**
- * Implements hook_page_alter().
+ * Implements hook_page_attachments_alter().
  */
-function devel_page_alter(&$page) {
+function devel_page_attachments_alter(&$page) {
   if (\Drupal::currentUser()->hasPermission('access devel information')) {
     if (\Drupal::config('devel.settings')->get('page_alter')) {
       dpm($page, 'page');
