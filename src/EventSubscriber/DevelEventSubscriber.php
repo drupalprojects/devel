@@ -51,11 +51,11 @@ class DevelEventSubscriber implements EventSubscriberInterface {
   /**
    * Constructs a DevelEventSubscriber object.
    */
-  public function __construct(ConfigFactoryInterface $config, AccountInterface $account, ModuleHandlerInterface $module_handler, UrlGeneratorInterface $urlGenerator) {
+  public function __construct(ConfigFactoryInterface $config, AccountInterface $account, ModuleHandlerInterface $module_handler, UrlGeneratorInterface $url_generator) {
     $this->config = $config->get('devel.settings');
     $this->account = $account;
     $this->moduleHandler = $module_handler;
-    $this->urlGenerator = $urlGenerator;
+    $this->urlGenerator = $url_generator;
   }
 
   /**
