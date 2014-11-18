@@ -209,7 +209,7 @@ class DevelSwitchUser extends BlockBase implements ContainerFactoryPluginInterfa
       foreach ($accounts as $account) {
         $path = 'devel/switch/' . $account->name->value;
         $links[$account->id()] = array(
-          'title' => String::placeholder(user_format_name($account)),
+          'title' => user_format_name($account),
           'href' => $path,
           'query' => $dest + array('token' => $this->csrfTokenGenerator->get($path)),
           'attributes' => array('title' => t('This user can switch back.')),
