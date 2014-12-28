@@ -85,7 +85,7 @@ class ConfigEditor extends FormBase {
 
     drupal_set_message(t('Configuration variable %variable was successfully saved.', array('%variable' => $values['name'])));
 
-    $form_state->setRedirectUrl(Url::createFromPath('devel/config'));
+    $form_state->setRedirect('devel.configs_list');
   }
 
 }
