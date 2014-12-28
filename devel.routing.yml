@@ -50,7 +50,7 @@ devel.config_edit:
 devel.state_system_page:
   path: '/devel/state'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::stateSystemPage'
+    _controller: '\Drupal\devel\Controller\DevelController::stateSystemPage'
     _title: 'State editor'
   options:
     _admin_route: TRUE
@@ -70,7 +70,7 @@ devel.system_state_edit:
 devel.menu_item:
   path: '/devel/menu/item'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::menuItem'
+    _controller: '\Drupal\devel\Controller\DevelController::menuItem'
     _title: 'Menu item'
   options:
     _admin_route: TRUE
@@ -80,7 +80,7 @@ devel.menu_item:
 devel.theme_registry:
   path: '/devel/theme/registry'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::themeRegistry'
+    _controller: '\Drupal\devel\Controller\DevelController::themeRegistry'
     _title: 'Theme registry'
   options:
     _admin_route: TRUE
@@ -90,7 +90,7 @@ devel.theme_registry:
 devel.entity_info_page:
   path: '/devel/entity/info'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::entityInfoPage'
+    _controller: '\Drupal\devel\Controller\DevelController::entityInfoPage'
     _title: 'Entity info'
   options:
     _admin_route: TRUE
@@ -100,7 +100,7 @@ devel.entity_info_page:
 devel.field_info_page:
   path: '/devel/field/info'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::fieldInfoPage'
+    _controller: '\Drupal\devel\Controller\DevelController::fieldInfoPage'
     _title: 'Field info'
   options:
     _admin_route: TRUE
@@ -110,7 +110,7 @@ devel.field_info_page:
 devel.devel_node_load:
   path: '/node/{node}/devel'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::nodeLoad'
+    _controller: '\Drupal\devel\Controller\DevelController::nodeLoad'
     _title: 'Devel'
   options:
     _admin_route: TRUE
@@ -120,7 +120,7 @@ devel.devel_node_load:
 devel.devel_node_render:
   path: '/node/{node}/devel/render'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::nodeRender'
+    _controller: '\Drupal\devel\Controller\DevelController::nodeRender'
     _title: 'Devel'
   options:
     _admin_route: TRUE
@@ -130,7 +130,7 @@ devel.devel_node_render:
 devel.devel_user_load:
   path: '/user/{user}/devel'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::userLoad'
+    _controller: '\Drupal\devel\Controller\DevelController::userLoad'
     _title: 'Devel'
   options:
     _admin_route: TRUE
@@ -140,7 +140,7 @@ devel.devel_user_load:
 devel.devel_user_render:
   path: '/user/{user}/devel/render'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::userRender'
+    _controller: '\Drupal\devel\Controller\DevelController::userRender'
     _title: 'Devel'
   options:
     _admin_route: TRUE
@@ -150,7 +150,7 @@ devel.devel_user_render:
 devel.devel_comment_load:
   path: '/comment/{comment}/devel'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::commentLoad'
+    _controller: '\Drupal\devel\Controller\DevelController::commentLoad'
     _title: 'Devel'
   options:
     _admin_route: TRUE
@@ -160,7 +160,7 @@ devel.devel_comment_load:
 devel.devel_comment_render:
   path: '/comment/{comment}/devel/render'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::commentRender'
+    _controller: '\Drupal\devel\Controller\DevelController::commentRender'
     _title: 'Devel'
   options:
     _admin_route: TRUE
@@ -170,7 +170,7 @@ devel.devel_comment_render:
 devel.devel_taxonomy_term_load:
   path: '/taxonomy/term/{taxonomy_term}/devel'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::taxonomyTermLoad'
+    _controller: '\Drupal\devel\Controller\DevelController::taxonomyTermLoad'
     _title: 'Devel'
   options:
     _admin_route: TRUE
@@ -180,7 +180,7 @@ devel.devel_taxonomy_term_load:
 devel.devel_taxonomy_term_render:
   path: '/taxonomy/term/{taxonomy_term}/devel/render'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::taxonomyTermRender'
+    _controller: '\Drupal\devel\Controller\DevelController::taxonomyTermRender'
     _title: 'Devel'
   options:
     _admin_route: TRUE
@@ -200,7 +200,7 @@ devel.execute_php:
 devel.session:
   path: '/devel/session'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::session'
+    _controller: '\Drupal\devel\Controller\DevelController::session'
     _title: 'Session viewer'
   options:
     _admin_route: TRUE
@@ -210,7 +210,7 @@ devel.session:
 devel.switch:
   path: '/devel/switch/{name}'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::switchUser'
+    _controller: '\Drupal\devel\Controller\DevelController::switchUser'
     _title: 'Switch user'
   options:
     _admin_route: TRUE
@@ -221,7 +221,7 @@ devel.switch:
 devel.elements_page:
   path: '/devel/elements'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::elementsPage'
+    _controller: '\Drupal\devel\Controller\DevelController::elementsPage'
     _title: 'Hook_elements()'
   options:
     _admin_route: TRUE
@@ -231,7 +231,7 @@ devel.elements_page:
 devel.cache_clear:
   path: '/devel/cache/clear'
   defaults:
-    _content: '\Drupal\devel\Controller\DevelController::cacheClear'
+    _controller: '\Drupal\devel\Controller\DevelController::cacheClear'
     _title: 'Clear cache'
   options:
     _admin_route: TRUE
