@@ -7,8 +7,8 @@
 
 namespace Drupal\devel\Tests;
 
+use Drupal\devel\Plugin\Mail\DevelMailLog;
 use Drupal\simpletest\WebTestBase;
-use Drupal\devel\DevelMailLog;
 
 /**
  * Tests sending mails with debug interface.
