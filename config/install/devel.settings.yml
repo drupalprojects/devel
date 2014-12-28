@@ -8,7 +8,8 @@ redirect_page: 0
 page_alter: FALSE
 raw_names: FALSE
 error_handlers:
-  1: 1
+  error_handler_type: 0
+  error_handler_value: 1
 krumo_skin: 'default'
 rebuild_theme: FALSE
 use_uncompressed_jquery: FALSE
