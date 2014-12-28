@@ -7,6 +7,7 @@
 
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
+use Drupal\Component\Utility\Unicode;
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\system\Entity\Menu;
 use Drupal\Core\Form\FormStateInterface;
@@ -265,7 +266,7 @@ class MenuDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
     for ($i = 1; $i <= $num_menus; $i++) {
       $menu = array();
       $menu['label'] = $this->generateWord(mt_rand(2, max(2, $title_length)));
-      $menu['id'] = 'devel-' . drupal_strtolower($menu['label']);
+      $menu['id'] = 'devel-' . Unicode::strtolower($menu['label']);
       $menu['description'] = t('Description of @name', array('@name' => $menu['label']));
       $new_menu = entity_create('menu', $menu);
       $new_menu->save();

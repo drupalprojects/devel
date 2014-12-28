@@ -7,6 +7,7 @@
 
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
+use Drupal\Component\Utility\Unicode;
 use Drupal\devel_generate\DevelGenerateBase;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Form\FormStateInterface;
@@ -83,7 +84,7 @@ class VocabularyDevelGenerate extends DevelGenerateBase {
       $name = $this->generateWord(mt_rand(2, $maxlength));
       $vocabulary = entity_create('taxonomy_vocabulary', array(
         'name' => $name,
-        'vid' => drupal_strtolower($name),
+        'vid' => Unicode::strtolower($name),
         'langcode' => Language::LANGCODE_NOT_SPECIFIED,
         'description' => "description of $name",
         'hierarchy' => 1,
