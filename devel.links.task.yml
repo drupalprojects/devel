@@ -1,7 +1,7 @@
 devel.devel_node_tab:
   route_name: devel.devel_node_load
   title: 'Devel'
-  base_route: node.view
+  base_route: entity.node.canonical
   weight: 100
 devel.devel_node_load_tab:
   route_name: devel.devel_node_load
@@ -15,7 +15,7 @@ devel.devel_node_render_tab:
 devel.devel_comment_tab:
   route_name: devel.devel_comment_load
   title: 'Devel'
-  base_route: comment.permalink
+  base_route: entity.comment.canonical
   weight: 100
 devel.devel_comment_load_tab:
   route_name: devel.devel_comment_load
@@ -29,7 +29,7 @@ devel.devel_comment_render_tab:
 devel.devel_user_tab:
   route_name: devel.devel_user_load
   title: 'Devel'
-  base_route: user.view
+  base_route: entity.user.canonical
   weight: 100
 devel.devel_user_load_tab:
   route_name: devel.devel_user_load
@@ -43,7 +43,7 @@ devel.devel_user_render_tab:
 devel.devel_taxonomy_term_tab:
   route_name: devel.devel_taxonomy_term_load
   title: 'Devel'
-  base_route: taxonomy.term_page
+  base_route: entity.taxonomy_term.canonical
   weight: 100
 devel.devel_taxonomy_term_load_tab:
   route_name: devel.devel_taxonomy_term_load
