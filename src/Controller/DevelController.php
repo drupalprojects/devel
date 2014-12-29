@@ -71,10 +71,9 @@ class DevelController extends ControllerBase {
   }
 
   public function themeRegistry() {
-    drupal_theme_initialize();
     $hooks = theme_get_registry();
     ksort($hooks);
-    return kprint_r($hooks, TRUE);
+    return array('#markup' => kprint_r($hooks, TRUE));
   }
 
   public function elementsPage() {
