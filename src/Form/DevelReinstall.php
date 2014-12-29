@@ -8,9 +8,10 @@
 namespace Drupal\devel\Form;
 
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Extension\ModuleInstallerInterface;
 use Drupal\Core\Form\FormBase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Display a dropdown of installed modules with the option to reinstall them.
@@ -25,13 +26,24 @@ class DevelReinstall extends FormBase {
   protected $moduleHandler;
 
   /**
+   * The module installer.
+   *
+   * @var \Drupal\Core\Extension\ModuleInstallerInterface
+   */
+  protected $moduleInstaller;
+
+  /**
    * Constructs a new DevelReinstall form.
    *
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
+   *
+   * @param \Drupal\Core\Extension\ModuleInstallerInterface $module_installer
+   *   The module installer.
    */
-  public function __construct(ModuleHandlerInterface $module_handler) {
+  public function __construct(ModuleHandlerInterface $module_handler, ModuleInstallerInterface $module_installer) {
     $this->moduleHandler = $module_handler;
+    $this->moduleInstaller = $module_installer;
   }
 
   /**
@@ -39,7 +51,8 @@ class DevelReinstall extends FormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('module_handler')
+      $container->get('module_handler'),
+      $container->get('module_installer')
     );
   }
 
@@ -65,6 +78,7 @@ class DevelReinstall extends FormBase {
       '#value' => t('Reinstall'),
       '#type' => 'submit',
     );
+
     return $form;
   }
 
@@ -73,8 +87,8 @@ class DevelReinstall extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $modules = array_filter($form_state->getValues()['list']);
-    $this->moduleHandler->uninstall($modules, FALSE);
-    $this->moduleHandler->install($modules, FALSE);
+    $this->moduleInstaller->uninstall($modules, FALSE);
+    $this->moduleInstaller->install($modules, FALSE);
     drupal_set_message(t('Uninstalled and installed: %names.', array('%names' => implode(', ', $modules))));
   }
 
