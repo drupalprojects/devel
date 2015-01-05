@@ -45,7 +45,6 @@ devel.execute_php:
 devel.session:
   title: 'View Session'
   route_name: devel.session
-  parent: 'system.admin_config_development'
   menu_name: devel
 devel.elements_page:
   title: 'Hook_elements'

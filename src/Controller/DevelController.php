@@ -158,13 +158,25 @@ class DevelController extends ControllerBase {
   }
 
   /**
-   * Menu callback: display the session.
+   * Builds the session overview page.
+   *
+   * @return array
+   *   Array of page elements to render.
    */
   public function session() {
-    $output = kprint_r($_SESSION, TRUE);
-    $headers = array(t('Session name'), t('Session ID'));
-    // @todo don't call theme() directly.
-    $output .= theme('table', array('headers' => $headers, 'rows' => array(array(session_name(), session_id()))));
+    $output['description'] = array(
+      '#markup' => '<p>' . $this->t('Here are the contents of your $_SESSION variable.') . '</p>',
+    );
+    $output['session'] = array(
+      '#type' => 'table',
+      '#header' => array($this->t('Session name'), $this->t('Session ID')),
+      '#rows' => array(array(session_name(), session_id())),
+      '#empty' => $this->t('No session available.'),
+    );
+    $output['data'] = array(
+      '#markup' => kprint_r($_SESSION, TRUE),
+    );
+
     return $output;
   }
 
