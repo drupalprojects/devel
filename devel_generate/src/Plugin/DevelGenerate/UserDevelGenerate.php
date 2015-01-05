@@ -113,7 +113,7 @@ class UserDevelGenerate extends DevelGenerateBase {
           'mail'    => $name . '@example.com',
           'status'  => 1,
           'created' => REQUEST_TIME - mt_rand(0, $age),
-          'roles' => array_combine($roles, $roles),
+          'roles' => array_values($roles),
           'devel_generate' => TRUE // A flag to let hook_user_* know that this is a generated user.
         );
         $account = entity_create('user', $edit);
