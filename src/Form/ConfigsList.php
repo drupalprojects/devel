@@ -29,9 +29,10 @@ class ConfigsList extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, $filter = '') {
     $form['filter'] = array(
-    '#type' => 'details',
-    '#title' => t('Filter variables'),
-    '#attributes' => array('class' => array('container-inline')),
+      '#type' => 'details',
+      '#title' => t('Filter variables'),
+      '#attributes' => array('class' => array('container-inline')),
+      '#open' => isset($filter) && trim($filter) != '',
     );
     $form['filter']['name'] = array(
       '#type' => 'textfield',
@@ -67,7 +68,8 @@ class ConfigsList extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $form_state->setRedirectUrl(Url::FromRoute('devel.config_edit', array('config_name' => String::checkPlain($form_state->getvalue('name')))));
+    $filter = $form_state->getValue('name');
+    $form_state->setRedirectUrl(Url::FromRoute('devel.configs_list', array('filter' => String::checkPlain($filter))));
   }
 
 }
