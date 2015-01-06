@@ -32,7 +32,7 @@ class TermDevelGenerate extends DevelGenerateBase {
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $options = array();
     foreach (entity_load_multiple('taxonomy_vocabulary') as $vid => $vocab) {
-      $options[$vid] = $vocab->vid;
+      $options[$vid] = $vocab->id();
     }
     $form['vids'] = array(
       '#type' => 'select',
@@ -101,12 +101,12 @@ class TermDevelGenerate extends DevelGenerateBase {
    *
    * @param $records
    *   int number of terms to create in total.
-   * @param $vocabs
+   * @param \Drupal\taxonomy\TermInterface[] $vocabs
    *   array list of vocabs to populate.
-   * @param $maxlength
+   * @param int $maxlength
    *   int maximum length per term.
-   * @return
-   *   array the list of names of the created terms.
+   * @return array the list of names of the created terms.
+   * array the list of names of the created terms.
    */
   function generateTerms($records, $vocabs, $maxlength = 12) {
     $terms = array();
@@ -120,8 +120,7 @@ class TermDevelGenerate extends DevelGenerateBase {
         case 1:
           // Set vid and vocabulary_machine_name properties.
           $vocab = $vocabs[array_rand($vocabs)];
-          $values['vid'] = $vocab->vid;
-          $values['vocabulary_machine_name'] = $vocab->vid;
+          $values['vid'] = $values['vocabulary_machine_name'] = $vocab->id();
           $values['parent'] = array(0);
           break;
         default:
@@ -181,7 +180,6 @@ class TermDevelGenerate extends DevelGenerateBase {
   }
 
   public function validateDrushParams($args) {
-
     $vname = array_shift($args);
     $values = array(
       'num' => array_shift($args),
@@ -196,7 +194,7 @@ class TermDevelGenerate extends DevelGenerateBase {
       return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid number of terms: !num', array('!num' => $values['num'])));
     }
 
-    $values['vids'] = array($vocab->vid);
+    $values['vids'] = array($vocab->id());
 
     return $values;
  }

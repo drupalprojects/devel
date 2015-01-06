@@ -125,7 +125,7 @@ class DevelGenerateTest extends WebTestBase {
 
     //Creating terms.
     $edit = array(
-      'vids[]' => $this->vocabulary->vid,
+      'vids[]' => $this->vocabulary->id(),
       'num' => 5,
       'title_length' => 12,
     );
