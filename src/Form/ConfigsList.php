@@ -36,30 +36,45 @@ class ConfigsList extends FormBase {
     );
     $form['filter']['name'] = array(
       '#type' => 'textfield',
-      '#title' => t('Variable name'),
+      '#title' => $this->t('Variable name'),
       '#title_display' => 'invisible',
       '#default_value' => $filter,
     );
     $form['filter']['show'] = array(
       '#type' => 'submit',
-      '#value' => t('Filter'),
+      '#value' => $this->t('Filter'),
     );
+
     $header = array(
-      'name' => array('data' => t('Name')),
-      'edit' => array('data' => t('Operations')),
+      'name' => array('data' => $this->t('Name')),
+      'edit' => array('data' => $this->t('Operations')),
     );
+
+    $rows = array();
+
+    $destination = drupal_get_destination();
+
+    // List all the variables filtered if any filter was provided.
+    $names = $this->configFactory()->listAll($filter);
+
+    foreach ($names as $config_name) {
+      $operations['edit'] = array(
+        'title' => $this->t('Edit'),
+        'url' => Url::fromRoute('devel.config_edit', array('config_name' => $config_name)),
+        'query' => $destination
+      );
+      $rows[] = array(
+        'name' => $config_name,
+        'operation' => array('data' => array('#type' => 'operations', '#links' => $operations)),
+      );
+    }
+
     $form['variables'] = array(
       '#type' => 'table',
       '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => $this->t('No variables found')
     );
-
-    // List all the variables filtered if any filter was provided.
-    $names = \Drupal::configFactory()->listAll($filter);
-    foreach ($names as $key => $config_name) {
-      $form['variables'][$key]['name'] = array('#markup' => $config_name);
-      $url = new Url('devel.config_edit', array('config_name' => $config_name));
-      $form['variables'][$key]['operation'] = array('#markup' => \Drupal::l(t('Edit'), $url));
-    }
 
     return $form;
   }
