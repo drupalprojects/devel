@@ -95,15 +95,15 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     $comment_fields = ($this->commentManager) ? $this->commentManager->getFields('node') : array();
     $map = array(t('Hidden'), t('Closed'), t('Open'));
     foreach ($types as $type) {
-      $options[$type->type] = array(
-        'type' => array('#markup' => t($type->name)),
+      $options[$type->id()] = array(
+        'type' => array('#markup' => t($type->label())),
       );
       if ($this->commentManager) {
         $fields = array();
         foreach ($comment_fields as $field_name => $info) {
           // Find all comment fields for the bundle.
-          if (in_array($type->type, $info['bundles'])) {
-            $instance = FieldConfig::loadByName('node', $type->type, $field_name);
+          if (in_array($type->id(), $info['bundles'])) {
+            $instance = FieldConfig::loadByName('node', $type->id(), $field_name);
             $default_mode = reset($instance->default_value);
             $fields[] = String::format('@field: !state', array(
               '@field' => $instance->label(),
@@ -113,13 +113,13 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
         }
         // @todo Refactor display of comment fields.
         if (!empty($fields)) {
-          $options[$type->type]['comments'] = array('data' => array(
+          $options[$type->id()]['comments'] = array('data' => array(
             '#theme' => 'item_list',
             '#items' => $fields,
           ));
         }
         else {
-          $options[$type->type]['comments'] = t('No comment fields');
+          $options[$type->id()]['comments'] = t('No comment fields');
         }
       }
     }
