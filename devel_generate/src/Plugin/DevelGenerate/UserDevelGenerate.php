@@ -123,7 +123,7 @@ class UserDevelGenerate extends DevelGenerateBase {
         $account->save();
       }
     }
-    $this->setMessage(t('!num_users created.', array('!num_users' => format_plural($num, '1 user', '@count users'))));
+    $this->setMessage(t('!num_users created.', array('!num_users' => \Drupal::translation()->formatPlural($num, '1 user', '@count users'))));
   }
 
   public function validateDrushParams($args) {

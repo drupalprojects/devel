@@ -23,6 +23,7 @@ use Drupal\Core\Template\Attribute;
 use Drupal\devel\Controller\DevelController;
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Url;
+use Drupal\Component\Utility\Unicode;
 
 /**
  * Implements hook_help().
@@ -673,13 +674,13 @@ function _devel_print_object($obj, $prefix = NULL, $parents = NULL, $object = FA
               $summary = htmlspecialchars($value);
             }
             else {
-              $summary = format_plural(drupal_strlen($value), '1 character', '@count characters');
+              $summary = \Drupal::translation()->formatPlural(Unicode::strlen($value), '1 character', '@count characters');
             }
             break;
 
           case 'array':
           case 'object':
-            $summary = format_plural(count((array) $value), '1 element', '@count elements');
+            $summary = \Drupal::translation()->formatPlural(count((array) $value), '1 element', '@count elements');
             break;
 
           case 'boolean':
