@@ -28,6 +28,15 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
+  protected function getEditableConfigNames() {
+    return [
+      'devel.settings',
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
     $current_path = $request->attributes->get('_system_path');
     $current_url = Url::createFromRequest($request);
@@ -175,7 +184,6 @@ class SettingsForm extends ConfigFormBase {
       ->set('use_uncompressed_jquery', $values['use_uncompressed_jquery'])
       ->save();
   }
-
 
   /**
    * @param string $severity
