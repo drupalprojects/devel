@@ -93,7 +93,7 @@ class DevelGenerateForm extends FormBase {
       $instance->generate($form_state->getValues());
     }
     catch (DevelGenerateException $e) {
-      watchdog('DevelGenerate', 'Failed to generate elements due to "%error".', array('%error' => $e->getMessage()), WATCHDOG_WARNING);
+      $this->logger('DevelGenerate', $this->t('Failed to generate elements due to "%error".', array('%error' => $e->getMessage())));
       drupal_set_message($this->t('Failed to generate elements due to "%error".', array('%error' => $e->getMessage())));
     }
   }
