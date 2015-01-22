@@ -58,7 +58,7 @@ devel.state_system_page:
     _permission: 'access devel information'
 
 devel.system_state_edit:
-  path: '/devel/state/edit/{key}'
+  path: '/devel/state/edit/{state_name}'
   defaults:
     _form: '\Drupal\devel\Form\SystemStateEdit'
     _title: 'Edit state variable: !state_name'

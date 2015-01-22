@@ -11,6 +11,7 @@ use Drupal\comment\CommentInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Field;
 use Drupal\Core\Session\UserSession;
+use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\TermInterface;
 use Drupal\user\UserInterface;
@@ -127,34 +128,47 @@ class DevelController extends ControllerBase {
   }
 
   /**
-   * Page callback that lists all the state variables.
+   * Builds the state variable overview page.
+   *
+   * @return array
+   *   Array of page elements to render.
    */
   public function stateSystemPage() {
-    $page['states'] = array(
-      '#type' => 'table',
-      '#header' => array(
-      'name' => array('data' => t('Name'), 'field' => 'name', 'sort' => 'asc'),
-      'value' => array('data' => t('Value'), 'field' => 'value'),
+
+    $header = array(
+      'name' => array('data' => t('Name')),
+      'value' => array('data' => t('Value')),
       'edit' => array('data' => t('Operations')),
-      ),
-      '#empty' => t('No state variables.'),
     );
 
-    // Get all states from the KeyValueStorage and put them in the table.
-    foreach ($this->state()->getAll() as $state_name => $state) {
-      $page['states'][$state_name] = array(
-        'name' => array('#markup' => $state_name),
-        // Output value in krumo if necessary with kprint_r.
-        'value' => array('#markup' => kprint_r($state, TRUE)),
+    $rows = array();
+    // State class doesn't have getAll method so we get all states from the
+    // KeyValueStorage and put them in the table.
+    foreach ($this->keyValue('state')->getAll() as $state_name => $state) {
+      $operations['edit'] = array(
+        'title' => $this->t('Edit'),
+        'url' => Url::fromRoute('devel.system_state_edit', array('state_name' => $state_name)),
+      );
+      $rows[$state_name] = array(
+        'name' => $state_name,
+        'value' => kprint_r($state, TRUE),
         'edit' => array(
-        '#type' => 'link',
-        '#title' => t('Edit'),
-        '#href' => 'devel/state/edit/' . $state_name,
+          'data' => array(
+            '#type' => 'operations',
+            '#links' => $operations,
+          )
         ),
       );
     }
 
-    return $page;
+    $output['states'] = array(
+      '#type' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => $this->t('No state variables.'),
+    );
+
+    return $output;
   }
 
   /**

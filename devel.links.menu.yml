@@ -21,7 +21,6 @@ devel.state_system_page:
   title: 'State editor'
   description: 'Edit state system values.'
   route_name: devel.state_system_page
-  parent: 'system.admin_config_development'
   menu_name: devel
 devel.theme_registry:
   title: 'Theme registry'

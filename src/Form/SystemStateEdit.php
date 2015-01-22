@@ -7,11 +7,11 @@
 
 namespace Drupal\devel\Form;
 
+use Drupal\Component\Serialization\Exception\InvalidDataTypeException;
+use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Form\FormBase;
-use Drupal\Core\Url;
-use Symfony\Component\Yaml\Dumper;
-use Symfony\Component\Yaml\Parser;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 
 /**
  * Form API form to edit a state.
@@ -28,53 +28,73 @@ class SystemStateEdit extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $key = '') {
+  public function buildForm(array $form, FormStateInterface $form_state, $state_name = '') {
     // Get the old value
-    $old_value = \Drupal::state()->get($key);
-    // First we will show the user the content of the variable about to be edited
-    $form['old_value'] = array(
-      '#type' => 'item',
-      '#title' => t('Old value for %name', array('%name' => $key)),
-      '#markup' => kprint_r($old_value, TRUE),
-    );
-    // Store in the form the name of the state variable
-    $form['state_name'] = array(
-      '#type' => 'hidden',
-      '#value' => $key,
-    );
+    $old_value = \Drupal::state()->get($state_name);
+
+    if (!isset($old_value)) {
+      drupal_set_message(t('State !name does not exist in the system.', array('!name' => $state_name)), 'warning');
+      return;
+    }
 
     // Only simple structures are allowed to be edited.
     $disabled = !$this->checkObject($old_value);
+
+    if ($disabled) {
+      drupal_set_message(t('Only simple structures are allowed to be edited. State !name contains objects.', array('!name' => $state_name)), 'warning');
+    }
+
+    // First we will show the user the content of the variable about to be edited.
+    $form['value'] = array(
+      '#type' => 'item',
+      '#title' => $this->t('Current value for %name', array('%name' => $state_name)),
+      '#markup' => kprint_r($old_value, TRUE),
+    );
+
+    $transport = 'plain';
+
+    if (!$disabled && is_array($old_value)) {
+      try {
+        $old_value = Yaml::encode($old_value);
+        $transport = 'yaml';
+      }
+      catch (InvalidDataTypeException $e) {
+        drupal_set_message(t('Invalid data detected for !name : %error', array('!name' => $state_name, '%error' => $e->getMessage())), 'error');
+        return;
+      }
+    }
+
+    // Store in the form the name of the state variable
+    $form['state_name'] = array(
+      '#type' => 'value',
+      '#value' => $state_name,
+    );
     // Set the transport format for the new value. Values:
     //  - plain
     //  - yaml
     $form['transport'] = array(
-      '#type' => 'hidden',
-      '#value' => 'plain',
+      '#type' => 'value',
+      '#value' => $transport,
     );
-    if (is_array($old_value)) {
-      $dumper = new Dumper();
-      // Set Yaml\Dumper's default indentation for nested nodes/collections to
-      // 2 spaces for consistency with Drupal coding standards.
-      $dumper->setIndentation(2);
-      // The level where you switch to inline YAML is set to PHP_INT_MAX to
-      // ensure this does not occur.
-      $old_value = $dumper->dump($old_value, PHP_INT_MAX);
-      $form['transport']['#value'] = 'yaml';
-    }
+
     $form['new_value'] = array(
       '#type' => 'textarea',
-      '#title' => t('New value'),
+      '#title' => $this->t('New value'),
       '#default_value' => $disabled ? '' : $old_value,
       '#disabled' => $disabled,
+      '#rows' => 15,
     );
 
     $form['actions'] = array('#type' => 'actions');
-    $form['actions']['submit'] = array('#type' => 'submit', '#value' => t('Save'));
+    $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => $this->t('Save'),
+      '#disabled' => $disabled,
+    );
     $form['actions']['cancel'] = array(
       '#type' => 'link',
-      '#title' => t('Cancel'),
-      '#href' => 'devel/state',
+      '#title' => $this->t('Cancel'),
+      '#url' => Url::fromRoute('devel.state_system_page')
     );
 
     return $form;
@@ -83,23 +103,37 @@ class SystemStateEdit extends FormBase {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+
+    if ($values['transport'] == 'yaml') {
+      // try to parse the new provided value
+      try {
+        $parsed_value = Yaml::decode($values['new_value']);
+        $form_state->setValue('parsed_value', $parsed_value);
+      }
+      catch (InvalidDataTypeException $e) {
+        $form_state->setErrorByName('new_value', $this->t('Invalid input: %error', array('%error' => $e->getMessage())));
+      }
+    }
+    else {
+      $form_state->setValue('parsed_value', $values['new_value']);
+    }
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Save the state
     $values = $form_state->getValues();
-    $name = $values['state_name'];
-    switch ($values['transport']) {
-      case 'yaml':
-        $parser = new Parser();
-        $new_value = $parser->parse($values['new_value']);
-        break;
+    \Drupal::state()->set($values['state_name'], $values['parsed_value']);
 
-      default:
-        $new_value = $values['new_value'];
-        break;
-    }
-    \Drupal::state()->set($name, $new_value);
-    $form_state->setRedirectUrl(Url::createFromPath('devel/state'));
-    drupal_set_message(t('Variable %var was successfully edited.', array('%var' => $name)));
+    $form_state->setRedirectUrl(Url::fromRoute('devel.state_system_page'));
+
+    drupal_set_message($this->t('Variable %variable was successfully edited.', array('%variable' => $values['state_name'])));
+    $this->logger('devel')->info('Variable %variable was successfully edited.', array('%variable' => $values['state_name']));
   }
 
   /**
@@ -124,6 +158,7 @@ class SystemStateEdit extends FormBase {
         }
       }
     }
+
     // All checks pass
     return TRUE;
   }
