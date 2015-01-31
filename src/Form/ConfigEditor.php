@@ -116,7 +116,7 @@ class ConfigEditor extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     try {
-      $this->config($values['name'])->setData($values['parsed_value'])->save();
+      $this->configFactory()->getEditable($values['name'])->setData($values['parsed_value'])->save();
       drupal_set_message($this->t('Configuration variable %variable was successfully saved.', array('%variable' => $values['name'])));
       $this->logger('devel')->info('Configuration variable %variable was successfully saved.', array('%variable' => $values['name']));
 
