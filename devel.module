@@ -17,6 +17,7 @@ define('DEVEL_ERROR_HANDLER_BACKTRACE_DPM', 4);
 define('DEVEL_MIN_TEXTAREA', 50);
 
 use Drupal\comment\CommentInterface;
+use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Timer;
@@ -416,7 +417,13 @@ function devel_shutdown_real() {
     }
 
     if (\Drupal::currentUser()->hasPermission('access devel information')) {
-      $queries = (devel_query_enabled() ? Drupal\Core\Database\Database::getLog('devel', 'default') : NULL);
+      $queries = (devel_query_enabled() ? \Drupal\Core\Database\Database::getLog('devel', 'default') : NULL);
+      if (!empty($queries)) {
+        // Remove caller args to avoid recursion.
+        foreach ($queries as &$query) {
+          unset($query['caller']['args']);
+        }
+      }
       $output .= devel_shutdown_summary($queries);
       $output .= devel_shutdown_query($queries);
     }
@@ -516,7 +523,7 @@ function devel_query_put_contents($queries) {
   $path .= "/$request_id.txt";
   $path = file_stream_wrapper_uri_normalize($path);
   // Save queries as a json array. No longer supressing errors per https://www.drupal.org/node/2267407.
-  file_put_contents($path, json_encode($queries));
+  file_put_contents($path, Json::encode($queries));
   $settings['devel'] = array(
     // A random string that is sent to the browser.
     // It enables the AJAX to retrieve queries from this request.

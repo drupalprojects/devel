@@ -8,7 +8,9 @@
 namespace Drupal\devel\Controller;
 
 use Drupal\comment\CommentInterface;
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Database\Database;
 use Drupal\Core\Field;
 use Drupal\Core\Session\UserSession;
 use Drupal\Core\Url;
@@ -265,26 +267,37 @@ class DevelController extends ControllerBase {
 
     $path = "temporary://devel_querylog/$request_id.txt";
     $path = file_stream_wrapper_uri_normalize($path);
-    $queries = json_decode(file_get_contents($path));
-    $query = $queries[$qid];
-    $result = db_query('EXPLAIN ' . $query->query, (array)$query->args)->fetchAllAssoc('table');
-    $i = 1;
-    foreach ($result as $row) {
-      $row = (array)$row;
-      if ($i == 1) {
-        $header = array_keys($row);
+
+    $header = $rows = array();
+
+    if (file_exists($path)) {
+      $queries = Json::decode(file_get_contents($path));
+
+      if ($queries !== FALSE && isset($queries[$qid])) {
+        $query = $queries[$qid];
+        $result = db_query('EXPLAIN ' . $query['query'], (array)$query['args'])->fetchAllAssoc('table');
+
+        $i = 1;
+        foreach ($result as $row) {
+          $row = (array)$row;
+          if ($i == 1) {
+            $header = array_keys($row);
+          }
+          $rows[] = array_values($row);
+          $i++;
+        }
       }
-      $rows[] = array_values($row);
-      $i++;
     }
-    // @todo don't call theme() directly.
+
     $build['explain'] = array(
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
+      '#empty' => $this->t('No explain log found.'),
     );
 
     $GLOBALS['devel_shutdown'] = FALSE;
+
     return new Response(drupal_render($build));
   }
 
@@ -298,16 +311,26 @@ class DevelController extends ControllerBase {
 
     $path = "temporary://devel_querylog/$request_id.txt";
     $path = file_stream_wrapper_uri_normalize($path);
-    $queries = json_decode(file_get_contents($path));
-    $query = $queries[$qid];
-    $conn = \Drupal\Core\Database\Database::getConnection();
-    $quoted = array();
-    foreach ((array)$query->args as $key => $val) {
-      $quoted[$key] = is_null($val) ? 'NULL' : $conn->quote($val);
+
+    $output = $this->t('No arguments log found.');
+
+    if (file_exists($path)) {
+      $queries = Json::decode(file_get_contents($path));
+
+      if ($queries !== FALSE && isset($queries[$qid])) {
+        $query = $queries[$qid];
+        $conn = Database::getConnection();
+
+        $quoted = array();
+        foreach ((array)$query['args'] as $key => $val) {
+          $quoted[$key] = is_null($val) ? 'NULL' : $conn->quote($val);
+        }
+        $output = strtr($query['query'], $quoted);
+      }
     }
-    $output = strtr($query->query, $quoted);
 
     $GLOBALS['devel_shutdown'] = FALSE;
+
     return new Response($output);
   }
 
