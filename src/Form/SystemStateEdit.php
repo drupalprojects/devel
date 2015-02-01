@@ -11,12 +11,40 @@ use Drupal\Component\Serialization\Exception\InvalidDataTypeException;
 use Drupal\Component\Serialization\Yaml;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Form API form to edit a state.
  */
 class SystemStateEdit extends FormBase {
+
+  /**
+   * The state store.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
+   * Constructs a new SystemStateEdit object.
+   *
+   * @param \Drupal\Core\State\StateInterface $state
+   *   The state service.
+   */
+  public function __construct(StateInterface $state) {
+    $this->state = $state;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('state')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -30,7 +58,7 @@ class SystemStateEdit extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, $state_name = '') {
     // Get the old value
-    $old_value = \Drupal::state()->get($state_name);
+    $old_value = $this->state->get($state_name);
 
     if (!isset($old_value)) {
       drupal_set_message(t('State !name does not exist in the system.', array('!name' => $state_name)), 'warning');
@@ -128,7 +156,7 @@ class SystemStateEdit extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Save the state
     $values = $form_state->getValues();
-    \Drupal::state()->set($values['state_name'], $values['parsed_value']);
+    $this->state->set($values['state_name'], $values['parsed_value']);
 
     $form_state->setRedirectUrl(Url::fromRoute('devel.state_system_page'));
 
