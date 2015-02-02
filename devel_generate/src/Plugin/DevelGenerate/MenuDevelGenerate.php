@@ -8,13 +8,13 @@
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
 use Drupal\Component\Utility\Unicode;
-use Drupal\devel_generate\DevelGenerateBase;
-use Drupal\system\Entity\Menu;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\devel_generate\DevelGenerateBase;
+use Drupal\system\Entity\Menu;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -82,6 +82,9 @@ class MenuDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
     );
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $menu_enabled = \Drupal::moduleHandler()->moduleExists('menu_ui');
     if ($menu_enabled) {
@@ -195,6 +198,9 @@ class MenuDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
     $this->setMessage(t('Created @count new menu links.', array('@count' => count($new_links))));
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function validateDrushParams($args) {
 
     $link_types = array('node', 'front', 'external');
@@ -245,7 +251,7 @@ class MenuDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
       ->fields('m', array('id'))
       ->condition('m.menu_name', 'devel', '<>')
       // Look for the serialized version of 'devel' => TRUE.
-      ->condition('m.options', '%' . db_like('s:5:"devel";b:1') . '%', 'LIKE')
+      ->condition('m.link__options', '%' . db_like('s:5:"devel";b:1') . '%', 'LIKE')
       ->execute()
       ->fetchCol();
     if ($result) {
@@ -297,7 +303,7 @@ class MenuDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
         'bundle'      => 'menu_link_content',
         'description' => t('Description of @title.', array('@title' => $link_title)),
       ));
-      $link->setOptions(array('devel' => TRUE));
+      $link->link->options = array('devel' => TRUE);
 
       // For the first $max_width items, make first level links.
       if ($i <= $max_width) {
@@ -336,16 +342,15 @@ class MenuDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
           $node = $select->execute()->fetchAssoc();
           if (isset($node['nid'])) {
             $nids[$menu_name][] = $node['nid'];
-            $link->route_name = 'entity.node.canonical';
-            $link->setRouteParameters(array('node' => $node['nid']));
+            $link->link->uri = 'entity:node/' . $node['nid'];
             $link->title = $node['title'];
             break;
           }
         case 'external':
-          $link->url = 'http://www.example.com/';
+          $link->link->uri = 'http://www.example.com/';
           break;
         case 'front':
-          $link->route_name = '<front>';
+          $link->link->uri = 'user-path:<front>';
           break;
         default:
           $link->devel_link_type = $link_type;
