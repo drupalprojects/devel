@@ -47,7 +47,6 @@ class DevelReinstallTest extends WebTestBase {
     // Minimal profile enables only dblog, block and node.
     $modules = array('dblog', 'block');
 
-    // Sort modules as DevelReinstall->buildForm do.
     // Needed for compare correctly the message.
     sort($modules);
 
@@ -56,7 +55,7 @@ class DevelReinstallTest extends WebTestBase {
     // Prepare field data in an associative array
     $edit = array();
     foreach ($modules as $module) {
-      $edit["list[$module]"] = TRUE;
+      $edit["reinstall[$module]"] = TRUE;
     }
 
     $this->drupalPostForm('devel/reinstall', $edit, t('Reinstall'));
