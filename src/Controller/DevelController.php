@@ -11,15 +11,16 @@ use Drupal\comment\CommentInterface;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field;
 use Drupal\Core\Session\UserSession;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\TermInterface;
 use Drupal\user\UserInterface;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
  * Returns responses for devel module routes.
@@ -40,37 +41,108 @@ class DevelController extends ControllerBase {
     return kdevel_print_object($item);
   }
 
+  /**
+   * Prints the loaded structure of the current node.
+   *
+   * @param NodeInterface $node
+   *    The current node.
+   *
+   * @return array
+   *    Array of page elements to render.
+   */
   public function nodeLoad(NodeInterface $node) {
-    return $this->loadObject('node', $node);
+    return $this->entityObject($node);
   }
 
+  /**
+   * Prints the render structure of the current node.
+   *
+   * @param NodeInterface $node
+   *    The current node.
+   *
+   * @return array
+   *    Array of page elements to render.
+   */
   public function nodeRender(NodeInterface $node) {
-    return $this->renderObject('node', $node);
+    return $this->renderEntity($node);
   }
 
+  /**
+   * Prints the loaded structure of the current user.
+   *
+   * @param UserInterface $user
+   *    The current user.
+   *
+   * @return array
+   *    Array of page elements to render.
+   */
   public function userLoad(UserInterface $user) {
-    return $this->loadObject('user', $user);
+    return $this->entityObject($user);
   }
 
+  /**
+   * Prints the render structure of the current user.
+   *
+   * @param UserInterface $user
+   *    The current user.
+   *
+   * @return array
+   *    Array of page elements to render.
+   */
   public function userRender(UserInterface $user) {
-    return $this->renderObject('user', $user);
+    return $this->renderEntity($user);
   }
 
+  /**
+   * Prints the loaded structure of the current comment.
+   *
+   * @param CommentInterface $comment
+   *    The current comment.
+   *
+   * @return array
+   *    Array of page elements to render.
+   */
   public function commentLoad(CommentInterface $comment) {
-    return $this->loadObject('comment', $comment);
+    return $this->entityObject($comment);
   }
 
+  /**
+   * Prints the render structure of the current comment.
+   *
+   * @param CommentInterface $comment
+   *    The current comment.
+   *
+   * @return array
+   *    Array of page elements to render.
+   */
   public function commentRender(CommentInterface $comment) {
-    return $this->renderObject('comment', $comment);
+    return $this->renderEntity($comment);
   }
 
+  /**
+   * Prints the loaded structure of the current taxonomy term.
+   *
+   * @param TermInterface $taxonomy_term
+   *    The current taxonomy term.
+   *
+   * @return array
+   *    Array of page elements to render.
+   */
   public function taxonomyTermLoad(TermInterface $taxonomy_term) {
-    return $this->loadObject('term', $taxonomy_term);
+    return $this->entityObject($taxonomy_term);
   }
 
+  /**
+   * Prints the render structure of the current taxonomy term.
+   *
+   * @param TermInterface $taxonomy_term
+   *    The current taxonomy term.
+   *
+   * @return array
+   *    Array of page elements to render.
+   */
   public function taxonomyTermRender(TermInterface $taxonomy_term) {
-
-    return $this->renderObject('term', $taxonomy_term);
+    return $this->renderEntity($taxonomy_term);
   }
 
   public function themeRegistry() {
@@ -196,16 +268,55 @@ class DevelController extends ControllerBase {
     return $output;
   }
 
-  protected function loadObject($type, $object, $name = NULL) {
-    $name = isset($name) ? $name : $type;
-    return kdevel_print_object($object, '$' . $name . '->');
+  /**
+   * Return the printed structure of the provided entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   An entity object.
+   * @param string $name
+   *   (optional) The label for the entity. Used only if kint is not enabled.
+   *   If not provided $entity->label() is used. Defaults to NULL.
+   *
+   * @return array
+   *   Render array containing the printed object.
+   */
+  protected function entityObject(EntityInterface $entity, $name = NULL) {
+    $name = isset($name) ? $name : $entity->label();
+    $print = kdevel_print_object($entity, '$' . $name . '->');
+    return array('#markup' => $print);
   }
 
-  protected function renderObject($type, $object, $name = NULL) {
-    $name = isset($name) ? $name : $type;
-    $function = $type . '_view';
-    $build = $function($object);
-    return kdevel_print_object($build, '$' . $name . '->');
+  /**
+   * Return the printed render structure of the provided entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   An entity object.
+   * @param string $name
+   *   (optional) The label for the entity. Used only if kint is not enabled.
+   *   If not provided $entity->label() is used. Defaults to NULL.
+   *
+   * @return array
+   *    Render array containing the printed object.
+   */
+  protected function renderEntity(EntityInterface $entity, $name = NULL) {
+    $name = isset($name) ? $name : $entity->label();
+
+    $entity_type_id = $entity->getEntityTypeId();
+    $view_hook = $entity_type_id . '_view';
+
+    $build = array();
+    // If module implements own {entity_type}_view
+    if (function_exists($view_hook)) {
+      $build = $view_hook($entity);
+    }
+    // If entity has view_builder handler
+    elseif ($this->entityManager()->hasHandler($entity_type_id, 'view_builder')) {
+      $build = $this->entityManager()->getViewBuilder($entity_type_id)->view($entity);
+    }
+
+    $print = kdevel_print_object($build, '$' . $name . '->');
+
+    return array('#markup' => $print);
   }
 
   /**
