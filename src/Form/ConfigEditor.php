@@ -139,8 +139,7 @@ class ConfigEditor extends FormBase {
 
     if ($query->has('destination')) {
       $options = UrlHelper::parse($query->get('destination'));
-      // @todo Use Url::fromPath() once https://www.drupal.org/node/2351379 is resolved.
-      $url = Url::fromUri('base://' . $options['path'], $options);
+      $url = Url::fromUri('user-path:/' . $options['path'], $options);
     }
     else {
       $url = Url::fromRoute('devel.configs_list');
