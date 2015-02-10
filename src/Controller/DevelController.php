@@ -151,8 +151,23 @@ class DevelController extends ControllerBase {
     return array('#markup' => kprint_r($hooks, TRUE));
   }
 
+  /**
+   * Builds the elements info overview page.
+   *
+   * @return array
+   *   Array of page elements to render.
+   */
   public function elementsPage() {
-    return kdevel_print_object($this->moduleHandler()->invokeAll('element_info'));
+    $element_info_manager = \Drupal::service('element_info');
+
+    $elements_info = array();
+    foreach ($element_info_manager->getDefinitions() as $element_type => $definition) {
+      $elements_info[$element_type] = $definition + $element_info_manager->getInfo($element_type);
+    }
+
+    ksort($elements_info);
+
+    return array('#markup' => kdevel_print_object($elements_info));
   }
 
   public function fieldInfoPage() {
