@@ -8,6 +8,7 @@
 namespace Drupal\devel\Tests;
 
 use Drupal\comment\CommentInterface;
+use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\devel\Controller\DevelController;
@@ -19,6 +20,8 @@ use Drupal\simpletest\WebTestBase;
  * @group devel
  */
 class DevelEntityDebugTest extends WebTestBase {
+
+  use CommentTestTrait;
 
   /**
    * Modules to enable.
@@ -73,7 +76,7 @@ class DevelEntityDebugTest extends WebTestBase {
     // Create Article node types and create comment field on it.
     if ($this->profile != 'standard') {
       $this->drupalCreateContentType(array('type' => 'article', 'name' => 'Article'));
-      $this->container->get('comment.manager')->addDefaultField('node', 'article');
+      $this->addDefaultCommentField('node', 'article');
     }
 
     // Create some entities
