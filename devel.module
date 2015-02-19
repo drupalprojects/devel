@@ -201,7 +201,7 @@ function devel_set_handler($handlers) {
  */
 function devel_silent() {
   // Don't interfere with private files/images.
-  $request_path = request_path();
+  $request_path = Url::fromRoute('<current>');
   return
     (PHP_SAPI === 'cli') ||
     (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'ApacheBench') !== FALSE) ||
