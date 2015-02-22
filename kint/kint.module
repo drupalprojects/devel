@@ -51,19 +51,6 @@ function ksm() {
 }
 
 /**
- * Implements hook_permission().
- */
-function kint_permission() {
-  return array(
-    'access kint' => array(
-      'description' => t('View developer debug output.'),
-      'title' => t('Access kint information'),
-      'restrict access' => TRUE,
-    ),
-  );
-}
-
-/**
  * Load the Kint class.
  */
 function kint_require() {

@@ -13,19 +13,6 @@ use Drupal\devel_node_access\DnaBlockBase;
 define('DNA_ACCESS_VIEW', 'view devel_node_access information');
 
 /**
- * Implements hook_permission().
- */
-function devel_node_access_permission() {
-  return array(
-    'view devel_node_access information' => array(
-      'description' => t('View the node access information blocks on node pages and the summary page.'),
-      'title'       => t('Access DNA information'),
-      'restrict access' => TRUE,
-    ),
-  );
-}
-
-/**
  * Implements hook_help().
  */
 function devel_node_access_help($path, $arg) {
