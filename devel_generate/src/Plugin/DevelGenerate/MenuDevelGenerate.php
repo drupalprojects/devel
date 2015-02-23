@@ -350,7 +350,7 @@ class MenuDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
           $link->link->uri = 'http://www.example.com/';
           break;
         case 'front':
-          $link->link->uri = 'user-path:/<front>';
+          $link->link->uri = 'internal:/<front>';
           break;
         default:
           $link->devel_link_type = $link_type;
