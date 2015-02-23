@@ -7,17 +7,14 @@
 
 namespace Drupal\devel\Controller;
 
-use Drupal\comment\CommentInterface;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\UserSession;
 use Drupal\Core\Url;
-use Drupal\node\NodeInterface;
-use Drupal\taxonomy\TermInterface;
-use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -39,110 +36,6 @@ class DevelController extends ControllerBase {
   public function menuItem() {
     $item = menu_get_item(current_path());
     return kdevel_print_object($item);
-  }
-
-  /**
-   * Prints the loaded structure of the current node.
-   *
-   * @param NodeInterface $node
-   *    The current node.
-   *
-   * @return array
-   *    Array of page elements to render.
-   */
-  public function nodeLoad(NodeInterface $node) {
-    return $this->entityObject($node);
-  }
-
-  /**
-   * Prints the render structure of the current node.
-   *
-   * @param NodeInterface $node
-   *    The current node.
-   *
-   * @return array
-   *    Array of page elements to render.
-   */
-  public function nodeRender(NodeInterface $node) {
-    return $this->renderEntity($node);
-  }
-
-  /**
-   * Prints the loaded structure of the current user.
-   *
-   * @param UserInterface $user
-   *    The current user.
-   *
-   * @return array
-   *    Array of page elements to render.
-   */
-  public function userLoad(UserInterface $user) {
-    return $this->entityObject($user);
-  }
-
-  /**
-   * Prints the render structure of the current user.
-   *
-   * @param UserInterface $user
-   *    The current user.
-   *
-   * @return array
-   *    Array of page elements to render.
-   */
-  public function userRender(UserInterface $user) {
-    return $this->renderEntity($user);
-  }
-
-  /**
-   * Prints the loaded structure of the current comment.
-   *
-   * @param CommentInterface $comment
-   *    The current comment.
-   *
-   * @return array
-   *    Array of page elements to render.
-   */
-  public function commentLoad(CommentInterface $comment) {
-    return $this->entityObject($comment);
-  }
-
-  /**
-   * Prints the render structure of the current comment.
-   *
-   * @param CommentInterface $comment
-   *    The current comment.
-   *
-   * @return array
-   *    Array of page elements to render.
-   */
-  public function commentRender(CommentInterface $comment) {
-    return $this->renderEntity($comment);
-  }
-
-  /**
-   * Prints the loaded structure of the current taxonomy term.
-   *
-   * @param TermInterface $taxonomy_term
-   *    The current taxonomy term.
-   *
-   * @return array
-   *    Array of page elements to render.
-   */
-  public function taxonomyTermLoad(TermInterface $taxonomy_term) {
-    return $this->entityObject($taxonomy_term);
-  }
-
-  /**
-   * Prints the render structure of the current taxonomy term.
-   *
-   * @param TermInterface $taxonomy_term
-   *    The current taxonomy term.
-   *
-   * @return array
-   *    Array of page elements to render.
-   */
-  public function taxonomyTermRender(TermInterface $taxonomy_term) {
-    return $this->renderEntity($taxonomy_term);
   }
 
   public function themeRegistry() {
@@ -284,54 +177,60 @@ class DevelController extends ControllerBase {
   }
 
   /**
-   * Return the printed structure of the provided entity.
+   * Prints the loaded structure of the current entity.
    *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   An entity object.
-   * @param string $name
-   *   (optional) The label for the entity. Used only if kint is not enabled.
-   *   If not provided $entity->label() is used. Defaults to NULL.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *    A RouteMatch object.
    *
    * @return array
-   *   Render array containing the printed object.
+   *    Array of page elements to render.
    */
-  protected function entityObject(EntityInterface $entity, $name = NULL) {
-    $name = isset($name) ? $name : $entity->label();
-    $print = kdevel_print_object($entity, '$' . $name . '->');
-    return array('#markup' => $print);
+  public function entityLoad(RouteMatchInterface $route_match) {
+    $output = array();
+
+    $parameter_name = $route_match->getRouteObject()->getOption('_devel_entity_type_id');
+    $entity = $route_match->getParameter($parameter_name);
+
+    if ($entity && $entity instanceof EntityInterface) {
+      $output = array('#markup' => kdevel_print_object($entity));
+    }
+
+    return $output;
   }
 
   /**
-   * Return the printed render structure of the provided entity.
+   * Prints the render structure of the current entity.
    *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   An entity object.
-   * @param string $name
-   *   (optional) The label for the entity. Used only if kint is not enabled.
-   *   If not provided $entity->label() is used. Defaults to NULL.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *    A RouteMatch object.
    *
    * @return array
-   *    Render array containing the printed object.
+   *    Array of page elements to render.
    */
-  protected function renderEntity(EntityInterface $entity, $name = NULL) {
-    $name = isset($name) ? $name : $entity->label();
+  public function entityRender(RouteMatchInterface $route_match) {
+    $output = array();
 
-    $entity_type_id = $entity->getEntityTypeId();
-    $view_hook = $entity_type_id . '_view';
+    $parameter_name = $route_match->getRouteObject()->getOption('_devel_entity_type_id');
+    $entity = $route_match->getParameter($parameter_name);
 
-    $build = array();
-    // If module implements own {entity_type}_view
-    if (function_exists($view_hook)) {
-      $build = $view_hook($entity);
+    if ($entity && $entity instanceof EntityInterface) {
+      $entity_type_id = $entity->getEntityTypeId();
+      $view_hook = $entity_type_id . '_view';
+
+      $build = array();
+      // If module implements own {entity_type}_view
+      if (function_exists($view_hook)) {
+        $build = $view_hook($entity);
+      }
+      // If entity has view_builder handler
+      elseif ($this->entityManager()->hasHandler($entity_type_id, 'view_builder')) {
+        $build = $this->entityManager()->getViewBuilder($entity_type_id)->view($entity);
+      }
+
+      $output = array('#markup' => kdevel_print_object($build));
     }
-    // If entity has view_builder handler
-    elseif ($this->entityManager()->hasHandler($entity_type_id, 'view_builder')) {
-      $build = $this->entityManager()->getViewBuilder($entity_type_id)->view($entity);
-    }
 
-    $print = kdevel_print_object($build, '$' . $name . '->');
-
-    return array('#markup' => $print);
+    return $output;
   }
 
   /**

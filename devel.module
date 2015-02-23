@@ -23,6 +23,7 @@ use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Timer;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
@@ -42,6 +43,38 @@ function devel_help($route_name) {
     case 'devel/session':
       return '<p>' . t('Here are the contents of your <code>$_SESSION</code> variable.') . '</p>';
   }
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function devel_entity_type_alter(array &$entity_types) {
+  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  foreach ($entity_types as $entity_type_id => $entity_type) {
+    if ($entity_type->hasViewBuilderClass() && $entity_type->hasLinkTemplate('canonical')) {
+      $entity_type->setLinkTemplate('devel-render', $entity_type->getLinkTemplate('canonical') . '/devel/render');
+    }
+    if ($entity_type->hasFormClasses() && $entity_type->hasLinkTemplate('edit-form')) {
+      $entity_type->setLinkTemplate('devel-load', $entity_type->getLinkTemplate('edit-form') . '/devel');
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function devel_entity_operation(EntityInterface $entity) {
+  $operations = array();
+
+  if ($entity->hasLinkTemplate('devel-load') && \Drupal::currentUser()->hasPermission('access devel information')) {
+    $operations['devel'] = array(
+      'title' => t('Devel'),
+      'weight' => 50,
+      'url' => $entity->urlInfo('devel-load'),
+    );
+  }
+
+  return $operations;
 }
 
 /**
