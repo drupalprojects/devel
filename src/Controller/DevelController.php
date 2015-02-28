@@ -89,7 +89,10 @@ class DevelController extends ControllerBase {
   }
 
   /**
-   * Menu callback for devel/entity/info.
+   * Builds the entity types overview page.
+   *
+   * @return array
+   *   Array of page elements to render.
    */
   public function entityInfoPage() {
     $types = $this->entityManager()->getEntityTypeLabels();
@@ -106,7 +109,8 @@ class DevelController extends ControllerBase {
       }
       $result[$type] = $props;
     }
-    return kprint_r($result, TRUE);
+
+    return array('#markup' => kprint_r($result, TRUE));
   }
 
   /**
