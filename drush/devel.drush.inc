@@ -72,7 +72,6 @@ function devel_drush_command() {
   $items['devel-token'] = array(
     'description' => dt('List available tokens'),
     'aliases' => array('token'),
-    'core' => array(7), // Remove once 3.0 is released.
     //@todo support --format option for json, csv, etc.
   );
 
@@ -221,7 +220,7 @@ function drush_devel_fn_view($function_name) {
  */
 function drush_devel_token() {
   $rows[] = array(dt('Group'), dt('Token'), dt('Name'));
-  $all = token_info();
+  $all = \Drupal::token()->getInfo();
   foreach ($all['tokens'] as $group => $tokens) {
     foreach ($tokens as $key => $token) {
       $rows[] = array($group, $key, $token['name']);
