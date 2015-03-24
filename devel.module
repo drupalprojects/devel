@@ -19,7 +19,6 @@ define('DEVEL_MIN_TEXTAREA', 50);
 use Drupal\comment\CommentInterface;
 use Drupal\Component\Serialization\Json;
 use Drupal\Component\Utility\SafeMarkup;
-use Drupal\Component\Utility\String;
 use Drupal\Component\Utility\Timer;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
@@ -819,7 +818,7 @@ function devel_query_table($queries, $counts) {
     }
     $cell[$i][] = implode(' ', $ops);
     // 3 divs for each variation of the query. Last 2 are hidden by default.
-    $placeholders = '<div class="dev-placeholders">' . String::checkPlain($query['query']) . "</div>\n";
+    $placeholders = '<div class="dev-placeholders">' . SafeMarkup::checkPlain($query['query']) . "</div>\n";
     $args = '<div class="dev-arguments" style="display: none;"></div>' . "\n";
     $explain = '<div class="dev-explain" style="display: none;"></div>' . "\n";
     $cell[$i][] = array(
@@ -1105,7 +1104,7 @@ function dprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r', 
     }
 
     if ($check) {
-      $output = String::checkPlain($output);
+      $output = SafeMarkup::checkPlain($output);
     }
     if (count($input, COUNT_RECURSIVE) > DEVEL_MIN_TEXTAREA) {
       // Don't use fapi here because sometimes fapi will not be loaded.
@@ -1277,7 +1276,7 @@ function devel_form_user_admin_permissions_alter(&$form, &$form_state) {
         $form['permission'][$perm]['#markup'] = '<span title="' . $form['permission'][$perm]['#id'] . '">' . $form['permission'][$perm]['#markup'] . '</span>';
       }
       else {
-        $form['permission'][$perm]['#markup'] = '<span title="' . String::checkPlain($perm) . '">' . $form['permission'][$perm]['#markup'] . '</span>';
+        $form['permission'][$perm]['#markup'] = '<span title="' . SafeMarkup::checkPlain($perm) . '">' . $form['permission'][$perm]['#markup'] . '</span>';
       }
     }
   }

@@ -7,7 +7,7 @@
 
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
-use Drupal\Component\Utility\String;
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Language\LanguageInterface;
@@ -105,7 +105,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
           if (in_array($type->id(), $info['bundles'])) {
             $instance = FieldConfig::loadByName('node', $type->id(), $field_name);
             $default_mode = reset($instance->default_value);
-            $fields[] = String::format('@field: !state', array(
+            $fields[] = SafeMarkup::format('@field: !state', array(
               '@field' => $instance->label(),
               '!state' => $map[$default_mode['status']],
             ));

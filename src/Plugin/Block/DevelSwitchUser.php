@@ -7,7 +7,7 @@
 
 namespace Drupal\devel\Plugin\Block;
 
-use Drupal\Component\Utility\String;
+use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Core\Access\CsrfTokenGenerator;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\Annotation\Block;
@@ -243,7 +243,7 @@ class DevelSwitchUser extends BlockBase implements ContainerFactoryPluginInterfa
           'attributes' => array('title' => t('Caution: the anonymous user will be unable to switch back.')),
         );
         if ($this->currentUser->hasPermission('switch users')) {
-          $link['title'] = String::placeholder($link['title']);
+          $link['title'] = SafeMarkup::placeholder($link['title']);
           $link['attributes'] = array('title' => t('This user can switch back.'));
           $link['html'] = TRUE;
         }
