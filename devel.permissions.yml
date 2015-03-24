@@ -9,6 +9,6 @@ execute php code:
   restrict access: TRUE
 
 switch users:
- title: 'Switch users'
- description: 'Become any user on the site with just a click.'
- restrict access: TRUE
+  title: 'Switch users'
+  description: 'Become any user on the site with just a click.'
+  restrict access: TRUE
