@@ -15,6 +15,8 @@ use Drupal\Core\Field;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\UserSession;
 use Drupal\Core\Url;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -63,28 +65,37 @@ class DevelController extends ControllerBase {
     return array('#markup' => kdevel_print_object($elements_info));
   }
 
+  /**
+   * Builds the fields info overview page.
+   *
+   * @return array
+   *   Array of page elements to render.
+   */
   public function fieldInfoPage() {
-    $field_info = Field::fieldInfo();
-    $info = $field_info->getFields();
-    $output = kprint_r($info, TRUE, t('Fields'));
+    $fields = FieldStorageConfig::loadMultiple();
+    ksort($fields);
+    $output['fields'] = array('#markup' => kprint_r($fields, TRUE, $this->t('Fields')));
 
-    $info = $field_info->getInstances();
-    $output .= kprint_r($info, TRUE, t('Instances'));
+    $field_instances = FieldConfig::loadMultiple();
+    ksort($field_instances);
+    $output['instances'] = array('#markup' => kprint_r($field_instances, TRUE, $this->t('Instances')));
 
-    $info = entity_get_bundles();
-    $output .= kprint_r($info, TRUE, t('Bundles'));
+    $bundles = $this->entityManager()->getAllBundleInfo();
+    ksort($bundles);
+    $output['bundles'] = array('#markup' => kprint_r($bundles, TRUE, $this->t('Bundles')));
 
-    $info = \Drupal::service('plugin.manager.field.field_type')->getConfigurableDefinitions();
-    $output .= kprint_r($info, TRUE, t('Field types'));
+    $field_types = \Drupal::service('plugin.manager.field.field_type')->getUiDefinitions();
+    ksort($field_types);
+    $output['field_types'] = array('#markup' => kprint_r($field_types, TRUE, $this->t('Field types')));
 
-    $info = \Drupal::service('plugin.manager.field.formatter')->getDefinitions();
-    $output .= kprint_r($info, TRUE, t('Formatter types'));
+    $formatter_types = \Drupal::service('plugin.manager.field.formatter')->getDefinitions();
+    ksort($formatter_types);
+    $output['formatter_types'] = array('#markup' => kprint_r($formatter_types, TRUE, $this->t('Formatter types')));
 
-    //$info = field_info_storage_types();
-    //$output .= kprint_r($info, TRUE, t('Storage types'));
+    $widget_types = \Drupal::service('plugin.manager.field.widget')->getDefinitions();
+    ksort($widget_types);
+    $output['widget_types'] = array('#markup' => kprint_r($widget_types, TRUE, $this->t('Widget types')));
 
-    $info = \Drupal::service('plugin.manager.field.widget')->getDefinitions();
-    $output .= kprint_r($info, TRUE, t('Widget types'));
     return $output;
   }
 
