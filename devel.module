@@ -22,6 +22,7 @@ use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Component\Utility\Timer;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Template\Attribute;
@@ -1314,5 +1315,24 @@ function devel_form_system_modules_alter(&$form, &$form_state) {
 function devel_preprocess_block(&$variables) {
   if (isset($variables['block']) && $variables['block']->module == 'devel') {
     $variables['attributes']['class'][] = drupal_html_class('block-' . $variables['elements']['#block']->get('plugin'));
+  }
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ *
+ * Makes debugging entity query much easier.
+ *
+ * Example usage:
+ *   $query = \Drupal::entityQuery('node');
+ *   $query->condition('status', 1);
+ *   $query->addTag('debug');
+ *   $query->execute();
+ *
+ */
+function devel_query_debug_alter(AlterableInterface $query) {
+  if (!$query->hasTag('debug-semaphore')) {
+    $query->addTag('debug-semaphore');
+    dpq($query);
   }
 }
