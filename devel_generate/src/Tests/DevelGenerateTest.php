@@ -1,15 +1,17 @@
 <?php
+
 /**
  * @file
- * Implements tests for devel_generate module.
+ * Contains \Drupal\devel_generate\Tests\DevelGenerateTest.
  */
 
 namespace Drupal\devel_generate\Tests;
 
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\simpletest\WebTestBase;
 use Drupal\Core\Language\Language;
+use Drupal\entity_reference\Tests\EntityReferenceTestTrait;
+use Drupal\simpletest\WebTestBase;
 
 /**
  * Tests the logic to generate data.
@@ -18,9 +20,14 @@ use Drupal\Core\Language\Language;
  */
 class DevelGenerateTest extends WebTestBase {
 
-  protected $vocabulary;
+  use EntityReferenceTestTrait;
 
-  protected $admin_user;
+  /**
+   * Vocabulary for testing.
+   *
+   * @var \Drupal\taxonomy\VocabularyInterface
+   */
+  protected $vocabulary;
 
   /**
    * Modules to enable.
@@ -35,7 +42,11 @@ class DevelGenerateTest extends WebTestBase {
   public function setUp() {
     parent::setUp();
 
-    $this->admin_user = $this->drupalCreateUser(array('administer devel_generate'));
+    // Create Basic page and Article node types.
+    if ($this->profile != 'standard') {
+      $this->drupalCreateContentType(array('type' => 'page', 'name' => 'Basic Page'));
+      $this->drupalCreateContentType(array('type' => 'article', 'name' => 'Article'));
+    }
 
     // Creating a vocabulary to associate taxonomy terms generated.
     $this->vocabulary = entity_create('taxonomy_vocabulary', array(
@@ -47,63 +58,44 @@ class DevelGenerateTest extends WebTestBase {
     ));
     $this->vocabulary->save();
 
-    // Create Basic page and Article node types.
-    if ($this->profile != 'standard') {
-      $this->drupalCreateContentType(array('type' => 'page', 'name' => 'Basic Page'));
-      $this->drupalCreateContentType(array('type' => 'article', 'name' => 'Article'));
-    }
-
-    // Copied from /core/modules/taxonomy/src/Tests/TermTest.php::setup()
+    // Creates a field of an entity reference field storage on article.
     $field_name = 'taxonomy_' . $this->vocabulary->id();
-    entity_create('field_storage_config', array(
-      'field_name' => $field_name,
-      'entity_type' => 'node',
-      'type' => 'taxonomy_term_reference',
-      'cardinality' => FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED,
-      'settings' => array(
-        'allowed_values' => array(
-          array(
-            'vocabulary' => $this->vocabulary->id(),
-            'parent' => 0,
-          ),
-        ),
-      ),
-    ))->save();
 
-    $this->instance = entity_create('field_config', array(
-      'field_name' => $field_name,
-      'bundle' => 'article',
-      'entity_type' => 'node',
-    ));
-    $this->instance->save();
+    $handler_settings = array(
+      'target_bundles' => array(
+        $this->vocabulary->id() => $this->vocabulary->id(),
+      ),
+      'auto_create' => TRUE,
+    );
+    $this->createEntityReferenceField('node', 'article', $field_name, NULL, 'taxonomy_term', 'default', $handler_settings, FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED);
+
     entity_get_form_display('node', 'article', 'default')
       ->setComponent($field_name, array(
         'type' => 'options_select',
       ))
       ->save();
+
     entity_get_display('node', 'article', 'default')
       ->setComponent($field_name, array(
-        'type' => 'taxonomy_term_reference_link',
+        'type' => 'entity_reference_label',
       ))
       ->save();
 
+    $admin_user = $this->drupalCreateUser(array('administer devel_generate'));
+    $this->drupalLogin($admin_user);
   }
 
   /**
    * Tests generate commands
    */
   public function testDevelGenerate() {
-
-    $this->drupalLogin($this->admin_user);
-
-    //Creating users.
+    // Creating users.
     $edit = array(
       'num' => 4,
     );
     $this->drupalPostForm('admin/config/development/generate/user', $edit, t('Generate'));
     $this->assertText(t('4 users created.'));
     $this->assertText(t('Generate process complete.'));
-
 
     // Creating content.
     // First we create a node in order to test the Delete content checkbox.
@@ -122,8 +114,7 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('Finished creating 4 nodes'));
     $this->assertText(t('Generate process complete.'));
 
-
-    //Creating terms.
+    // Creating terms.
     $edit = array(
       'vids[]' => $this->vocabulary->id(),
       'num' => 5,
@@ -133,7 +124,7 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('Created the following new terms: '));
     $this->assertText(t('Generate process complete.'));
 
-    //Creating vocabularies.
+    // Creating vocabularies.
     $edit = array(
       'num' => 5,
       'title_length' => 12,
@@ -143,7 +134,7 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('Created the following new vocabularies: '));
     $this->assertText(t('Generate process complete.'));
 
-    //Creating menus.
+    // Creating menus.
     $edit = array(
       'num_menus' => 5,
       'num_links' => 7,
@@ -160,4 +151,5 @@ class DevelGenerateTest extends WebTestBase {
     $this->assertText(t('Created 7 new menu links'));
     $this->assertText(t('Generate process complete.'));
   }
+
 }
