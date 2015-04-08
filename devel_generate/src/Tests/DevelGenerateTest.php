@@ -7,6 +7,7 @@
 
 namespace Drupal\devel_generate\Tests;
 
+use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Language\Language;
@@ -20,6 +21,7 @@ use Drupal\simpletest\WebTestBase;
  */
 class DevelGenerateTest extends WebTestBase {
 
+  use CommentTestTrait;
   use EntityReferenceTestTrait;
 
   /**
@@ -46,6 +48,7 @@ class DevelGenerateTest extends WebTestBase {
     if ($this->profile != 'standard') {
       $this->drupalCreateContentType(array('type' => 'page', 'name' => 'Basic Page'));
       $this->drupalCreateContentType(array('type' => 'article', 'name' => 'Article'));
+      $this->addDefaultCommentField('node', 'article');
     }
 
     // Creating a vocabulary to associate taxonomy terms generated.
