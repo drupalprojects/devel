@@ -14,6 +14,7 @@ use Drupal\Core\Block\Annotation\Block;
 use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -53,6 +54,12 @@ class DevelSwitchUser extends BlockBase implements ContainerFactoryPluginInterfa
   protected $currentUser;
 
   /**
+   * The redirect destination service.
+   *
+   * @var \Drupal\Core\Routing\RedirectDestinationInterface
+   */
+  protected $redirectDestination;
+  /**
    * Constructs a new DevelSwitchUser object.
    *
    * @param array $configuration
@@ -65,11 +72,12 @@ class DevelSwitchUser extends BlockBase implements ContainerFactoryPluginInterfa
    * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    * @param \Drupal\Core\Session\AccountProxyInterface $current_user
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, CsrfTokenGenerator $csrf_token_generator, FormBuilderInterface $form_builder, AccountProxyInterface $current_user) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, CsrfTokenGenerator $csrf_token_generator, FormBuilderInterface $form_builder, AccountProxyInterface $current_user, RedirectDestinationInterface $redirect_destination) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->csrfTokenGenerator = $csrf_token_generator;
     $this->formBuilder = $form_builder;
     $this->currentUser = $current_user;
+    $this->redirectDestination = $redirect_destination;
   }
 
   /**
@@ -82,7 +90,8 @@ class DevelSwitchUser extends BlockBase implements ContainerFactoryPluginInterfa
       $plugin_definition,
       $container->get('csrf_token'),
       $container->get('form_builder'),
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get('redirect.destination')
     );
   }
 
@@ -179,7 +188,7 @@ class DevelSwitchUser extends BlockBase implements ContainerFactoryPluginInterfa
       if ($include_anon) {
         --$list_size;
       }
-      $dest = drupal_get_destination();
+      $dest = $this->redirectDestination->getAsArray();
       // Try to find at least $list_size users that can switch.
       // Inactive users are omitted from all of the following db selects.
       $roles = user_roles(TRUE, 'switch users');

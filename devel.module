@@ -105,7 +105,7 @@ function devel_menu_link_alter(&$item) {
  */
 function devel_translated_menu_link_alter(&$item) {
   if (in_array($item['href'], devel_menu_need_destination())) {
-    $item['localized_options']['query'] = drupal_get_destination();
+    $item['localized_options']['query'] = \Drupal::destination()->getAsArray();
   }
   elseif ($item['href'] == 'devel/menu/item') {
     $item['localized_options']['query'] = array('path' => current_path());

@@ -275,7 +275,7 @@ class DevelController extends ControllerBase {
       $accountSwitcher->switchTo(new UserSession(array('uid' => $account->getId())));
 
       // Send her on her way.
-      $destination = drupal_get_destination();
+      $destination = $this->getDestinationArray();
       $url = $this->getUrlGenerator()
         ->generateFromPath($destination['destination'], array('absolute' => TRUE));
       return new RedirectResponse($url);

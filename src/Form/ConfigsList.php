@@ -52,7 +52,7 @@ class ConfigsList extends FormBase {
 
     $rows = array();
 
-    $destination = drupal_get_destination();
+    $destination = $this->getDestinationArray();
 
     // List all the variables filtered if any filter was provided.
     $names = $this->configFactory()->listAll($filter);
