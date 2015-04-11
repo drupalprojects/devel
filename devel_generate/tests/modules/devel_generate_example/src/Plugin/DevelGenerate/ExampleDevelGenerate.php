@@ -31,14 +31,14 @@ class ExampleDevelGenerate extends DevelGenerateBase {
 
     $form['num'] = array(
       '#type' => 'textfield',
-      '#title' => t('How many examples would you like to generate?'),
+      '#title' => $this->t('How many examples would you like to generate?'),
       '#default_value' => $this->getSetting('num'),
       '#size' => 10,
     );
 
     $form['kill'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Delete all examples before generating new examples.'),
+      '#title' => $this->t('Delete all examples before generating new examples.'),
       '#default_value' => $this->getSetting('kill'),
     );
 
@@ -53,7 +53,7 @@ class ExampleDevelGenerate extends DevelGenerateBase {
     $kill = $values['kill'];
 
     if ($kill) {
-        $this->setMessage(t('Old examples have been deleted.'));
+        $this->setMessage($this->t('Old examples have been deleted.'));
     }
 
     //Creating user in order to demonstrate
@@ -79,7 +79,7 @@ class ExampleDevelGenerate extends DevelGenerateBase {
 
     $account->save();
 
-    $this->setMessage(t('!num_examples created.', array('!num_examples' => \Drupal::translation()->formatPlural($num, '1 example', '@count examples'))));
+    $this->setMessage($this->t('!num_examples created.', array('!num_examples' => $this->formatPlural($num, '1 example', '@count examples'))));
   }
 
   public function validateDrushParams($args) {

@@ -31,14 +31,14 @@ class UserDevelGenerate extends DevelGenerateBase {
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['num'] = array(
       '#type' => 'textfield',
-      '#title' => t('How many users would you like to generate?'),
+      '#title' => $this->t('How many users would you like to generate?'),
       '#default_value' => $this->getSetting('num'),
       '#size' => 10,
     );
 
     $form['kill'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Delete all users (except user id 1) before generating new users.'),
+      '#title' => $this->t('Delete all users (except user id 1) before generating new users.'),
       '#default_value' => $this->getSetting('kill'),
     );
 
@@ -46,27 +46,27 @@ class UserDevelGenerate extends DevelGenerateBase {
     unset($options[DRUPAL_AUTHENTICATED_RID]);
     $form['roles'] = array(
       '#type' => 'checkboxes',
-      '#title' => t('Which roles should the users receive?'),
-      '#description' => t('Users always receive the <em>authenticated user</em> role.'),
+      '#title' => $this->t('Which roles should the users receive?'),
+      '#description' => $this->t('Users always receive the <em>authenticated user</em> role.'),
       '#options' => $options,
     );
 
     $form['pass'] = array(
       '#type' => 'textfield',
-      '#title' => t('Password to be set'),
+      '#title' => $this->t('Password to be set'),
       '#default_value' => $this->getSetting('pass'),
       '#size' => 32,
-      '#description' => t('Leave this field empty if you do not need to set a password'),
+      '#description' => $this->t('Leave this field empty if you do not need to set a password'),
     );
 
-    $options = array(1 => t('Now'));
+    $options = array(1 => $this->t('Now'));
     foreach (array(3600, 86400, 604800, 2592000, 31536000) as $interval) {
-      $options[$interval] = \Drupal::service('date.formatter')->formatInterval($interval, 1) . ' ' . t('ago');
+      $options[$interval] = \Drupal::service('date.formatter')->formatInterval($interval, 1) . ' ' . $this->t('ago');
     }
     $form['time_range'] = array(
       '#type' => 'select',
-      '#title' => t('How old should user accounts be?'),
-      '#description' => t('User ages will be distributed randomly from the current time, back to the selected time.'),
+      '#title' => $this->t('How old should user accounts be?'),
+      '#description' => $this->t('User ages will be distributed randomly from the current time, back to the selected time.'),
       '#options' => $options,
       '#default_value' => 604800,
     );
@@ -91,7 +91,7 @@ class UserDevelGenerate extends DevelGenerateBase {
         ->execute()
         ->fetchAllAssoc('uid');
       user_delete_multiple(array_keys($uids));
-      $this->setMessage(\Drupal::translation()->formatPlural(count($uids), '1 user deleted', '@count users deleted.'));
+      $this->setMessage($this->formatPlural(count($uids), '1 user deleted', '@count users deleted.'));
     }
 
     if ($num > 0) {
@@ -123,7 +123,7 @@ class UserDevelGenerate extends DevelGenerateBase {
         $account->save();
       }
     }
-    $this->setMessage(t('!num_users created.', array('!num_users' => \Drupal::translation()->formatPlural($num, '1 user', '@count users'))));
+    $this->setMessage($this->t('!num_users created.', array('!num_users' => $this->formatPlural($num, '1 user', '@count users'))));
   }
 
   public function validateDrushParams($args) {

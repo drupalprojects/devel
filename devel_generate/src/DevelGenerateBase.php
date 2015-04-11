@@ -7,10 +7,12 @@ use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBaseInterface {
 
   use DependencySerializationTrait;
+  use StringTranslationTrait;
 
   /**
    * The plugin settings.
@@ -57,7 +59,7 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
    */
   public function generate(array $values) {
     $this->generateElements($values);
-    $this->setMessage("Generate process complete.");
+    $this->setMessage('Generate process complete.');
   }
 
   /**

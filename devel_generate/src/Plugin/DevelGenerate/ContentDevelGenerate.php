@@ -93,10 +93,10 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
 
     $types = NodeType::loadMultiple();
     $comment_fields = ($this->commentManager) ? $this->commentManager->getFields('node') : array();
-    $map = array(t('Hidden'), t('Closed'), t('Open'));
+    $map = array($this->t('Hidden'), $this->t('Closed'), $this->t('Open'));
     foreach ($types as $type) {
       $options[$type->id()] = array(
-        'type' => array('#markup' => t($type->label())),
+        'type' => array('#markup' => $this->t($type->label())),
       );
       if ($this->commentManager) {
         $fields = array();
@@ -119,23 +119,23 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
           ));
         }
         else {
-          $options[$type->id()]['comments'] = t('No comment fields');
+          $options[$type->id()]['comments'] = $this->t('No comment fields');
         }
       }
     }
 
     if (empty($options)) {
       $create_url = $this->urlGenerator->generateFromRoute('node.type_add');
-      $this->setMessage(t('You do not have any content types that can be generated. <a href="@create-type">Go create a new content type</a> already!</a>', array('@create-type' => $create_url)), 'error', FALSE);
+      $this->setMessage($this->t('You do not have any content types that can be generated. <a href="@create-type">Go create a new content type</a> already!</a>', array('@create-type' => $create_url)), 'error', FALSE);
       return;
     }
 
     $header = array(
-      'type' => t('Content type'),
+      'type' => $this->t('Content type'),
     );
     if ($this->commentManager) {
       $header['comments'] = array(
-        'data' => t('Comments'),
+        'data' => $this->t('Comments'),
         'class' => array(RESPONSIVE_PRIORITY_MEDIUM),
       );
     }
@@ -148,52 +148,52 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
 
     $form['kill'] = array(
       '#type' => 'checkbox',
-      '#title' => t('<strong>Delete all content</strong> in these content types before generating new content.'),
+      '#title' => $this->t('<strong>Delete all content</strong> in these content types before generating new content.'),
       '#default_value' => $this->getSetting('kill'),
     );
     $form['num'] = array(
       '#type' => 'textfield',
-      '#title' => t('How many nodes would you like to generate?'),
+      '#title' => $this->t('How many nodes would you like to generate?'),
       '#default_value' => $this->getSetting('num'),
       '#size' => 10,
     );
 
-    $options = array(1 => t('Now'));
+    $options = array(1 => $this->t('Now'));
     foreach (array(3600, 86400, 604800, 2592000, 31536000) as $interval) {
-      $options[$interval] = \Drupal::service('date.formatter')->formatInterval($interval, 1) . ' ' . t('ago');
+      $options[$interval] = \Drupal::service('date.formatter')->formatInterval($interval, 1) . ' ' . $this->t('ago');
     }
     $form['time_range'] = array(
       '#type' => 'select',
-      '#title' => t('How far back in time should the nodes be dated?'),
-      '#description' => t('Node creation dates will be distributed randomly from the current time, back to the selected time.'),
+      '#title' => $this->t('How far back in time should the nodes be dated?'),
+      '#description' => $this->t('Node creation dates will be distributed randomly from the current time, back to the selected time.'),
       '#options' => $options,
       '#default_value' => 604800,
     );
 
     $form['max_comments'] = array(
       '#type' => $this->moduleHandler->moduleExists('comment') ? 'textfield' : 'value',
-      '#title' => t('Maximum number of comments per node.'),
-      '#description' => t('You must also enable comments for the content types you are generating. Note that some nodes will randomly receive zero comments. Some will receive the max.'),
+      '#title' => $this->t('Maximum number of comments per node.'),
+      '#description' => $this->t('You must also enable comments for the content types you are generating. Note that some nodes will randomly receive zero comments. Some will receive the max.'),
       '#default_value' => $this->getSetting('max_comments'),
       '#size' => 3,
       '#access' => $this->moduleHandler->moduleExists('comment'),
     );
     $form['title_length'] = array(
       '#type' => 'textfield',
-      '#title' => t('Maximum number of words in titles'),
+      '#title' => $this->t('Maximum number of words in titles'),
       '#default_value' => $this->getSetting('title_length'),
       '#size' => 10,
     );
     $form['add_alias'] = array(
       '#type' => 'checkbox',
       '#disabled' => !$this->moduleHandler->moduleExists('path'),
-      '#description' => t('Requires path.module'),
-      '#title' => t('Add an url alias for each node.'),
+      '#description' => $this->t('Requires path.module'),
+      '#title' => $this->t('Add an url alias for each node.'),
       '#default_value' => FALSE,
     );
     $form['add_statistics'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Add statistics for each node (node_counter table).'),
+      '#title' => $this->t('Add statistics for each node (node_counter table).'),
       '#default_value' => TRUE,
       '#access' => $this->moduleHandler->moduleExists('statistics'),
     );
@@ -209,9 +209,9 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     $default_langcode = $default_language->getId();
     $form['add_language'] = array(
       '#type' => 'select',
-      '#title' => t('Set language on nodes'),
+      '#title' => $this->t('Set language on nodes'),
       '#multiple' => TRUE,
-      '#description' => t('Requires locale.module'),
+      '#description' => $this->t('Requires locale.module'),
       '#options' => $options,
       '#default_value' => array(
         $default_langcode,
@@ -220,7 +220,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
 
     $form['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Generate'),
+      '#value' => $this->t('Generate'),
       '#tableselect' => TRUE,
     );
     $form['#redirect'] = FALSE;
@@ -263,7 +263,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
         }
       }
     }
-    $this->setMessage(\Drupal::translation()->formatPlural($values['num'], '1 node created.', 'Finished creating @count nodes'));
+    $this->setMessage($this->formatPlural($values['num'], '1 node created.', 'Finished creating @count nodes'));
   }
 
   /**
@@ -286,7 +286,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
 
     // start the batch
     $batch = array(
-      'title' => t('Generating Content'),
+      'title' => $this->t('Generating Content'),
       'operations' => $operations,
       'finished' => 'devel_generate_batch_finished',
       'file' => drupal_get_path('module', 'devel_generate') . '/devel_generate.batch.inc',
@@ -354,7 +354,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
 
     if (!empty($nids)) {
       entity_delete_multiple('node', $nids);
-      $this->setMessage(t('Deleted %count nodes.', array('%count' => count($nids))));
+      $this->setMessage($this->t('Deleted %count nodes.', array('%count' => count($nids))));
     }
   }
 

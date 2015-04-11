@@ -33,19 +33,19 @@ class VocabularyDevelGenerate extends DevelGenerateBase {
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['num'] = array(
       '#type' => 'textfield',
-      '#title' => t('Number of vocabularies?'),
+      '#title' => $this->t('Number of vocabularies?'),
       '#default_value' => $this->getSetting('num'),
       '#size' => 10,
     );
     $form['title_length'] = array(
       '#type' => 'textfield',
-      '#title' => t('Maximum number of characters in vocabulary names'),
+      '#title' => $this->t('Maximum number of characters in vocabulary names'),
       '#default_value' => $this->getSetting('title_length'),
       '#size' => 10,
     );
     $form['kill'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Delete existing vocabularies before generating new ones.'),
+      '#title' => $this->t('Delete existing vocabularies before generating new ones.'),
       '#default_value' => $this->getSetting('kill'),
     );
 
@@ -59,11 +59,11 @@ class VocabularyDevelGenerate extends DevelGenerateBase {
 
     if ($values['kill']) {
       $this->deleteVocabularies();
-      $this->setMessage(t('Deleted existing vocabularies.'));
+      $this->setMessage($this->t('Deleted existing vocabularies.'));
     }
     $new_vocs = $this->generateVocabs($values['num'], $values['title_length']);
     if (!empty($new_vocs)) {
-      $this->setMessage(t('Created the following new vocabularies: !vocs', array('!vocs' => implode(', ', $new_vocs))));
+      $this->setMessage($this->t('Created the following new vocabularies: !vocs', array('!vocs' => implode(', ', $new_vocs))));
     }
   }
 

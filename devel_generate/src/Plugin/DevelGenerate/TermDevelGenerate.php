@@ -37,27 +37,27 @@ class TermDevelGenerate extends DevelGenerateBase {
     $form['vids'] = array(
       '#type' => 'select',
       '#multiple' => TRUE,
-      '#title' => t('Vocabularies'),
+      '#title' => $this->t('Vocabularies'),
       '#required' => TRUE,
       '#default_value' => 'tags',
       '#options' => $options,
-      '#description' => t('Restrict terms to these vocabularies.'),
+      '#description' => $this->t('Restrict terms to these vocabularies.'),
     );
     $form['num'] = array(
       '#type' => 'textfield',
-      '#title' => t('Number of terms?'),
+      '#title' => $this->t('Number of terms?'),
       '#default_value' => $this->getSetting('num'),
       '#size' => 10,
     );
     $form['title_length'] = array(
       '#type' => 'textfield',
-      '#title' => t('Maximum number of characters in term names'),
+      '#title' => $this->t('Maximum number of characters in term names'),
       '#default_value' => $this->getSetting('title_length'),
       '#size' => 10,
     );
     $form['kill'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Delete existing terms in specified vocabularies before generating new terms.'),
+      '#title' => $this->t('Delete existing terms in specified vocabularies before generating new terms.'),
       '#default_value' => $this->getSetting('kill'),
     );
 
@@ -73,12 +73,12 @@ class TermDevelGenerate extends DevelGenerateBase {
       foreach ($values['vids'] as $vid) {
         $this->deleteVocabularyTerms($vid);
       }
-      $this->setMessage(t('Deleted existing terms.'));
+      $this->setMessage($this->t('Deleted existing terms.'));
     }
     $vocabs = entity_load_multiple('taxonomy_vocabulary', $values['vids']);
     $new_terms = $this->generateTerms($values['num'], $vocabs, $values['title_length']);
     if (!empty($new_terms)) {
-      $this->setMessage(t('Created the following new terms: !terms', array('!terms' => implode(', ', $new_terms))));
+      $this->setMessage($this->t('Created the following new terms: !terms', array('!terms' => implode(', ', $new_terms))));
     }
   }
 
@@ -147,7 +147,7 @@ class TermDevelGenerate extends DevelGenerateBase {
       }
 
       $values['name'] = $this->generateWord(mt_rand(2, $maxlength));
-      $values['description'] = "description of " . $values['name'];
+      $values['description'] = 'description of ' . $values['name'];
       $values['format'] = filter_fallback_format();
       $values['weight'] = mt_rand(0, 10);
       $values['langcode'] = Language::LANGCODE_NOT_SPECIFIED;
