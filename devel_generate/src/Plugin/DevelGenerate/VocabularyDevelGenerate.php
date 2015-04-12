@@ -81,7 +81,7 @@ class VocabularyDevelGenerate extends DevelGenerateBase {
 
     // Insert new data:
     for ($i = 1; $i <= $records; $i++) {
-      $name = $this->generateWord(mt_rand(2, $maxlength));
+      $name = $this->getRandom()->word(mt_rand(2, $maxlength));
       $vocabulary = entity_create('taxonomy_vocabulary', array(
         'name' => $name,
         'vid' => Unicode::strtolower($name),

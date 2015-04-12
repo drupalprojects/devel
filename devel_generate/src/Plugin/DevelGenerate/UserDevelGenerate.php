@@ -97,8 +97,7 @@ class UserDevelGenerate extends DevelGenerateBase {
     if ($num > 0) {
       $names = array();
       while (count($names) < $num) {
-        //@todo add suport for devel_generate_word(mt_rand(6, 12)) in a class method
-        $name = $this->generateWord(mt_rand(6, 12));
+        $name = $this->getRandom()->word(mt_rand(6, 12));
         $names[$name] = '';
       }
 

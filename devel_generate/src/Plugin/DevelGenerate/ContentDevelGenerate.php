@@ -392,12 +392,11 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       'langcode' => $this->getLangcode($results),
     );
 
-    // We should not use the random function if the value is not random
     if ($results['title_length'] < 2) {
-      $edit_node['title'] = $this->createGreeking(1, TRUE);
+      $edit_node['title'] = $this->getRandom()->sentences(1, TRUE);
     }
     else {
-      $edit_node['title'] = $this->createGreeking(mt_rand(1, $results['title_length']), TRUE);
+      $edit_node['title'] = $this->getRandom()->sentences(mt_rand(1, $results['title_length']), TRUE);
     }
     $node = entity_create('node', $edit_node);
 

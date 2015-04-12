@@ -146,7 +146,7 @@ class TermDevelGenerate extends DevelGenerateBase {
           break;
       }
 
-      $values['name'] = $this->generateWord(mt_rand(2, $maxlength));
+      $values['name'] = $this->getRandom()->word(mt_rand(2, $maxlength));
       $values['description'] = 'description of ' . $values['name'];
       $values['format'] = filter_fallback_format();
       $values['weight'] = mt_rand(0, 10);

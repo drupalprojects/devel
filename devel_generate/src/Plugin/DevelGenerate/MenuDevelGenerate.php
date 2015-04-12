@@ -271,7 +271,7 @@ class MenuDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
 
     for ($i = 1; $i <= $num_menus; $i++) {
       $menu = array();
-      $menu['label'] = $this->generateWord(mt_rand(2, max(2, $title_length)));
+      $menu['label'] = $this->getRandom()->word(mt_rand(2, max(2, $title_length)));
       $menu['id'] = 'devel-' . Unicode::strtolower($menu['label']);
       $menu['description'] = t('Description of @name', array('@name' => $menu['label']));
       $new_menu = entity_create('menu', $menu);
@@ -295,7 +295,7 @@ class MenuDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
       // Pick a random menu.
       $menu_name = $menus[array_rand($menus)];
       // Build up our link.
-      $link_title = $this->generateWord(mt_rand(2, max(2, $title_length)));
+      $link_title = $this->getRandom()->word(mt_rand(2, max(2, $title_length)));
       $link = entity_create('menu_link_content', array(
         'menu_name'   => $menu_name,
         'weight'      => mt_rand(-50, 50),
