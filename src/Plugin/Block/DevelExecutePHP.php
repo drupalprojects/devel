@@ -7,6 +7,7 @@
 
 namespace Drupal\devel\Plugin\Block;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Session\AccountInterface;
 
@@ -24,7 +25,7 @@ class DevelExecutePHP extends BlockBase {
    * {@inheritdoc}
    */
   protected function blockAccess(AccountInterface $account) {
-    return $account->hasPermission('execute php code');
+    return AccessResult::allowedIfHasPermission($account, 'execute php code');
   }
 
   /**

@@ -8,6 +8,7 @@
 namespace Drupal\devel\Plugin\Block;
 
 use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\CsrfTokenGenerator;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\Annotation\Block;
@@ -145,7 +146,7 @@ class DevelSwitchUser extends BlockBase implements ContainerFactoryPluginInterfa
    * {@inheritdoc}
    */
   public function blockAccess(AccountInterface $account) {
-    return $account->hasPermission('switch users');
+    return AccessResult::allowedIfHasPermission($account, 'switch users');
   }
 
   /**
