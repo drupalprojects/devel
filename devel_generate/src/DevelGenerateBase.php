@@ -1,19 +1,22 @@
 <?php
 
+/**
+ * @file
+ * Contains \Drupal\devel_generate\DevelGenerateBase.
+ */
+
 namespace Drupal\devel_generate;
 
-use Drupal\Component\Plugin\PluginBase;
 use Drupal\Component\Utility\Random;
-use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Plugin\PluginBase;
 
+/**
+ * Provides a base DevelGenerate plugin implementation.
+ */
 abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBaseInterface {
-
-  use DependencySerializationTrait;
-  use StringTranslationTrait;
 
   /**
    * The plugin settings.
@@ -30,7 +33,7 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
   protected $random;
 
   /**
-   * Implements Drupal\devel_generate\DevelGenerateBaseInterface::getSetting().
+   * {@inheritdoc}
    */
   public function getSetting($key) {
     // Merge defaults if we have no value for the key.
@@ -41,7 +44,7 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
   }
 
   /**
-   * Implements Drupal\devel_generate\DevelGenerateBaseInterface::getDefaultSettings().
+   * {@inheritdoc}
    */
   public function getDefaultSettings() {
     $definition = $this->getPluginDefinition();
@@ -49,21 +52,21 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
   }
 
   /**
-   * Implements Drupal\devel_generate\DevelGenerateBaseInterface::getSettings().
+   * {@inheritdoc}
    */
   public function getSettings() {
     return $this->settings;
   }
 
   /**
-   * Implements Drupal\devel_generate\DevelGenerateBaseInterface::settingsForm().
+   * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     return array();
   }
 
   /**
-   * Implements Drupal\devel_generate\DevelGenerateBaseInterface::generate().
+   * {@inheritdoc}
    */
   public function generate(array $values) {
     $this->generateElements($values);
@@ -87,7 +90,9 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
    *  The entity to be enriched with sample field values.
    */
   public static function populateFields(EntityInterface $entity) {
+    /** @var \Drupal\field\FieldConfigInterface[] $instances */
     $instances = entity_load_multiple_by_properties('field_config', array('entity_type' => $entity->getEntityType()->id(), 'bundle' => $entity->bundle()));
+
     if ($skips = function_exists('drush_get_option') ? drush_get_option('skip-fields', '') : @$_REQUEST['skip-fields']) {
       foreach (explode(',', $skips) as $skip) {
         unset($instances[$skip]);
@@ -95,7 +100,6 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
     }
 
     foreach ($instances as $instance) {
-      /** @var \Drupal\field\FieldStorageConfigInterface $field_storage */
       $field_storage = $instance->getFieldStorageDefinition();
       $max = $cardinality = $field_storage->getCardinality();
       if ($cardinality == FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED) {
@@ -108,7 +112,7 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
   }
 
   /**
-   * Implements Drupal\devel_generate\DevelGenerateBaseInterface::handleDrushValues().
+   * {@inheritdoc}
    */
   public function handleDrushParams($args) {
 
@@ -121,9 +125,6 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
    *  The message to display.
    * @param $type
    *  The message type, as defined by drupal_set_message().
-   *
-   * @return
-   *  Context-appropriate message output.
    */
   protected function setMessage($msg, $type = 'status') {
     $function = function_exists('drush_log') ? 'drush_log' : 'drupal_set_message';
@@ -131,8 +132,13 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
   }
 
   /**
-   * Check if a given param is a number
-   * @Return Boolean
+   * Check if a given param is a number.
+   *
+   * @param mixed $number
+   *  The parameter to check.
+   *
+   * @return bool
+   *   TRUE if the parameter is a number, FALSE otherwise.
    */
   public static function isNumber($number) {
     if ($number == NULL) return FALSE;
@@ -141,11 +147,13 @@ abstract class DevelGenerateBase extends PluginBase implements DevelGenerateBase
   }
 
   /**
+   * Returns the random data generator.
+   *
    * @return \Drupal\Component\Utility\Random
    *   The random data generator.
    */
   protected function getRandom() {
-    if(!$this->random) {
+    if (!$this->random) {
       $this->random = new Random();
     }
     return $this->random;
