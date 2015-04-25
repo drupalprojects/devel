@@ -218,11 +218,6 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       ),
     );
 
-    $form['submit'] = array(
-      '#type' => 'submit',
-      '#value' => $this->t('Generate'),
-      '#tableselect' => TRUE,
-    );
     $form['#redirect'] = FALSE;
 
     return $form;

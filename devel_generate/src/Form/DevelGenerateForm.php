@@ -2,21 +2,28 @@
 
 /**
  * @file
- * Contains \Drupal\devel_generate\Form\GenerateForm.
+ * Contains \Drupal\devel_generate\Form\DevelGenerateForm.
  */
 
 namespace Drupal\devel_generate\Form;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\devel_generate\DevelGenerateException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Defines a form that allows privileged users to generate entities.
  */
 class DevelGenerateForm extends FormBase {
+
+  /**
+   * The manager to be used for instantiating plugins.
+   *
+   * @var \Drupal\Component\Plugin\PluginManagerInterface
+   */
+  protected $develGenerateManager;
 
   /**
    * Constructs a new DevelGenerateForm object.
@@ -25,7 +32,7 @@ class DevelGenerateForm extends FormBase {
    *   The manager to be used for instantiating plugins.
    */
   public function __construct(PluginManagerInterface $devel_generate_manager) {
-    $this->DevelGenerateManager = $devel_generate_manager;
+    $this->develGenerateManager = $devel_generate_manager;
   }
 
   /**
@@ -59,12 +66,13 @@ class DevelGenerateForm extends FormBase {
    * Returns a DevelGenerate plugin instance for a given plugin id.
    *
    * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
    *
    * @return \Drupal\devel_generate\DevelGenerateBaseInterface
    *   A DevelGenerate plugin instance.
    */
   public function getPluginInstance($plugin_id) {
-    $instance = $this->DevelGenerateManager->createInstance($plugin_id, array());
+    $instance = $this->develGenerateManager->createInstance($plugin_id, array());
     return $instance;
   }
 
@@ -75,9 +83,10 @@ class DevelGenerateForm extends FormBase {
     $plugin_id = $this->getPluginIdFromRequest();
     $instance = $this->getPluginInstance($plugin_id);
     $form = $instance->settingsForm($form, $form_state);
-    $form['submit'] = array(
+    $form['actions'] = array('#type' => 'actions');
+    $form['actions']['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Generate'),
+      '#value' => $this->t('Generate'),
     );
 
     return $form;
