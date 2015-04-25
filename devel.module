@@ -24,7 +24,9 @@ use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\RfcLogLevel;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
 use Drupal\Core\Utility\Error;
@@ -1265,39 +1267,41 @@ function devel_rebuild_node_comment_statistics() {
 }
 
 /**
- * Implements hook_form_alter().
+ * Implements hook_form_FORM_ID_alter().
  *
  * Adds mouse-over hints on the Permissions page to display
  * language-independent machine names and module base names.
+ *
+ * @see \Drupal\user\Form\UserPermissionsForm::buildForm()
  */
-function devel_form_user_admin_permissions_alter(&$form, &$form_state) {
+function devel_form_user_admin_permissions_alter(&$form, FormStateInterface $form_state) {
   if (\Drupal::currentUser()->hasPermission('access devel information') && \Drupal::config('devel.settings')->get('raw_names')) {
-    foreach ($form['permission'] as $perm => $data) {
-      if (is_numeric($perm)) {
-        $form['permission'][$perm]['#markup'] = '<span title="' . $form['permission'][$perm]['#id'] . '">' . $form['permission'][$perm]['#markup'] . '</span>';
+    foreach (Element::children($form['permissions']) as $key) {
+      if (isset($form['permissions'][$key][0])) {
+        $form['permissions'][$key][0]['#wrapper_attributes']['title'] = $key;
       }
-      else {
-        $form['permission'][$perm]['#markup'] = '<span title="' . SafeMarkup::checkPlain($perm) . '">' . $form['permission'][$perm]['#markup'] . '</span>';
+      elseif(isset($form['permissions'][$key]['description'])) {
+        $form['permissions'][$key]['description']['#wrapper_attributes']['title']  = $key;
       }
     }
   }
 }
 
 /**
- * Implements hook_form_alter().
+ * Implements hook_form_FORM_ID_alter().
  *
  * Adds mouse-over hints on the Modules page to display module base names.
+ *
+ * @see \Drupal\system\Form\ModulesListForm::buildForm()
+ * @see theme_system_modules_details()
  */
-function devel_form_system_modules_alter(&$form, &$form_state) {
+function devel_form_system_modules_alter(&$form, FormStateInterface $form_state) {
   if (\Drupal::currentUser()->hasPermission('access devel information') && \Drupal::config('devel.settings')->get('raw_names', FALSE) && isset($form['modules']) && is_array($form['modules'])) {
-    foreach (element_children($form['modules']) as $key) {
-      if (isset($form['modules'][$key]['name']['#markup'])) {
-        $form['modules'][$key]['name']['#markup'] = '<span title="' . $key . '">' . $form['modules'][$key]['name']['#markup'] . '</span>';
-      }
-      elseif (is_array($form['modules'][$key])) {
-        foreach (element_children($form['modules'][$key]) as $key2) {
-          if (isset($form['modules'][$key][$key2]['name']['#markup'])) {
-            $form['modules'][$key][$key2]['name']['#markup'] = '<span title="' . $key2 . '">' . $form['modules'][$key][$key2]['name']['#markup'] . '</span>';
+    foreach (Element::children($form['modules']) as $group) {
+      if (is_array($form['modules'][$group])) {
+        foreach (Element::children($form['modules'][$group]) as $key) {
+          if (isset($form['modules'][$group][$key]['name']['#markup'])) {
+            $form['modules'][$group][$key]['name']['#markup'] = '<span title="' . $key . '">' . $form['modules'][$group][$key]['name']['#markup'] . '</span>';
           }
         }
       }
