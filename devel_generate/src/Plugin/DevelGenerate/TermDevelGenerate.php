@@ -7,9 +7,12 @@
 
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
-use Drupal\devel_generate\DevelGenerateBase;
-use Drupal\Core\Language\Language;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\Language;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\devel_generate\DevelGenerateBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a TermDevelGenerate plugin.
@@ -27,12 +30,62 @@ use Drupal\Core\Form\FormStateInterface;
  *   }
  * )
  */
-class TermDevelGenerate extends DevelGenerateBase {
+class TermDevelGenerate extends DevelGenerateBase implements ContainerFactoryPluginInterface {
 
+  /**
+   * The vocabulary storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $vocabularyStorage;
+
+  /**
+   * The term storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $termStorage;
+
+  /**
+   * Constructs a new TermDevelGenerate object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $vocabulary_storage
+   *   The vocabulary storage.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $term_storage
+   *   The term storage.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $vocabulary_storage, EntityStorageInterface $term_storage) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->vocabularyStorage = $vocabulary_storage;
+    $this->termStorage = $term_storage;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $entity_manager = $container->get('entity.manager');
+    return new static(
+      $configuration, $plugin_id, $plugin_definition,
+      $entity_manager->getStorage('taxonomy_vocabulary'),
+      $entity_manager->getStorage('taxonomy_term')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $options = array();
-    foreach (entity_load_multiple('taxonomy_vocabulary') as $vid => $vocab) {
-      $options[$vid] = $vocab->id();
+    foreach ($this->vocabularyStorage->loadMultiple() as $vocabulary) {
+      $options[$vocabulary->id()] = $vocabulary->label();
     }
     $form['vids'] = array(
       '#type' => 'select',
@@ -68,14 +121,12 @@ class TermDevelGenerate extends DevelGenerateBase {
    * {@inheritdoc}
    */
   public function generateElements(array $values) {
-
     if ($values['kill']) {
-      foreach ($values['vids'] as $vid) {
-        $this->deleteVocabularyTerms($vid);
-      }
+      $this->deleteVocabularyTerms($values['vids']);
       $this->setMessage($this->t('Deleted existing terms.'));
     }
-    $vocabs = entity_load_multiple('taxonomy_vocabulary', $values['vids']);
+
+    $vocabs = $this->vocabularyStorage->loadMultiple($values['vids']);
     $new_terms = $this->generateTerms($values['num'], $vocabs, $values['title_length']);
     if (!empty($new_terms)) {
       $this->setMessage($this->t('Created the following new terms: !terms', array('!terms' => implode(', ', $new_terms))));
@@ -83,46 +134,54 @@ class TermDevelGenerate extends DevelGenerateBase {
   }
 
   /**
-   * Deletes all terms of a vocabulary.
+   * Deletes all terms of given vocabularies.
    *
-   * @param $vid
-   *   int a vocabulary vid.
+   * @param array $vids
+   *   Array of vocabulary vid.
    */
-  protected function deleteVocabularyTerms($vid) {
-    $tids = array();
-    foreach (taxonomy_get_tree($vid) as $term) {
-      $tids[] = $term->tid;
-    }
-    entity_delete_multiple('taxonomy_term', $tids);;
+  protected function deleteVocabularyTerms($vids) {
+    $tids = $this->vocabularyStorage->getToplevelTids($vids);
+    $terms = $this->termStorage->loadMultiple($tids);
+    $this->termStorage->delete($terms);
   }
 
   /**
    * Generates taxonomy terms for a list of given vocabularies.
    *
-   * @param $records
-   *   int number of terms to create in total.
+   * @param int$records
+   *   Number of terms to create in total.
    * @param \Drupal\taxonomy\TermInterface[] $vocabs
-   *   array list of vocabs to populate.
+   *   List of vocabularies to populate.
    * @param int $maxlength
-   *   int maximum length per term.
-   * @return array the list of names of the created terms.
-   * array the list of names of the created terms.
+   *   (optional) Maximum length per term.
+   *
+   * @return array
+   *   The list of names of the created terms.
    */
-  function generateTerms($records, $vocabs, $maxlength = 12) {
+  protected function generateTerms($records, $vocabs, $maxlength = 12) {
     $terms = array();
 
     // Insert new data:
     $max = db_query('SELECT MAX(tid) FROM {taxonomy_term_data}')->fetchField();
     $start = time();
     for ($i = 1; $i <= $records; $i++) {
-      $values = array();
+      $name = $this->getRandom()->word(mt_rand(2, $maxlength));
+
+      $values = array(
+        'name' => $name,
+        'description' => 'description of ' . $name,
+        'format' => filter_fallback_format(),
+        'weight' => mt_rand(0, 10),
+        'langcode' => Language::LANGCODE_NOT_SPECIFIED,
+      );
+
       switch ($i % 2) {
         case 1:
-          // Set vid and vocabulary_machine_name properties.
           $vocab = $vocabs[array_rand($vocabs)];
-          $values['vid'] = $values['vocabulary_machine_name'] = $vocab->id();
+          $values['vid'] = $vocab->id();
           $values['parent'] = array(0);
           break;
+
         default:
           while (TRUE) {
             // Keep trying to find a random parent.
@@ -132,7 +191,7 @@ class TermDevelGenerate extends DevelGenerateBase {
               ->fields('t', array('tid', 'vid'))
               ->condition('t.vid', array_keys($vocabs), 'IN')
               ->condition('t.tid', $candidate, '>=')
-              ->range(0,1)
+              ->range(0, 1)
               ->execute()
               ->fetchAssoc();
             if ($parent['tid']) {
@@ -141,44 +200,41 @@ class TermDevelGenerate extends DevelGenerateBase {
           }
           $values['parent'] = array($parent['tid']);
           // Slight speedup due to this property being set.
-          $values['vocabulary_machine_name'] = $parent['vid'];
           $values['vid'] = $parent['vid'];
           break;
       }
 
-      $values['name'] = $this->getRandom()->word(mt_rand(2, $maxlength));
-      $values['description'] = 'description of ' . $values['name'];
-      $values['format'] = filter_fallback_format();
-      $values['weight'] = mt_rand(0, 10);
-      $values['langcode'] = Language::LANGCODE_NOT_SPECIFIED;
-      $term = entity_create('taxonomy_term', $values);
+      $term = $this->termStorage->create($values);
 
       // Populate all fields with sample values.
       $this->populateFields($term);
+      $term->save();
 
-      if ($status = $term->save()) {
-        $max += 1;
-        if (function_exists('drush_log')) {
+      $max++;
 
-          $feedback = drush_get_option('feedback', 1000);
-          if ($i % $feedback == 0) {
-            $now = time();
-            drush_log(dt('Completed !feedback terms (!rate terms/min)', array('!feedback' => $feedback, '!rate' => $feedback*60 / ($now-$start) )), 'ok');
-            $start = $now;
-          }
+      if (function_exists('drush_log')) {
+        $feedback = drush_get_option('feedback', 1000);
+        if ($i % $feedback == 0) {
+          $now = time();
+          drush_log(dt('Completed !feedback terms (!rate terms/min)', array('!feedback' => $feedback, '!rate' => $feedback * 60 / ($now - $start))), 'ok');
+          $start = $now;
         }
-
-        // Limit memory usage. Only report first 20 created terms.
-        if ($i < 20) {
-          $terms[] = $term->name->value;
-        }
-
-        unset($term);
       }
+
+      // Limit memory usage. Only report first 20 created terms.
+      if ($i < 20) {
+        $terms[] = $term->label();
+      }
+
+      unset($term);
     }
+
     return $terms;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function validateDrushParams($args) {
     $vname = array_shift($args);
     $values = array(
@@ -187,7 +243,7 @@ class TermDevelGenerate extends DevelGenerateBase {
       'title_length' => 12,
     );
     // Try to convert machine name to a vocab ID
-    if (!$vocab = entity_load('taxonomy_vocabulary', $vname)) {
+    if (!$vocab = $this->vocabularyStorage->load($vname)) {
       return drush_set_error('DEVEL_GENERATE_INVALID_INPUT', dt('Invalid vocabulary name: !name', array('!name' => $vname)));
     }
     if ($this->isNumber($values['num']) == FALSE) {
@@ -197,6 +253,6 @@ class TermDevelGenerate extends DevelGenerateBase {
     $values['vids'] = array($vocab->id());
 
     return $values;
- }
+  }
 
 }

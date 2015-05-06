@@ -7,18 +7,19 @@
 
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
-use Drupal\Component\Utility\SafeMarkup;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Language\Language;
-use Drupal\Core\Language\LanguageInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\comment\CommentManagerInterface;
-use Drupal\Core\Routing\UrlGeneratorInterface;
-use Drupal\field\Entity\FieldConfig;
-use Drupal\devel_generate\DevelGenerateBase;
-use Drupal\node\Entity\NodeType;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Datetime\DateFormatter;
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Routing\UrlGeneratorInterface;
+use Drupal\devel_generate\DevelGenerateBase;
+use Drupal\field\Entity\FieldConfig;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a ContentDevelGenerate plugin.
@@ -40,6 +41,20 @@ use Drupal\Core\Form\FormStateInterface;
 class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactoryPluginInterface {
 
   /**
+   * The node storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $nodeStorage;
+
+  /**
+   * The node type storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $nodeTypeStorage;
+
+  /**
    * The module handler.
    *
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
@@ -54,34 +69,73 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
   protected $commentManager;
 
   /**
+   * The language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
    * The url generator service.
+   *
+   * @var \Drupal\Core\Routing\UrlGeneratorInterface
    */
   protected $urlGenerator;
 
   /**
-   * {@inheritdoc}
+   * The date formatter service.
    *
+   * @var \Drupal\Core\Datetime\DateFormatter
+   */
+  protected $dateFormatter;
+
+  /**
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin ID for the plugin instance.
+   * @param array $plugin_definition
+   * @param \Drupal\Core\Entity\EntityStorageInterface $node_storage
+   *   The node storage.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $node_type_storage
+   *   The node type storage.
    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
    *   The module handler.
    * @param \Drupal\comment\CommentManagerInterface $comment_manager
    *   The comment manager service.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
+   *   The language manager.
+   * @param \Drupal\Core\Routing\UrlGeneratorInterface $url_generator
+   *   The url generator service.
+   * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
+   *   The date formatter service.
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, CommentManagerInterface $comment_manager = NULL, UrlGeneratorInterface $urlGenerator) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityStorageInterface $node_storage, EntityStorageInterface $node_type_storage, ModuleHandlerInterface $module_handler, CommentManagerInterface $comment_manager = NULL, LanguageManagerInterface $language_manager, UrlGeneratorInterface $url_generator, DateFormatter $date_formatter) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+
     $this->moduleHandler = $module_handler;
+    $this->nodeStorage = $node_storage;
+    $this->nodeTypeStorage = $node_type_storage;
     $this->commentManager = $comment_manager;
-    $this->urlGenerator = $urlGenerator;
+    $this->languageManager = $language_manager;
+    $this->urlGenerator = $url_generator;
+    $this->dateFormatter = $date_formatter;
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $entity_manager = $container->get('entity.manager');
     return new static(
       $configuration, $plugin_id, $plugin_definition,
+      $entity_manager->getStorage('node'),
+      $entity_manager->getStorage('node_type'),
       $container->get('module_handler'),
       $container->has('comment.manager') ? $container->get('comment.manager') : NULL,
-      $container->get('url_generator')
+      $container->get('language_manager'),
+      $container->get('url_generator'),
+      $container->get('date.formatter')
     );
   }
 
@@ -89,16 +143,24 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
+    $types = $this->nodeTypeStorage->loadMultiple();
+
+    if (empty($types)) {
+      $create_url = $this->urlGenerator->generateFromRoute('node.type_add');
+      $this->setMessage($this->t('You do not have any content types that can be generated. <a href="@create-type">Go create a new content type</a>', array('@create-type' => $create_url)), 'error', FALSE);
+      return;
+    }
+
     $options = array();
 
-    $types = NodeType::loadMultiple();
-    $comment_fields = ($this->commentManager) ? $this->commentManager->getFields('node') : array();
-    $map = array($this->t('Hidden'), $this->t('Closed'), $this->t('Open'));
     foreach ($types as $type) {
       $options[$type->id()] = array(
-        'type' => array('#markup' => $this->t($type->label())),
+        'type' => array('#markup' => $type->label()),
       );
       if ($this->commentManager) {
+        $comment_fields = $this->commentManager->getFields('node');
+        $map = array($this->t('Hidden'), $this->t('Closed'), $this->t('Open'));
+
         $fields = array();
         foreach ($comment_fields as $field_name => $info) {
           // Find all comment fields for the bundle.
@@ -122,12 +184,6 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
           $options[$type->id()]['comments'] = $this->t('No comment fields');
         }
       }
-    }
-
-    if (empty($options)) {
-      $create_url = $this->urlGenerator->generateFromRoute('node.type_add');
-      $this->setMessage($this->t('You do not have any content types that can be generated. <a href="@create-type">Go create a new content type</a> already!</a>', array('@create-type' => $create_url)), 'error', FALSE);
-      return;
     }
 
     $header = array(
@@ -160,7 +216,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
 
     $options = array(1 => $this->t('Now'));
     foreach (array(3600, 86400, 604800, 2592000, 31536000) as $interval) {
-      $options[$interval] = \Drupal::service('date.formatter')->formatInterval($interval, 1) . ' ' . $this->t('ago');
+      $options[$interval] = $this->dateFormatter->formatInterval($interval, 1) . ' ' . $this->t('ago');
     }
     $form['time_range'] = array(
       '#type' => 'select',
@@ -200,13 +256,11 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
 
     $options = array();
     // We always need a language
-    $languages = \Drupal::languageManager()->getLanguages(LanguageInterface::STATE_ALL);
+    $languages = $this->languageManager->getLanguages(LanguageInterface::STATE_ALL);
     foreach ($languages as $langcode => $language) {
       $options[$langcode] = $language->getName();
     }
 
-    $default_language = \Drupal::service('language.default')->get();
-    $default_langcode = $default_language->getId();
     $form['add_language'] = array(
       '#type' => 'select',
       '#title' => $this->t('Set language on nodes'),
@@ -214,7 +268,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       '#description' => $this->t('Requires locale.module'),
       '#options' => $options,
       '#default_value' => array(
-        $default_langcode,
+        $this->languageManager->getDefaultLanguage()->getId()
       ),
     );
 
@@ -313,7 +367,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       $add_language = explode(',', str_replace(' ', '', $add_language));
       // Intersect with the enabled languages to make sure the language args
       // passed are actually enabled.
-      $values['values']['add_language'] = array_intersect($add_language, array_keys(locale_language_list()));
+      $values['values']['add_language'] = array_intersect($add_language, array_keys($this->languageManager->getLanguages(LanguageInterface::STATE_ALL)));
     }
 
     $values['kill'] = drush_get_option('kill');
@@ -338,17 +392,20 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     return $values;
   }
 
+  /**
+   * Deletes all nodes of given node types.
+   *
+   * @param array $values
+   *   The input values from the settings form.
+   */
   protected function contentKill($values) {
-    $results = db_select('node', 'n')
-      ->fields('n', array('nid'))
+    $nids = $this->nodeStorage->getQuery()
       ->condition('type', $values['node_types'], 'IN')
       ->execute();
-    foreach ($results as $result) {
-      $nids[] = $result->nid;
-    }
 
     if (!empty($nids)) {
-      entity_delete_multiple('node', $nids);
+      $nodes = $this->nodeStorage->loadMultiple($nids);
+      $this->nodeStorage->delete($nodes);
       $this->setMessage($this->t('Deleted %count nodes.', array('%count' => count($nids))));
     }
   }
@@ -393,7 +450,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     else {
       $edit_node['title'] = $this->getRandom()->sentences(mt_rand(1, $results['title_length']), TRUE);
     }
-    $node = entity_create('node', $edit_node);
+    $node = $this->nodeStorage->create($edit_node);
 
     // A flag to let hook_node_insert() implementations know that this is a
     // generated node.
@@ -416,7 +473,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       $langcode = $langcodes[array_rand($langcodes)];
     }
     else {
-      $langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
+      $langcode = $this->languageManager->getDefaultLanguage()->getId();
     }
     return $langcode;
   }

@@ -7,8 +7,12 @@
 
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
-use Drupal\devel_generate\DevelGenerateBase;
+use Drupal\Core\Datetime\DateFormatter;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\devel_generate\DevelGenerateBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a UserDevelGenerate plugin.
@@ -26,8 +30,57 @@ use Drupal\Core\Form\FormStateInterface;
  *   }
  * )
  */
-class UserDevelGenerate extends DevelGenerateBase {
+class UserDevelGenerate extends DevelGenerateBase implements ContainerFactoryPluginInterface{
 
+  /**
+   * The user storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $userStorage;
+
+  /**
+   * The date formatter service.
+   *
+   * @var \Drupal\Core\Datetime\DateFormatter
+   */
+  protected $dateFormatter;
+
+  /**
+   * Constructs a new UserDevelGenerate object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $entity_storage
+   *   The user storage.
+   * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
+   *   The date formatter service.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityStorageInterface $entity_storage, DateFormatter $date_formatter) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->userStorage = $entity_storage;
+    $this->dateFormatter = $date_formatter;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration, $plugin_id, $plugin_definition,
+      $container->get('entity.manager')->getStorage('user'),
+      $container->get('date.formatter')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['num'] = array(
       '#type' => 'textfield',
@@ -61,7 +114,7 @@ class UserDevelGenerate extends DevelGenerateBase {
 
     $options = array(1 => $this->t('Now'));
     foreach (array(3600, 86400, 604800, 2592000, 31536000) as $interval) {
-      $options[$interval] = \Drupal::service('date.formatter')->formatInterval($interval, 1) . ' ' . $this->t('ago');
+      $options[$interval] = $this->dateFormatter->formatInterval($interval, 1) . ' ' . $this->t('ago');
     }
     $form['time_range'] = array(
       '#type' => 'select',
@@ -83,14 +136,14 @@ class UserDevelGenerate extends DevelGenerateBase {
     $pass = $values['pass'];
     $age = $values['time_range'];
     $roles = $values['roles'];
-    $url = parse_url($GLOBALS['base_url']);
+
     if ($kill) {
-      $uids = db_select('users', 'u')
-        ->fields('u', array('uid'))
+      $uids = $this->userStorage->getQuery()
         ->condition('uid', 1, '>')
-        ->execute()
-        ->fetchAllAssoc('uid');
-      user_delete_multiple(array_keys($uids));
+        ->execute();
+      $users = $this->userStorage->loadMultiple($uids);
+      $this->userStorage->delete($users);
+
       $this->setMessage($this->formatPlural(count($uids), '1 user deleted', '@count users deleted.'));
     }
 
@@ -105,17 +158,16 @@ class UserDevelGenerate extends DevelGenerateBase {
         $roles = array(DRUPAL_AUTHENTICATED_RID);
       }
       foreach ($names as $name => $value) {
-        $edit = array(
-          'uid'     => NULL,
-          'name'    => $name,
-          'pass'    => $pass,
-          'mail'    => $name . '@example.com',
-          'status'  => 1,
+        $account = $this->userStorage->create(array(
+          'uid' => NULL,
+          'name' => $name,
+          'pass' => $pass,
+          'mail' => $name . '@example.com',
+          'status' => 1,
           'created' => REQUEST_TIME - mt_rand(0, $age),
           'roles' => array_values($roles),
           'devel_generate' => TRUE // A flag to let hook_user_* know that this is a generated user.
-        );
-        $account = entity_create('user', $edit);
+        ));
 
         // Populate all fields with sample values.
         $this->populateFields($account);
@@ -125,6 +177,9 @@ class UserDevelGenerate extends DevelGenerateBase {
     $this->setMessage($this->t('!num_users created.', array('!num_users' => $this->formatPlural($num, '1 user', '@count users'))));
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function validateDrushParams($args) {
     $values = array(
       'num' => array_shift($args),
