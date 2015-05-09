@@ -73,16 +73,19 @@ class VocabularyDevelGenerate extends DevelGenerateBase implements ContainerFact
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['num'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => $this->t('Number of vocabularies?'),
       '#default_value' => $this->getSetting('num'),
-      '#size' => 10,
+      '#required' => TRUE,
+      '#min' => 0,
     );
     $form['title_length'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => $this->t('Maximum number of characters in vocabulary names'),
       '#default_value' => $this->getSetting('title_length'),
-      '#size' => 10,
+      '#required' => TRUE,
+      '#min' => 2,
+      '#max' => 255,
     );
     $form['kill'] = array(
       '#type' => 'checkbox',

@@ -30,7 +30,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   }
  * )
  */
-class UserDevelGenerate extends DevelGenerateBase implements ContainerFactoryPluginInterface{
+class UserDevelGenerate extends DevelGenerateBase implements ContainerFactoryPluginInterface {
 
   /**
    * The user storage.
@@ -83,10 +83,11 @@ class UserDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form['num'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => $this->t('How many users would you like to generate?'),
       '#default_value' => $this->getSetting('num'),
-      '#size' => 10,
+      '#required' => TRUE,
+      '#min' => 0,
     );
 
     $form['kill'] = array(
@@ -166,7 +167,8 @@ class UserDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
           'status' => 1,
           'created' => REQUEST_TIME - mt_rand(0, $age),
           'roles' => array_values($roles),
-          'devel_generate' => TRUE // A flag to let hook_user_* know that this is a generated user.
+          // A flag to let hook_user_* know that this is a generated user.
+          'devel_generate' => TRUE,
         ));
 
         // Populate all fields with sample values.

@@ -47,13 +47,12 @@ class DevelGenerateForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
+  public function getFormId() {
     return 'devel_generate_form_' . $this->getPluginIdFromRequest();
   }
 
   /**
-   * Returns the value of the param _plugin_id
-   * for the current request.
+   * Returns the value of the param _plugin_id for the current request.
    *
    * @see \Drupal\devel_generate\Routing\DevelGenerateRouteSubscriber
    */
@@ -87,6 +86,7 @@ class DevelGenerateForm extends FormBase {
     $form['actions']['submit'] = array(
       '#type' => 'submit',
       '#value' => $this->t('Generate'),
+      '#button_type' => 'primary',
     );
 
     return $form;

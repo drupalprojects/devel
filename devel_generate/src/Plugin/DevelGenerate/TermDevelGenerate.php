@@ -97,16 +97,19 @@ class TermDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
       '#description' => $this->t('Restrict terms to these vocabularies.'),
     );
     $form['num'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => $this->t('Number of terms?'),
       '#default_value' => $this->getSetting('num'),
-      '#size' => 10,
+      '#required' => TRUE,
+      '#min' => 0,
     );
     $form['title_length'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => $this->t('Maximum number of characters in term names'),
       '#default_value' => $this->getSetting('title_length'),
-      '#size' => 10,
+      '#required' => TRUE,
+      '#min' => 2,
+      '#max' => 255,
     );
     $form['kill'] = array(
       '#type' => 'checkbox',
@@ -148,7 +151,7 @@ class TermDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
   /**
    * Generates taxonomy terms for a list of given vocabularies.
    *
-   * @param int$records
+   * @param int $records
    *   Number of terms to create in total.
    * @param \Drupal\taxonomy\TermInterface[] $vocabs
    *   List of vocabularies to populate.

@@ -175,10 +175,12 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
         }
         // @todo Refactor display of comment fields.
         if (!empty($fields)) {
-          $options[$type->id()]['comments'] = array('data' => array(
-            '#theme' => 'item_list',
-            '#items' => $fields,
-          ));
+          $options[$type->id()]['comments'] = array(
+            'data' => array(
+              '#theme' => 'item_list',
+              '#items' => $fields,
+            ),
+          );
         }
         else {
           $options[$type->id()]['comments'] = $this->t('No comment fields');
@@ -208,10 +210,11 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       '#default_value' => $this->getSetting('kill'),
     );
     $form['num'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => $this->t('How many nodes would you like to generate?'),
       '#default_value' => $this->getSetting('num'),
-      '#size' => 10,
+      '#required' => TRUE,
+      '#min' => 0,
     );
 
     $options = array(1 => $this->t('Now'));
@@ -227,18 +230,20 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     );
 
     $form['max_comments'] = array(
-      '#type' => $this->moduleHandler->moduleExists('comment') ? 'textfield' : 'value',
+      '#type' => $this->moduleHandler->moduleExists('comment') ? 'number' : 'value',
       '#title' => $this->t('Maximum number of comments per node.'),
       '#description' => $this->t('You must also enable comments for the content types you are generating. Note that some nodes will randomly receive zero comments. Some will receive the max.'),
       '#default_value' => $this->getSetting('max_comments'),
-      '#size' => 3,
+      '#min' => 0,
       '#access' => $this->moduleHandler->moduleExists('comment'),
     );
     $form['title_length'] = array(
-      '#type' => 'textfield',
+      '#type' => 'number',
       '#title' => $this->t('Maximum number of words in titles'),
       '#default_value' => $this->getSetting('title_length'),
-      '#size' => 10,
+      '#required' => TRUE,
+      '#min' => 1,
+      '#max' => 255,
     );
     $form['add_alias'] = array(
       '#type' => 'checkbox',
@@ -255,7 +260,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     );
 
     $options = array();
-    // We always need a language
+    // We always need a language.
     $languages = $this->languageManager->getLanguages(LanguageInterface::STATE_ALL);
     foreach ($languages as $langcode => $language) {
       $options[$langcode] = $language->getName();
@@ -268,7 +273,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
       '#description' => $this->t('Requires locale.module'),
       '#options' => $options,
       '#default_value' => array(
-        $this->languageManager->getDefaultLanguage()->getId()
+        $this->languageManager->getDefaultLanguage()->getId(),
       ),
     );
 
@@ -307,7 +312,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
         $this->develGenerateContentAddNode($values);
         if (function_exists('drush_log') && $i % drush_get_option('feedback', 1000) == 0) {
           $now = time();
-          drush_log(dt('Completed !feedback nodes (!rate nodes/min)', array('!feedback' => drush_get_option('feedback', 1000), '!rate' => (drush_get_option('feedback', 1000)*60)/($now-$start))), 'ok');
+          drush_log(dt('Completed !feedback nodes (!rate nodes/min)', array('!feedback' => drush_get_option('feedback', 1000), '!rate' => (drush_get_option('feedback', 1000) * 60) / ($now - $start))), 'ok');
           $start = $now;
         }
       }
@@ -323,17 +328,17 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     // Setup the batch operations and save the variables.
     $operations[] = array('devel_generate_operation', array($this, 'batchContentPreNode', $values));
 
-    // add the kill operation
+    // Add the kill operation.
     if ($values['kill']) {
       $operations[] = array('devel_generate_operation', array($this, 'batchContentKill', $values));
     }
 
-    // add the operations to create the nodes
+    // Add the operations to create the nodes.
     for ($num = 0; $num < $values['num']; $num ++) {
       $operations[] = array('devel_generate_operation', array($this, 'batchContentAddNode', $values));
     }
 
-    // start the batch
+    // Start the batch.
     $batch = array(
       'title' => $this->t('Generating Content'),
       'operations' => $operations,
@@ -433,24 +438,17 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     $node_type = array_rand(array_filter($results['node_types']));
     $uid = $users[array_rand($users)];
 
-    $edit_node = array(
+    $node = $this->nodeStorage->create(array(
       'nid' => NULL,
       'type' => $node_type,
+      'title' => $this->getRandom()->sentences(mt_rand(1, $results['title_length']), TRUE),
       'uid' => $uid,
       'revision' => mt_rand(0, 1),
       'status' => TRUE,
       'promote' => mt_rand(0, 1),
       'created' => REQUEST_TIME - mt_rand(0, $results['time_range']),
       'langcode' => $this->getLangcode($results),
-    );
-
-    if ($results['title_length'] < 2) {
-      $edit_node['title'] = $this->getRandom()->sentences(1, TRUE);
-    }
-    else {
-      $edit_node['title'] = $this->getRandom()->sentences(mt_rand(1, $results['title_length']), TRUE);
-    }
-    $node = $this->nodeStorage->create($edit_node);
+    ));
 
     // A flag to let hook_node_insert() implementations know that this is a
     // generated node.
