@@ -48,16 +48,19 @@ function drush_phpstorm_metadata() {
   $container = \Drupal::getContainer();
 
   $reflectedClass = new ReflectionClass($container);
-  $property = $reflectedClass->getProperty('services');
-  $property->setAccessible(true);
-  $services = $property->getValue($container);
-  unset($services['service_container']);
 
   $map = array();
 
-  // Service container
-  foreach ($services as $id => $class) {
-    $map["\\Drupal::service('')"][$id] = '\\' . get_class($class);
+  // Map for all services of the container.
+  // @see \Symfony\Component\DependencyInjection\Container::getServiceIds().
+  foreach ($reflectedClass->getMethods() as $method) {
+    if (preg_match('/^get(.+)Service$/', $method->name, $match)) {
+      $id = strtolower(preg_replace(array('/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'), array('\\1_\\2', '\\1_\\2'), strtr($match[1], '_', '.')));
+      $service = \Drupal::service($id);
+      if (is_object($service)) {
+        $map["\\Drupal::service('')"][$id] = '\\' . get_class($service);
+      }
+    }
   }
 
   // Entity Manager - getStorage
