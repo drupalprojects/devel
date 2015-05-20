@@ -17,8 +17,8 @@ executed on a page, and how long each query took.
  This module is safe to use on a production site. Just be sure to only grant
  'access development information' permission to developers.
 
-Also a dpr() function is provided, which pretty prints arrays and strings.
-Useful during development. Many other nice functions like dpm(), dvm().
+Enabling the Devel Kint module gives you a dpr() function, which pretty prints variables.
+Useful during development. Also see similar helpers like dpm(), dvm().
 
 AJAX developers in particular ought to install FirePHP Core from
 http://www.firephp.org/ and put it in the devel directory. You may
