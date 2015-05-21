@@ -153,13 +153,6 @@ class SettingsForm extends ConfigFormBase {
      '#default_value' => $devel_config->get('rebuild_theme'),
     );
 
-    $form['use_uncompressed_jquery'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Use uncompressed jQuery'),
-      '#default_value' => $devel_config->get('use_uncompressed_jquery'),
-      '#description' => t("Use a human-readable version of jQuery instead of the minified version that ships with Drupal, to make JavaScript debugging easier."),
-    );
-
     return parent::buildForm($form, $form_state);
   }
 
@@ -181,7 +174,6 @@ class SettingsForm extends ConfigFormBase {
       ->set('error_handlers', $values['error_handlers'])
       ->set('krumo_skin', $values['krumo_skin'])
       ->set('rebuild_theme', $values['rebuild_theme'])
-      ->set('use_uncompressed_jquery', $values['use_uncompressed_jquery'])
       ->save();
   }
 

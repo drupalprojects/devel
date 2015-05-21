@@ -47,9 +47,6 @@ devel.settings:
     rebuild_theme:
       type: boolean
       label: 'Rebuild theme information'
-    use_uncompressed_jquery:
-      type: boolean
-      label: 'Use uncompressed jquery'
     debug_mail_file_format:
       type: string
       label: 'Mail debug file format'

@@ -12,6 +12,5 @@ error_handlers:
   error_handler_value: 1
 krumo_skin: 'default'
 rebuild_theme: FALSE
-use_uncompressed_jquery: FALSE
 debug_mail_file_format: '%to-%subject-%datetime.mail.txt'
 debug_mail_directory: 'temporary://devel-mails'
