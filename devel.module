@@ -781,11 +781,8 @@ function devel_query_table($queries, $counts) {
       $cell[$i][] = $diff;
     }
     $cell[$i][] = $count;
-    $url = Url::fromUri("http://$api/api/drupal/$file/function/$function_name/$version");
-    $cell[$i][] = \Drupal::l($function, $url, array(
-      'attributes' => array(
-        'target' => '_blank'))
-    );
+    $url = Url::fromUri("http://$api/api/drupal/$file/function/$function_name/$version", array('attributes' => array('target' => '_blank')));
+    $cell[$i][] = \Drupal::l($function, $url, FALSE);
     $ops[] = '<a href="#" title="' . t('Show placeholders') . '" class="dev-placeholders" qid="' . $i . '">P</a>';
     $ops[] = '<a href="#" title="' . t('Show arguments') . '" class="dev-arguments" qid="' . $i . '">A</a>';
     // EXPLAIN only valid for select queries.

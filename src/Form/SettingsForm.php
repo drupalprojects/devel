@@ -38,39 +38,42 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
-    $current_path = $request->attributes->get('_system_path');
     $current_url = Url::createFromRequest($request);
     $devel_config = $this->config('devel.settings');
 
-    $form['queries'] = array('#type' => 'fieldset', '#title' => t('Query log'));
-
-    $description = t('Display a log of the database queries needed to generate the current page, and the execution time for each. Also, queries which are repeated during a single page view are summed in the # column, and printed in red since they are candidates for caching.');
-    $form['queries']['query_display'] = array('#type' => 'checkbox',
-      '#title' => t('Display query log'),
+    $form['queries'] = array(
+      '#type' => 'details',
+      '#title' => $this->t('Query log'),
+      '#open' => TRUE,
+    );
+    $form['queries']['query_display'] = array(
+      '#type' => 'checkbox',
+      '#title' => $this->t('Display query log'),
       '#default_value' => $devel_config->get('query_display'),
-      '#description' => $description,
+      '#description' => $this->t('Display a log of the database queries needed to generate the current page, and the execution time for each. Also, queries which are repeated during a single page view are summed in the # column, and printed in red since they are candidates for caching.'),
     );
     $form['queries']['settings'] = array(
       '#type' => 'container',
-        '#states' => array(
-          // Hide the query log settings when not displaying query log.
-          'invisible' => array(
-            'input[name="query_display"]' => array('checked' => FALSE),
-          ),
+      '#states' => array(
+        // Hide the query log settings when not displaying query log.
+        'invisible' => array(
+          'input[name="query_display"]' => array('checked' => FALSE),
         ),
+      ),
     );
-    $form['queries']['settings']['query_sort'] = array('#type' => 'radios',
-      '#title' => t('Sort query log'),
-      '#default_value' =>   $devel_config->get('query_sort'),
-      '#options' => array(t('by source'), t('by duration')),
-      '#description' => t('The query table can be sorted in the order that the queries were executed or by descending duration.'),
+    $form['queries']['settings']['query_sort'] = array(
+      '#type' => 'radios',
+      '#title' => $this->t('Sort query log'),
+      '#default_value' => $devel_config->get('query_sort'),
+      '#options' => array($this->t('by source'), $this->t('by duration')),
+      '#description' => $this->t('The query table can be sorted in the order that the queries were executed or by descending duration.'),
     );
-    $form['queries']['settings']['execution'] = array('#type' => 'textfield',
-      '#title' => t('Slow query highlighting'),
+    $form['queries']['settings']['execution'] = array(
+      '#type' => 'number',
+      '#title' => $this->t('Slow query highlighting'),
       '#default_value' => $devel_config->get('execution'),
-      '#size' => 4,
-      '#maxlength' => 4,
-      '#description' => t('Enter an integer in milliseconds. Any query which takes longer than this many milliseconds will be highlighted in the query log. This indicates a possibly inefficient query, or a candidate for caching.'),
+      '#min' => 0,
+      '#description' => $this->t('Enter an integer in milliseconds. Any query which takes longer than this many milliseconds will be highlighted in the query log. This indicates a possibly inefficient query, or a candidate for caching.'),
     );
 
     $form['api_url'] = array('#type' => 'textfield',
