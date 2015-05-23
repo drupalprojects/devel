@@ -22,6 +22,7 @@ use Drupal\Component\Utility\SafeMarkup;
 use Drupal\Component\Utility\Timer;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Database\Database;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -434,7 +435,7 @@ function devel_shutdown_real() {
     }
 
     if (\Drupal::currentUser()->hasPermission('access devel information')) {
-      $queries = (devel_query_enabled() ? \Drupal\Core\Database\Database::getLog('devel', 'default') : NULL);
+      $queries = (devel_query_enabled() ? Database::getLog('devel', 'default') : NULL);
       if (!empty($queries)) {
         // Remove caller args to avoid recursion.
         foreach ($queries as &$query) {
@@ -954,7 +955,7 @@ function dpq($query, $return = FALSE, $name = NULL) {
     }
     $sql = (string) $query;
     $quoted = array();
-    $connection = Drupal\Core\Database\Database::getConnection();
+    $connection = Database::getConnection();
     foreach ((array) $query->arguments() as $key => $val) {
       $quoted[$key] = is_null($val) ? 'NULL' : $connection->quote($val);
     }
