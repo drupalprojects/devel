@@ -142,7 +142,7 @@ devel.elements_page:
   path: '/devel/elements'
   defaults:
     _controller: '\Drupal\devel\Controller\DevelController::elementsPage'
-    _title: 'Hook_elements()'
+    _title: 'Element Info'
   options:
     _admin_route: TRUE
   requirements:
