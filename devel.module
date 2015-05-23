@@ -883,7 +883,7 @@ function _devel_table_sort($a, $b) {
  * Displays page execution time at the bottom of the page.
  */
 function devel_timer() {
-  $time = Timer::read('page');
+  $time = Timer::read('devel_page');
   return t_safe(' Page execution time was @time ms.', array('@time' => $time));
 }
 

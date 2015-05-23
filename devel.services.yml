@@ -11,6 +11,11 @@ services:
     tags:
       - { name: event_subscriber }
 
+  devel.http_middleware:
+    class: Drupal\devel\StackMiddleware\DevelMiddleware
+    tags:
+      - { name: http_middleware, priority: 350 }
+
   access_check.switch_user:
     class: Drupal\devel\Access\SwitchAccess
     arguments: ['@csrf_token']
