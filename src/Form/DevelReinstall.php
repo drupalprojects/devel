@@ -46,7 +46,7 @@ class DevelReinstall extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
+  public function getFormId() {
     return 'devel_reinstall_form';
   }
 

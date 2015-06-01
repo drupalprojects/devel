@@ -49,7 +49,7 @@ class SystemStateEdit extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
+  public function getFormId() {
     return 'devel_state_system_edit_form';
   }
 

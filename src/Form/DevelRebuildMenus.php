@@ -47,7 +47,7 @@ class DevelRebuildMenus extends ConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
+  public function getFormId() {
     return 'devel_menu_rebuild';
   }
 

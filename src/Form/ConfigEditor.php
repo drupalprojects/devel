@@ -22,7 +22,7 @@ class ConfigEditor extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function getFormID() {
+  public function getFormId() {
     return 'devel_config_system_edit_form';
   }
 
