@@ -283,21 +283,6 @@ class DevelController extends ControllerBase {
   }
 
   /**
-   * Returns the core version.
-   */
-  public static function getCoreVersion($version) {
-    $version_parts = explode('.', $version);
-    // Map from 4.7.10 -> 4.7
-    if ($version_parts[0] < 5) {
-      return $version_parts[0] . '.' . $version_parts[1];
-    }
-    // Map from 5.5 -> 5 or 6.0-beta2 -> 6
-    else {
-      return $version_parts[0];
-    }
-  }
-
-  /**
    * Explain query callback called by the AJAX link in the query log.
    */
   function queryLogExplain($request_id = NULL, $qid = NULL) {

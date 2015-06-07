@@ -31,7 +31,6 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Url;
 use Drupal\Core\Utility\Error;
-use Drupal\devel\Controller\DevelController;
 
 /**
  * Implements hook_help().
@@ -360,6 +359,21 @@ function backtrace_error_handler($error_level, $message, $filename, $line, $cont
  */
 function _devel_switch_user_list_cmp($a, $b) {
   return $b['last_access'] - $a['last_access'];
+}
+
+/**
+ * Returns the core version.
+ */
+function devel_get_core_version($version) {
+  $version_parts = explode('.', $version);
+  // Map from 4.7.10 -> 4.7
+  if ($version_parts[0] < 5) {
+    return $version_parts[0] . '.' . $version_parts[1];
+  }
+  // Map from 5.5 -> 5 or 6.0-beta2 -> 6
+  else {
+    return $version_parts[0];
+  }
 }
 
 /**
@@ -759,7 +773,7 @@ function _devel_print_object($obj, $prefix = NULL, $parents = NULL, $object = FA
  * queries that were made to generate the page.
  */
 function devel_query_table($queries, $counts) {
-  $version = DevelController::getCoreVersion(\Drupal::VERSION);
+  $version = devel_get_core_version(\Drupal::VERSION);
   $header = array('ms', '#', 'where', 'ops', 'query', 'target');
   $i = 0;
   $config_devel = \Drupal::config('devel.settings');
