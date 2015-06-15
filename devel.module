@@ -616,7 +616,8 @@ function t_safe($string, $args) {
  */
 function kdevel_print_object($object, $prefix = NULL) {
   // @todo: quick fix to avoid Kint output floating. Remove when fixed upstream.
-  return has_kint() ? '<div style="clear:both">' . @Kint::dump($object) . '</div>' : devel_print_object($object, $prefix);
+  $dump = has_kint() ? '<div style="clear:both">' . @Kint::dump($object) . '</div>' : devel_print_object($object, $prefix);
+  return SafeMarkup::set($dump);
 }
 
 /**
