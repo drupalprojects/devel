@@ -127,7 +127,7 @@ class DevelEventSubscriber implements EventSubscriberInterface {
       if (\Drupal::service('flood')->isAllowed('devel.rebuild_theme_warning', 1)) {
         \Drupal::service('flood')->register('devel.rebuild_theme_warning');
         if (!devel_silent() && $this->account->hasPermission('access devel information')) {
-          drupal_set_message(t('The theme information is being rebuilt on every request. Remember to <a href="!url">turn off</a> this feature on production websites.', array("!url" => $this->urlGenerator->generateFromRoute('devel.admin_settings'))));
+          drupal_set_message(t('The theme information is being rebuilt on every request. Remember to <a href="@url">turn off</a> this feature on production websites.', array('@url' => $this->urlGenerator->generateFromRoute('devel.admin_settings'))));
         }
       }
     }
