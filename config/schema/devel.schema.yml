@@ -36,10 +36,10 @@ devel.settings:
       type: mapping
       mapping:
         error_handler_type:
-          type: 'integer'
+          type: integer
           label: 'Error handler type'
         error_handler_value:
-          type: 'integer'
+          type: integer
           label: 'Error handler value'
     krumo_skin:
       type: string
