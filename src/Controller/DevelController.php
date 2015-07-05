@@ -131,29 +131,52 @@ class DevelController extends ControllerBase {
    *   Array of page elements to render.
    */
   public function stateSystemPage() {
+    $output['#attached']['library'][] = 'system/drupal.system.modules';
+
+    $output['filters'] = array(
+      '#type' => 'container',
+      '#attributes' => array(
+        'class' => array('table-filter', 'js-show'),
+      ),
+    );
+
+    $output['filters']['text'] = array(
+      '#type' => 'search',
+      '#title' => $this->t('Search'),
+      '#size' => 30,
+      '#placeholder' => $this->t('Enter state name'),
+      '#attributes' => array(
+        'class' => array('table-filter-text'),
+        'data-table' => '.devel-state-list',
+        'autocomplete' => 'off',
+        'title' => $this->t('Enter a part of the state name to filter by.'),
+      ),
+    );
 
     $header = array(
-      'name' => array('data' => t('Name')),
-      'value' => array('data' => t('Value')),
-      'edit' => array('data' => t('Operations')),
+      'name' => $this->t('Name'),
+      'value' => $this->t('Value'),
+      'edit' => $this->t('Operations'),
     );
 
     $rows = array();
     // State class doesn't have getAll method so we get all states from the
-    // KeyValueStorage and put them in the table.
+    // KeyValueStorage.
     foreach ($this->keyValue('state')->getAll() as $state_name => $state) {
       $operations['edit'] = array(
         'title' => $this->t('Edit'),
         'url' => Url::fromRoute('devel.system_state_edit', array('state_name' => $state_name)),
       );
       $rows[$state_name] = array(
-        'name' => $state_name,
-        'value' => kprint_r($state, TRUE),
+        'name' => array(
+          'data' => $state_name,
+          'class' => 'table-filter-text-source',
+        ),
+        'value' => array(
+          'data' => kprint_r($state, TRUE),
+        ),
         'edit' => array(
-          'data' => array(
-            '#type' => 'operations',
-            '#links' => $operations,
-          )
+          'data' => array('#type' => 'operations', '#links' => $operations),
         ),
       );
     }
@@ -162,7 +185,10 @@ class DevelController extends ControllerBase {
       '#type' => 'table',
       '#header' => $header,
       '#rows' => $rows,
-      '#empty' => $this->t('No state variables.'),
+      '#empty' => $this->t('No state variables found.'),
+      '#attributes' => array(
+        'class' => array('devel-state-list'),
+      ),
     );
 
     return $output;
