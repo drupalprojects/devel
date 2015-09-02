@@ -136,7 +136,7 @@ class UserDevelGenerate extends DevelGenerateBase implements ContainerFactoryPlu
     $kill = $values['kill'];
     $pass = $values['pass'];
     $age = $values['time_range'];
-    $roles = $values['roles'];
+    $roles = array_filter($values['roles']);
 
     if ($kill) {
       $uids = $this->userStorage->getQuery()
