@@ -21,7 +21,7 @@ class DevelControllerTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('devel', 'node', 'entity_test', 'devel_test');
+  public static $modules = array('devel', 'node', 'entity_test', 'devel_test', 'block');
 
   /**
    * {@inheritdoc}
@@ -52,6 +52,8 @@ class DevelControllerTest extends WebTestBase {
     $data = array('type' => 'devel_entity_test_no_links', 'name' => $random_label);
     $this->entity_no_links = entity_create('devel_entity_test_no_links', $data);
     $this->entity_no_links->save();
+
+    $this->drupalPlaceBlock('local_tasks_block');
 
     $web_user = $this->drupalCreateUser(array(
       'view test entity',
