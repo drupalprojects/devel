@@ -7,7 +7,7 @@
 
 namespace Drupal\devel\Form;
 
-use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Core\Render\SafeString;
 use Drupal\Core\Form\ConfigFormBase;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Form\FormStateInterface;
@@ -121,7 +121,8 @@ class SettingsForm extends ConfigFormBase {
       ),
       '#multiple' => TRUE,
       '#default_value' => empty($error_handlers) ? DEVEL_ERROR_HANDLER_NONE : $error_handlers,
-      '#description' => SafeMarkup::set(t('Select the error handler(s) to use, in case you <a href="@choose">choose to show errors on screen</a>.', array('@choose' => $this->url('system.logging_settings'))) . '<ul>' .
+      // TODO properly handle this without use SafeString
+      '#description' => SafeString::create(t('Select the error handler(s) to use, in case you <a href="@choose">choose to show errors on screen</a>.', array('@choose' => $this->url('system.logging_settings'))) . '<ul>' .
           '<li>' . t('<em>None</em> is a good option when stepping through the site in your debugger.') . '</li>' .
           '<li>' . t('<em>Standard Drupal</em> does not display all the information that is often needed to resolve an issue.') . '</li>' .
           '<li>' . t('<em>Krumo backtrace</em> displays nice debug information when any type of error is noticed, but only to users with the %perm permission.', array('%perm' => t('Access developer information'))) . '</li></ul>' .
