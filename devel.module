@@ -233,21 +233,30 @@ function devel_set_handler($handlers) {
 
 /**
  * Checks whether Devel may be active.
- * @todo: port to D8.
+ *
+ * @return bool
+ *   Return whether Devel may be active.
  */
 function devel_silent() {
-  // Don't interfere with private files/images.
-  $request_path = Url::fromRoute('<current>')->toString();
+  $route_name = \Drupal::routeMatch()->getRouteName();
+
+  $excluded_routes = array(
+    'file.ajax_progress',
+    'file.ajax_upload',
+    'image.style_private',
+    'system.batch_page.html',
+    'system.batch_page.json',
+    'system.files',
+    'system.private_file_download',
+  );
+
   return
     (PHP_SAPI === 'cli') ||
     (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'ApacheBench') !== FALSE) ||
     !empty($_REQUEST['XDEBUG_PROFILE']) ||
     isset($GLOBALS['devel_shutdown']) ||
     strstr($_SERVER['PHP_SELF'], 'update.php') ||
-    in_array($request_path, array('admin/content/node-settings/rebuild')) ||
-    substr($request_path, 0, strlen('system/files')) == 'system/files' ||
-    substr($request_path, 0, strlen('batch')) == 'batch' ||
-    substr($request_path, 0, strlen('file/ajax')) == 'file/ajax';
+    in_array($route_name, $excluded_routes);
 }
 
 /**
