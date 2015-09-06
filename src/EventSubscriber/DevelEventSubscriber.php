@@ -11,6 +11,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Page\DefaultHtmlPageRenderer;
+use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -153,6 +154,10 @@ class DevelEventSubscriber implements EventSubscriberInterface {
       else {
         $GLOBALS['devel_redirecting'] = TRUE;
       }
+    }
+    // Enable Devel only on html pages.
+    elseif(!$response instanceof HtmlResponse) {
+      $GLOBALS['devel_shutdown'] = FALSE;
     }
   }
 

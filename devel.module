@@ -234,29 +234,45 @@ function devel_set_handler($handlers) {
 /**
  * Checks whether Devel may be active.
  *
+ * Devel is automatically disabled when:
+ *   - The request come from a php cli.
+ *   - The request has 'XDEBUG_PROFILE' parameter set.
+ *   - The request come from Apache Benchmark.
+ *   - The currently executing script is the front controller update.php.
+ *   - The returned response isn't a \Drupal\Core\Render\HtmlResponse instance.
+ *
+ * You can manually disable devel at runtime by setting the global variable
+ * 'devel_shutdown' to FALSE in your code:
+ *
+ * @code
+ * if ($some_condition)  {
+ *   $GLOBALS['devel_shutdown'] = FALSE;
+ * }
+ * @endcode
+ *
+ * You can manually disable devel adding the '_devel_silent' requirement
+ * to your route definitions:
+ *
+ * @code
+ * mymodule.silent_route:
+ *   path: '/my-path'
+ *   defaults:
+ *     _controller: '\Drupal\mymodule\Controller\MyController::method'
+ *   requirements:
+ *     _devel_silent: 'TRUE'
+ * @endcode
+ *
  * @return bool
  *   Return whether Devel may be active.
  */
 function devel_silent() {
-  $route_name = \Drupal::routeMatch()->getRouteName();
-
-  $excluded_routes = array(
-    'file.ajax_progress',
-    'file.ajax_upload',
-    'image.style_private',
-    'system.batch_page.html',
-    'system.batch_page.json',
-    'system.files',
-    'system.private_file_download',
-  );
-
   return
     (PHP_SAPI === 'cli') ||
     (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'ApacheBench') !== FALSE) ||
     !empty($_REQUEST['XDEBUG_PROFILE']) ||
     isset($GLOBALS['devel_shutdown']) ||
     strstr($_SERVER['PHP_SELF'], 'update.php') ||
-    in_array($route_name, $excluded_routes);
+    (($route = \Drupal::routeMatch()->getRouteObject()) && $route->getRequirement('_devel_silent'));
 }
 
 /**
@@ -444,19 +460,6 @@ function devel_shutdown_real() {
   // of the Content-type http headers tested below (e.g. text/xml,
   // text/javascript, etc).  This is is advised where applicable.
   if (!devel_silent() && !isset($GLOBALS['devel_shutdown']) && !isset($GLOBALS['devel_redirecting'])) {
-    // Try not to break non html pages.
-    if (function_exists('drupal_get_http_header')) {
-      $header = drupal_get_http_header('content-type');
-      if ($header) {
-        $formats = array('xml', 'javascript', 'json', 'plain', 'image',
-          'application', 'csv', 'x-comma-separated-values');
-        foreach ($formats as $format) {
-          if (strstr($header, $format)) {
-            return;
-          }
-        }
-      }
-    }
 
     if (\Drupal::currentUser()->hasPermission('access devel information')) {
       $queries = (devel_query_enabled() ? Database::getLog('devel', 'default') : NULL);
