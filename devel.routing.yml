@@ -157,6 +157,7 @@ devel.cache_clear:
     _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
+    _csrf_token: 'TRUE'
 
 devel.run_cron:
   path: '/devel/run-cron'
@@ -167,6 +168,7 @@ devel.run_cron:
     _admin_route: TRUE
   requirements:
     _permission: 'administer site configuration'
+    _csrf_token: 'TRUE'
 
 devel.explain:
   path: '/devel/explain/{request_id}/{qid}'
