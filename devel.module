@@ -1079,7 +1079,7 @@ function kprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r') 
       $output = dprint_r($input, $return, $name, $function);
     }
 
-    return SafeMarkup::set($output);
+    return SafeString::create($output);
   }
 }
 

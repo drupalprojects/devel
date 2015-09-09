@@ -46,7 +46,7 @@ function ksm() {
   if (\Drupal::currentUser()->hasPermission('access kint')) {
     $args = func_get_args();
     $msg = @Kint::dump($args);
-    drupal_set_message($msg);
+    drupal_set_message(Drupal\Core\Render\SafeString::create($msg));
   }
 }
 

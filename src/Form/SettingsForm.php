@@ -7,7 +7,6 @@
 
 namespace Drupal\devel\Form;
 
-use Drupal\Core\Render\SafeString;
 use Drupal\Core\Form\ConfigFormBase;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Form\FormStateInterface;
@@ -40,6 +39,8 @@ class SettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
     $current_url = Url::createFromRequest($request);
     $devel_config = $this->config('devel.settings');
+    /** @var \Drupal\Core\Render\RendererInterface $renderer */
+    $renderer = \Drupal::service('renderer');
 
     $form['queries'] = array(
       '#type' => 'details',
@@ -121,17 +122,27 @@ class SettingsForm extends ConfigFormBase {
       ),
       '#multiple' => TRUE,
       '#default_value' => empty($error_handlers) ? DEVEL_ERROR_HANDLER_NONE : $error_handlers,
-      // TODO properly handle this without use SafeString
-      '#description' => SafeString::create(t('Select the error handler(s) to use, in case you <a href="@choose">choose to show errors on screen</a>.', array('@choose' => $this->url('system.logging_settings'))) . '<ul>' .
-          '<li>' . t('<em>None</em> is a good option when stepping through the site in your debugger.') . '</li>' .
-          '<li>' . t('<em>Standard Drupal</em> does not display all the information that is often needed to resolve an issue.') . '</li>' .
-          '<li>' . t('<em>Krumo backtrace</em> displays nice debug information when any type of error is noticed, but only to users with the %perm permission.', array('%perm' => t('Access developer information'))) . '</li></ul>' .
-          t('Depending on the situation, the theme, the size of the call stack and the arguments, etc., some handlers may not display their messages, or display them on the subsequent page. Select <em>Standard Drupal</em> <strong>and</strong> <em>Krumo backtrace above the rendered page</em> to maximize your chances of not missing any messages.') . '<br />' .
-          t('Demonstrate the current error handler(s):') . ' ' .
-          $this->l('notice', $current_url, array('query' => array('demo' => 'notice'))) . ', ' .
-          $this->l('notice+warning', $current_url, array('query' => array('demo' => 'warning'))) . ', ' .
-          $this->l('notice+warning+error', $current_url, array('query' => array('demo' => 'error'))) . ' ' .
-          t('(The presentation of the @error is determined by PHP.)', array('@error' => 'error'))),
+      '#description' => [
+        [
+          '#markup' => $this->t('Select the error handler(s) to use, in case you <a href="@choose">choose to show errors on screen</a>.', ['@choose' => $this->url('system.logging_settings')])
+        ],
+        [
+          '#theme' => 'item_list',
+          '#items' => [
+            $this->t('<em>None</em> is a good option when stepping through the site in your debugger.'),
+            $this->t('<em>Standard Drupal</em> does not display all the information that is often needed to resolve an issue.'),
+            $this->t('<em>Krumo backtrace</em> displays nice debug information when any type of error is noticed, but only to users with the %perm permission.', ['%perm' => t('Access developer information')]),
+          ],
+        ],
+        [
+          '#markup' => $this->t('Depending on the situation, the theme, the size of the call stack and the arguments, etc., some handlers may not display their messages, or display them on the subsequent page. Select <em>Standard Drupal</em> <strong>and</strong> <em>Krumo backtrace above the rendered page</em> to maximize your chances of not missing any messages.') . '<br />' .
+            $this->t('Demonstrate the current error handler(s):') . ' ' .
+            $this->l('notice', $current_url->setOption('query', ['demo' => 'notice'])) . ', ' .
+            $this->l('notice+warning', $current_url->setOption('query', ['demo' => 'warning'])). ', ' .
+            $this->l('notice+warning+error', $current_url->setOption('query', ['demo' => 'error'])) . ' (' .
+            $this->t('The presentation of the @error is determined by PHP.', ['@error' => 'error']) . ')'
+        ],
+      ],
     );
     $form['error_handlers']['#size'] = count($form['error_handlers']['#options']);
     if ($request->query->has('demo')) {
