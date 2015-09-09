@@ -130,8 +130,9 @@ devel.session:
 devel.switch:
   path: '/devel/switch/{name}'
   defaults:
-    _controller: '\Drupal\devel\Controller\DevelController::switchUser'
+    _controller: '\Drupal\devel\Controller\SwitchUserController::switchUser'
     _title: 'Switch user'
+    name: ''
   options:
     _admin_route: TRUE
   requirements:

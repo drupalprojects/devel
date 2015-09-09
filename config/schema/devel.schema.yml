@@ -53,3 +53,17 @@ devel.settings:
     debug_mail_directory:
       type: string
       label: 'Mail debug directory'
+
+block.settings.devel_switch_user:
+  type: block_settings
+  label: 'Switch user block'
+  mapping:
+    list_size:
+      type: integer
+      label: 'List size'
+    include_anon:
+      type: boolean
+      label: 'Include Anonymous user'
+    show_form:
+      type: boolean
+      label: 'Show search form'

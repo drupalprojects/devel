@@ -376,17 +376,6 @@ function backtrace_error_handler($error_level, $message, $filename, $line, $cont
   }
 }
 
-
-
-/**
- * Comparison helper function for uasort() in devel_switch_user_list().
- *
- * Sorts the Switch User links by the user's last access timestamp.
- */
-function _devel_switch_user_list_cmp($a, $b) {
-  return $b['last_access'] - $a['last_access'];
-}
-
 /**
  * Returns the core version.
  */

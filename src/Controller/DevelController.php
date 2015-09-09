@@ -275,40 +275,6 @@ class DevelController extends ControllerBase {
   }
 
   /**
-   * Switches to a different user.
-   *
-   * We don't call session_save_session() because we really want to change users.
-   * Usually unsafe!
-   *
-   * @param string $name
-   *   The username to switch to, or NULL to log out.
-   *
-   * @return \Symfony\Component\HttpFoundation\RedirectResponse
-   */
-  public function switchUser($name = NULL) {
-    // global $user;
-
-    // $module_handler = $this->moduleHandler();
-    // $session_manager = \Drupal::service('session_manager');
-
-    if ($uid = $this->currentUser()->id()) {
-      // @todo Is this needed?
-      // user_logout();
-    }
-    if (isset($name) && $account = user_load_by_name($name)) {
-      // See https://www.drupal.org/node/218104
-      $accountSwitcher = Drupal::service('account_switcher');
-      $accountSwitcher->switchTo(new UserSession(array('uid' => $account->getId())));
-
-      // Send her on her way.
-      $destination = $this->getDestinationArray();
-      $url = $this->getUrlGenerator()
-        ->generateFromPath($destination['destination'], array('absolute' => TRUE));
-      return new RedirectResponse($url);
-    }
-  }
-
-  /**
    * Explain query callback called by the AJAX link in the query log.
    */
   function queryLogExplain($request_id = NULL, $qid = NULL) {
