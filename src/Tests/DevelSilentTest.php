@@ -31,6 +31,10 @@ class DevelSilentTest extends WebTestBase {
    * Tests devel silent.
    */
   public function testDevelSilent() {
+    // TODO Quickfix for dynamic_page_cache, enabled by default in the testing
+    // profile.
+    $this->container->get('module_installer')->uninstall(['dynamic_page_cache']);
+
     // Enable timer so we can test if devel_silent() works properly by checking
     // the output of the page.
     \Drupal::configFactory()->getEditable('devel.settings')->set('timer', TRUE)->save();
