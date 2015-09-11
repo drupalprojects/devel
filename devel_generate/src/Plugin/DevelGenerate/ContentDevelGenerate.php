@@ -166,7 +166,8 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
           // Find all comment fields for the bundle.
           if (in_array($type->id(), $info['bundles'])) {
             $instance = FieldConfig::loadByName('node', $type->id(), $field_name);
-            $default_mode = reset($instance->getDefaultValueLiteral());
+            $default_value = $instance->getDefaultValueLiteral();
+            $default_mode = reset($default_value);
             $fields[] = SafeMarkup::format('@field: !state', array(
               '@field' => $instance->label(),
               '!state' => $map[$default_mode['status']],
