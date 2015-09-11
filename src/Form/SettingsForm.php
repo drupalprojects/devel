@@ -39,8 +39,6 @@ class SettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
     $current_url = Url::createFromRequest($request);
     $devel_config = $this->config('devel.settings');
-    /** @var \Drupal\Core\Render\RendererInterface $renderer */
-    $renderer = \Drupal::service('renderer');
 
     $form['queries'] = array(
       '#type' => 'details',
