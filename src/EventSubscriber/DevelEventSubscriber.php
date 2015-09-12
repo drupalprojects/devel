@@ -64,14 +64,7 @@ class DevelEventSubscriber implements EventSubscriberInterface {
    */
   public function onRequest(GetResponseEvent $event) {
     if (!devel_silent()) {
-      if ($this->config->get('memory')) {
-        global $memory_init;
-        $memory_init = memory_get_usage();
-      }
 
-      if (devel_query_enabled()) {
-        Database::startLog('devel');
-      }
 
       if ($this->account->hasPermission('access devel information')) {
         devel_set_handler(devel_get_handlers());

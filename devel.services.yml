@@ -13,5 +13,6 @@ services:
 
   devel.http_middleware:
     class: Drupal\devel\StackMiddleware\DevelMiddleware
+    arguments: ['@config.factory']
     tags:
       - { name: http_middleware, priority: 350 }
