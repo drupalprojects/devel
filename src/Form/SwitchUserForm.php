@@ -93,7 +93,7 @@ class SwitchUserForm extends FormBase {
       $form_state->setErrorByName('userid', $this->t('Username not found'));
     }
     else {
-      $form_state->setValue('username', $account->getUsername());
+      $form_state->setValue('username', $account->getAccountName());
     }
   }
 

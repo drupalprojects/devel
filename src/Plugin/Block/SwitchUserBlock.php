@@ -124,7 +124,7 @@ class SwitchUserBlock extends BlockBase implements ContainerFactoryPluginInterfa
     ];
     $form['include_anon'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Include %anonymous', ['%anonymous' => $anononymous->getUsername()]),
+      '#title' => $this->t('Include %anonymous', ['%anonymous' => $anononymous->getAccountName()]),
       '#default_value' => $this->configuration['include_anon'],
     ];
     $form['show_form'] = [
@@ -240,8 +240,8 @@ class SwitchUserBlock extends BlockBase implements ContainerFactoryPluginInterfa
 
     foreach ($accounts as $account) {
       $links[$account->id()] = [
-        'title' => $account->getUsername(),
-        'url' => Url::fromRoute('devel.switch', ['name' => $account->getUsername()]),
+        'title' => $account->getDisplayName(),
+        'url' => Url::fromRoute('devel.switch', ['name' => $account->getAccountName()]),
         'query' => $this->getDestinationArray(),
         'attributes' => [
           'title' => $account->hasPermission('switch users') ? $this->t('This user can switch back.') : $this->t('Caution: this user will be unable to switch back.'),
@@ -253,7 +253,7 @@ class SwitchUserBlock extends BlockBase implements ContainerFactoryPluginInterfa
       }
 
       if ($this->currentUser->id() === $account->id()) {
-        $links[$account->id()]['title'] = SafeMarkup::format('<strong>%user</strong>', ['%user' => $account->getUsername()]);
+        $links[$account->id()]['title'] = SafeMarkup::format('<strong>%user</strong>', ['%user' => $account->getDisplayName()]);
       }
     }
 
