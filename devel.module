@@ -22,7 +22,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Timer;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Xss;
-use Drupal\Core\Render\SafeString;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -619,7 +619,7 @@ function t_safe($string, $args) {
 function kdevel_print_object($object, $prefix = NULL) {
   // @todo: quick fix to avoid Kint output floating. Remove when fixed upstream.
   $dump = has_kint() ? '<div style="clear:both">' . @Kint::dump($object) . '</div>' : devel_print_object($object, $prefix);
-  return SafeString::create($dump);
+  return Markup::create($dump);
 }
 
 /**
@@ -1068,7 +1068,7 @@ function kprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r') 
       $output = dprint_r($input, $return, $name, $function);
     }
 
-    return SafeString::create($output);
+    return Markup::create($output);
   }
 }
 
