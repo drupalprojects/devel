@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\devel_test\Routing\RouteSubscriber.
+ * Contains \Drupal\devel_entity_test\Routing\RouteSubscriber.
  */
 
-namespace Drupal\devel_test\Routing;
+namespace Drupal\devel_entity_test\Routing;
 
 use Symfony\Component\Routing\Route;
 

@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\devel_test\Entity\DevelEntityTestCanonical.
+ * Contains \Drupal\devel_entity_test\Entity\DevelEntityTestNoLinks.
  */
 
-namespace Drupal\devel_test\Entity;
+namespace Drupal\devel_entity_test\Entity;
 
 use Drupal\entity_test\Entity\EntityTest;
 
@@ -13,8 +13,8 @@ use Drupal\entity_test\Entity\EntityTest;
  * Defines the test entity class.
  *
  * @ContentEntityType(
- *   id = "devel_entity_test_canonical",
- *   label = @Translation("Devel test entity with canonical link"),
+ *   id = "devel_entity_test_no_links",
+ *   label = @Translation("Devel test entity with no links"),
  *   handlers = {
  *     "list_builder" = "Drupal\entity_test\EntityTestListBuilder",
  *     "view_builder" = "Drupal\entity_test\EntityTestViewBuilder",
@@ -26,7 +26,7 @@ use Drupal\entity_test\Entity\EntityTest;
  *     "translation" = "Drupal\content_translation\ContentTranslationHandler",
  *     "views_data" = "Drupal\entity_test\EntityTestViewsData"
  *   },
- *   base_table = "devel_entity_test_canonical",
+ *   base_table = "devel_entity_test_no_links",
  *   persistent_cache = FALSE,
  *   entity_keys = {
  *     "id" = "id",
@@ -35,12 +35,9 @@ use Drupal\entity_test\Entity\EntityTest;
  *     "label" = "name",
  *     "langcode" = "langcode",
  *   },
- *   links = {
- *     "canonical" = "/devel_entity_test_canonical/{devel_entity_test_canonical}",
- *   },
  *   field_ui_base_route = "entity.entity_test.admin_form",
  * )
  */
-class DevelEntityTestCanonical extends EntityTest {
+class DevelEntityTestNoLinks extends EntityTest {
 
 }

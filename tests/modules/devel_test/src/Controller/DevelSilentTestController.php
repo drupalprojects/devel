@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\devel_test\Controller\DevelSilentTestContoller.
+ * Contains \Drupal\devel_test\Controller\DevelSilentTestController.
  */
 
 namespace Drupal\devel_test\Controller;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 /**
  * Returns responses for devel module routes.
  */
-class DevelSilentTestContoller extends ControllerBase {
+class DevelSilentTestController extends ControllerBase {
 
   /**
    * Tests that devel is disabled if $GLOBALS['devel_shutdown'] is set.

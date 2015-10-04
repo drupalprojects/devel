@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\devel_test\Plugin\Derivative\DevelEntityTestLocalTasks.
+ * Contains \Drupal\devel_entity_test\Plugin\Derivative\DevelEntityTestLocalTasks.
  */
 
-namespace Drupal\devel_test\Plugin\Derivative;
+namespace Drupal\devel_entity_test\Plugin\Derivative;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 

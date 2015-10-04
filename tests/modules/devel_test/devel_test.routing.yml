@@ -1,7 +1,15 @@
+devel.simple_page:
+  path: '/devel/simple-page'
+  defaults:
+    _controller: '\Drupal\devel_test\Controller\DevelTestController::simplePage'
+    _title: 'Simple Page'
+  requirements:
+    _permission: 'access devel information'
+
 devel.silent_global:
   path: '/devel-silent/global-shoutdown'
   defaults:
-    _controller: '\Drupal\devel_test\Controller\DevelSilentTestContoller::globalShoutdown'
+    _controller: '\Drupal\devel_test\Controller\DevelSilentTestController::globalShoutdown'
     _title: 'Devel shoutdown'
   requirements:
     _permission: 'access devel information'
@@ -9,7 +17,7 @@ devel.silent_global:
 devel.silent_route_parameter:
   path: '/devel-silent/route-requirement'
   defaults:
-    _controller: '\Drupal\devel_test\Controller\DevelSilentTestContoller::develSilentRouteRequirement'
+    _controller: '\Drupal\devel_test\Controller\DevelSilentTestController::develSilentRouteRequirement'
     _title: 'Devel settings'
   requirements:
     _permission: 'access devel information'
@@ -18,10 +26,7 @@ devel.silent_route_parameter:
 devel.silent_json:
   path: '/devel-silent/json'
   defaults:
-    _controller: '\Drupal\devel_test\Controller\DevelSilentTestContoller::jsonResponse'
+    _controller: '\Drupal\devel_test\Controller\DevelSilentTestController::jsonResponse'
     _title: 'Devel settings'
   requirements:
     _permission: 'access devel information'
-
-route_callbacks:
-  - '\Drupal\devel_test\Routing\DevelEntityTestRoutes::routes'

@@ -21,7 +21,7 @@ class DevelControllerTest extends WebTestBase {
    *
    * @var array
    */
-  public static $modules = array('devel', 'node', 'entity_test', 'devel_test', 'block');
+  public static $modules = array('devel', 'node', 'entity_test', 'devel_entity_test', 'block');
 
   /**
    * {@inheritdoc}
