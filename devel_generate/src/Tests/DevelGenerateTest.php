@@ -11,7 +11,7 @@ use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Language\Language;
-use Drupal\entity_reference\Tests\EntityReferenceTestTrait;
+use Drupal\field\Tests\EntityReference\EntityReferenceTestTrait;
 use Drupal\node\Entity\Node;
 use Drupal\simpletest\WebTestBase;
 
