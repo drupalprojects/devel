@@ -1020,7 +1020,7 @@ function dpm($input, $name = NULL, $type = 'status') {
  */
 function dvm($input, $name = NULL) {
   if (\Drupal::currentUser()->hasPermission('access devel information')) {
-    $export = dprint_r($input, TRUE, $name, 'drupal_var_export', FALSE);
+    $export = dprint_r($input, TRUE, $name, ['\Drupal\Component\Utility\Variable', 'export'], FALSE);
     drupal_set_message($export, 'status', TRUE);
   }
   return $input;
@@ -1083,15 +1083,10 @@ function dprint_r($input, $return = FALSE, $name = NULL, $function = 'print_r', 
     if ($name) {
       $name .= ' => ';
     }
-    if ($function == 'drupal_var_export') {
-      include_once DRUPAL_ROOT . '/core/includes/utility.inc';
-      $output = drupal_var_export($input);
-    }
-    else {
-      ob_start();
-      $function($input);
-      $output = ob_get_clean();
-    }
+
+    ob_start();
+    $function($input);
+    $output = ob_get_clean();
 
     if ($check) {
       $output = Html::escape($output);
