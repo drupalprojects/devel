@@ -71,7 +71,7 @@ class DevelControllerTest extends WebTestBase {
     // definitions.
     $this->drupalGet('entity_test/' . $this->entity->id());
     $this->assertText('Devel', 'Devel tab is present');
-    $this->drupalGet('entity_test/manage/' . $this->entity->id() . '/devel');
+    $this->drupalGet('entity_test/manage/' . $this->entity->id() . '/edit/devel');
     $this->assertResponse(200);
     $this->assertText('Load', 'Devel load tab is present');
     $this->assertText('Render', 'Devel load tab is present');
