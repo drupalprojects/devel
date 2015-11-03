@@ -168,9 +168,9 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
             $instance = FieldConfig::loadByName('node', $type->id(), $field_name);
             $default_value = $instance->getDefaultValueLiteral();
             $default_mode = reset($default_value);
-            $fields[] = SafeMarkup::format('@field: !state', array(
+            $fields[] = SafeMarkup::format('@field: @state', array(
               '@field' => $instance->label(),
-              '!state' => $map[$default_mode['status']],
+              '@state' => $map[$default_mode['status']],
             ));
           }
         }
@@ -313,7 +313,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
         $this->develGenerateContentAddNode($values);
         if (function_exists('drush_log') && $i % drush_get_option('feedback', 1000) == 0) {
           $now = time();
-          drush_log(dt('Completed !feedback nodes (!rate nodes/min)', array('!feedback' => drush_get_option('feedback', 1000), '!rate' => (drush_get_option('feedback', 1000) * 60) / ($now - $start))), 'ok');
+          drush_log(dt('Completed @feedback nodes (@rate nodes/min)', array('@feedback' => drush_get_option('feedback', 1000), '@rate' => (drush_get_option('feedback', 1000) * 60) / ($now - $start))), 'ok');
           $start = $now;
         }
       }
