@@ -35,10 +35,6 @@ class DevelSilentTest extends WebTestBase {
     // profile.
     $this->container->get('module_installer')->uninstall(['dynamic_page_cache']);
 
-    // Enable timer so we can test if devel_silent() works properly by checking
-    // the output of the page.
-    \Drupal::configFactory()->getEditable('devel.settings')->set('timer', TRUE)->save();
-
     $web_user = $this->drupalCreateUser([
       'administer site configuration',
       'access devel information',
@@ -46,36 +42,10 @@ class DevelSilentTest extends WebTestBase {
     ]);
     $this->drupalLogin($web_user);
 
-    $this->drupalGet('');
-    $this->assertText('Page execution time was');
-
-    // Ensure that devel is disabled if the request has XDEBUG_PROFILE
-    // parameter set. Get the user profile page so we are sure that we are not
-    // redirected and we don't lose the query string parameter.
-    $this->drupalGet('user/' . $web_user->id(), ['query' => ['XDEBUG_PROFILE' => '1']]);
-    $this->assertNoText('Page execution time was');
-
-    // TODO this assertion seems to break testbot, we need to investigate.
-    // Ensure that devel is disabled if the request come from Apache Benchmark.
-    // $this->drupalGet('', [], ['User-Agent: ApacheBench/1.0']);
-    // $this->assertNoText('Page execution time was');
-
-    // Ensure that devel is disabled on the front controller update.php.
-    $this->drupalGet(Url::fromRoute('system.db_update'));
-    $this->assertResponse(200);
-    $this->assertNoText('Page execution time was');
-
-    // Ensure that devel is disabled if $GLOBALS['devel_shutdown'] is set
-    // somewhere in the code.
-    $this->drupalGet('devel-silent/global-shoutdown');
-    $this->assertText(t('$GLOBALS[\'devel_shutdown\'] = FALSE forces devel to be inactive.'));
-    $this->assertNoText('Page execution time was');
-
     // Ensure that devel is disabled if response come from routes that are
     // declared with '_devel_silent' requirement.
     $this->drupalGet('devel-silent/route-requirement');
     $this->assertText(t('"_devel_silent" route requirement forces devel to be inactive.'));
-    $this->assertNoText('Page execution time was');
 
     // Ensure that devel doesn't interfere with non html response (e.g JsonResponse).
     $response = $this->drupalGet('devel-silent/json');
@@ -101,7 +71,6 @@ class DevelSilentTest extends WebTestBase {
     $this->drupalGet($style->buildUrl($image_uri));
     $this->assertResponse(200);
     $this->assertRaw(file_get_contents($style->buildUri($image_uri)), 'URL returns expected file.');
-    $this->assertNoText('Page execution time was');
 
     // Ensure that devel doesn't interfere with private files and with
     // BinaryFileResponse response.
@@ -122,7 +91,6 @@ class DevelSilentTest extends WebTestBase {
     $this->drupalGet($file->url());
     $this->assertResponse(200);
     $this->assertRaw(file_get_contents($file->getFileUri()), 'URL returns expected file.');
-    $this->assertNoText('Page execution time was');
   }
 
 }

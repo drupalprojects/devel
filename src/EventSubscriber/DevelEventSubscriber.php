@@ -8,18 +8,12 @@
 namespace Drupal\devel\EventSubscriber;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Database\Database;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Page\DefaultHtmlPageRenderer;
-use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Routing\UrlGeneratorInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 class DevelEventSubscriber implements EventSubscriberInterface {
 
@@ -125,33 +119,6 @@ class DevelEventSubscriber implements EventSubscriberInterface {
         }
       }
     }
-
-    drupal_register_shutdown_function('devel_shutdown');
-  }
-
-  /**
-   * Prevents page redirection so that the developer can see the intermediate debug data.
-   * @param FilterResponseEvent $event
-   */
-  public function onResponse(FilterResponseEvent $event) {
-    $response = $event->getResponse();
-    if ($response instanceOf RedirectResponse && !devel_silent()) {
-      if ($this->account->hasPermission('access devel information') && $this->config->get('redirect_page')) {
-        $output = t_safe('<p>The user is being redirected to <a href="@destination">@destination</a>.</p>', array('@destination' => $response->getTargetUrl()));
-
-        // Replace RedirectResponse with a fresh Response that includes our content.
-        // We pass array() as last param in order to avoid adding regions which would add queries, etc.
-        $response = new Response(DefaultHtmlPageRenderer::renderPage($output, 'Devel Redirect', '', array()), 200);
-        $event->setResponse($response);
-      }
-      else {
-        $GLOBALS['devel_redirecting'] = TRUE;
-      }
-    }
-    // Enable Devel only on html pages.
-    elseif(!$response instanceof HtmlResponse) {
-      $GLOBALS['devel_shutdown'] = FALSE;
-    }
   }
 
   /**
@@ -163,9 +130,6 @@ class DevelEventSubscriber implements EventSubscriberInterface {
   static function getSubscribedEvents() {
     // Set a low value to start as early as possible.
     $events[KernelEvents::REQUEST][] = array('onRequest', -100);
-
-    // Why only large positive value works here?
-    $events[KernelEvents::RESPONSE][] = array('onResponse', 1000);
 
     return $events;
   }
