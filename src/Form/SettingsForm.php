@@ -43,7 +43,7 @@ class SettingsForm extends ConfigFormBase {
     $form['api_url'] = array('#type' => 'textfield',
       '#title' => t('API Site'),
       '#default_value' => $devel_config->get('api_url'),
-      '#description' => t('The base URL for your developer documentation links. You might change this if you run <a href="!url">api.module</a> locally.', array('!url' => Url::fromUri('http://drupal.org/project/api')->toString())));
+      '#description' => t('The base URL for your developer documentation links. You might change this if you run <a href=":url">api.module</a> locally.', array(':url' => Url::fromUri('http://drupal.org/project/api')->toString())));
     $form['page_alter'] = array('#type' => 'checkbox',
       '#title' => t('Display $page array'),
       '#default_value' => $devel_config->get('page_alter'),
@@ -52,7 +52,7 @@ class SettingsForm extends ConfigFormBase {
     $form['raw_names'] = array('#type' => 'checkbox',
       '#title' => t('Display machine names of permissions and modules'),
       '#default_value' => $devel_config->get('raw_names'),
-      '#description' => t('Display the language-independent machine names of the permissions in mouse-over hints on the !Permissions page and the module base file names on the @Permissions and !Modules pages.', array('!Permissions' => $this->l(t('Permissions'), Url::fromRoute('user.admin_permissions')), '@Permissions' => t('Permissions'), '!Modules' => $this->l(t('Modules'), Url::fromRoute('system.modules_list')))),
+      '#description' => t('Display the language-independent machine names of the permissions in mouse-over hints on the <a href=":permissions_url">Permissions</a> page and the module base file names on the Permissions and <a href=":modules_url">Permissions</a> pages.', array(':permissions_url' => Url::fromRoute('user.admin_permissions')->toString(), ':modules_url' => Url::fromRoute('system.modules_list')->toString())),
     );
 
     $error_handlers = devel_get_handlers();

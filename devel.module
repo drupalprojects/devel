@@ -419,9 +419,9 @@ function kdevel_print_object($object, $prefix = NULL) {
 function devel_print_object($object, $prefix = NULL, $header = TRUE) {
   $output = '<div class="devel-obj-output">';
   if ($header) {
-    $output .= '<h3>' . t('Display of !type !obj', array(
-      '!type' => str_replace(array('$', '->'), '', $prefix),
-      '!obj' => gettype($object),
+    $output .= '<h3>' . t('Display of @type @obj', array(
+      '@type' => str_replace(array('$', '->'), '', $prefix),
+      '@obj' => gettype($object),
     )
     ) . '</h3>';
   }
