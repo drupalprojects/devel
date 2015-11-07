@@ -52,7 +52,7 @@ class SettingsForm extends ConfigFormBase {
     $form['raw_names'] = array('#type' => 'checkbox',
       '#title' => t('Display machine names of permissions and modules'),
       '#default_value' => $devel_config->get('raw_names'),
-      '#description' => t('Display the language-independent machine names of the permissions in mouse-over hints on the <a href=":permissions_url">Permissions</a> page and the module base file names on the Permissions and <a href=":modules_url">Permissions</a> pages.', array(':permissions_url' => Url::fromRoute('user.admin_permissions')->toString(), ':modules_url' => Url::fromRoute('system.modules_list')->toString())),
+      '#description' => t('Display the language-independent machine names of the permissions in mouse-over hints on the <a href=":permissions_url">Permissions</a> page and the module base file names on the Permissions and <a href=":modules_url">Modules</a> pages.', array(':permissions_url' => Url::fromRoute('user.admin_permissions')->toString(), ':modules_url' => Url::fromRoute('system.modules_list')->toString())),
     );
 
     $error_handlers = devel_get_handlers();
@@ -69,7 +69,7 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => empty($error_handlers) ? DEVEL_ERROR_HANDLER_NONE : $error_handlers,
       '#description' => [
         [
-          '#markup' => $this->t('Select the error handler(s) to use, in case you <a href="@choose">choose to show errors on screen</a>.', ['@choose' => $this->url('system.logging_settings')])
+          '#markup' => $this->t('Select the error handler(s) to use, in case you <a href=":choose">choose to show errors on screen</a>.', [':choose' => $this->url('system.logging_settings')])
         ],
         [
           '#theme' => 'item_list',

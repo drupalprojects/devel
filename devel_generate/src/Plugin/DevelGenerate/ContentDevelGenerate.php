@@ -147,7 +147,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
 
     if (empty($types)) {
       $create_url = $this->urlGenerator->generateFromRoute('node.type_add');
-      $this->setMessage($this->t('You do not have any content types that can be generated. <a href="@create-type">Go create a new content type</a>', array('@create-type' => $create_url)), 'error', FALSE);
+      $this->setMessage($this->t('You do not have any content types that can be generated. <a href=":create-type">Go create a new content type</a>', array(':create-type' => $create_url)), 'error', FALSE);
       return;
     }
 
