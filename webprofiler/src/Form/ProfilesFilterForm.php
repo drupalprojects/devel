@@ -10,7 +10,6 @@ namespace Drupal\webprofiler\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class ProfilesFilterForm

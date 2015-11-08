@@ -8,7 +8,6 @@
 namespace Drupal\devel\Tests;
 
 use Drupal\Component\Serialization\Json;
-use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\simpletest\WebTestBase;
