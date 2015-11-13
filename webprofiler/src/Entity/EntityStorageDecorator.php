@@ -49,7 +49,7 @@ class EntityStorageDecorator extends EntityDecorator implements ConfigEntityStor
   public function load($id) {
     $entity = $this->getOriginalObject()->load($id);
 
-    $this->entities[] = $entity;
+    $this->entities[$id] = $entity;
 
     return $entity;
   }

@@ -52,25 +52,14 @@ class EntityManagerWrapper extends DefaultPluginManager implements EntityManager
     /** @var ConfigEntityStorageInterface $handler */
     $handler = $this->getHandler($entity_type, 'storage');
 
-    switch ($entity_type) {
-      case 'block':
-        if (!isset($this->loaded['block'])) {
-          $handler = new EntityStorageDecorator($handler);
-          $this->loaded['block'] = $handler;
-        }
-        else {
-          $handler = $this->loaded['block'];
-        }
-        break;
-      case 'view':
-        if (!isset($this->loaded['view'])) {
-          $handler = new EntityStorageDecorator($handler);
-          $this->loaded['view'] = $handler;
-        }
-        else {
-          $handler = $this->loaded['view'];
-        }
-        break;
+    if ($handler instanceof ConfigEntityStorageInterface) {
+      if (!isset($this->loaded[$entity_type])) {
+        $handler = new EntityStorageDecorator($handler);
+        $this->loaded[$entity_type] = $handler;
+      }
+      else {
+        $handler = $this->loaded[$entity_type];
+      }
     }
 
     return $handler;
@@ -83,16 +72,14 @@ class EntityManagerWrapper extends DefaultPluginManager implements EntityManager
     /** @var EntityViewBuilderInterface $handler */
     $handler = $this->getHandler($entity_type, 'view_builder');
 
-    switch ($entity_type) {
-      case 'block':
-        if (!isset($this->rendered['block'])) {
-          $handler = new EntityViewBuilderDecorator($handler);
-          $this->rendered['block'] = $handler;
-        }
-        else {
-          $handler = $this->rendered['block'];
-        }
-        break;
+    if ($handler instanceof EntityViewBuilderInterface) {
+      if (!isset($this->rendered[$entity_type])) {
+        $handler = new EntityViewBuilderDecorator($handler);
+        $this->rendered[$entity_type] = $handler;
+      }
+      else {
+        $handler = $this->rendered[$entity_type];
+      }
     }
 
     return $handler;
@@ -113,7 +100,7 @@ class EntityManagerWrapper extends DefaultPluginManager implements EntityManager
    * @return array
    */
   public function getRendered($type) {
-    return isset($this->rendered[$type]) ? $this->rendered[$type]: NULL;
+    return isset($this->rendered[$type]) ? $this->rendered[$type] : NULL;
   }
 
   /**

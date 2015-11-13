@@ -25,7 +25,7 @@ class BlocksDataCollector extends DataCollector implements DrupalDataCollectorIn
   use StringTranslationTrait, DrupalDataCollectorTrait;
 
   /**
-   * @var
+   * @var \Drupal\Core\Entity\EntityManagerInterface
    */
   private $entityManager;
 
