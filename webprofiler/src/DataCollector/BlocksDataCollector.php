@@ -129,23 +129,24 @@ class BlocksDataCollector extends DataCollector implements DrupalDataCollectorIn
     /** @var \Drupal\block\BlockInterface $block */
     foreach ($decorator->getEntities() as $block) {
       /** @var Block $entity */
-      $entity = $storage->load($block->get('id'));
+      if ($entity = $storage->load($block->get('id'))) {
 
-      $route = '';
-      if ($entity->hasLinkTemplate('edit-form')) {
-        $route = $entity->urlInfo('edit-form')->toString();
+        $route = '';
+        if ($entity->hasLinkTemplate('edit-form')) {
+          $route = $entity->urlInfo('edit-form')->toString();
+        }
+
+        $id = $block->get('id');
+        $blocks[$id] = [
+          'id' => $id,
+          'region' => $block->getRegion(),
+          'status' => $block->get('status'),
+          'theme' => $block->getTheme(),
+          'plugin' => $block->get('plugin'),
+          'settings' => $block->get('settings'),
+          'route' => $route,
+        ];
       }
-
-      $id = $block->get('id');
-      $blocks[$id] = [
-        'id' => $id,
-        'region' => $block->getRegion(),
-        'status' => $block->get('status'),
-        'theme' => $block->getTheme(),
-        'plugin' => $block->get('plugin'),
-        'settings' => $block->get('settings'),
-        'route' => $route,
-      ];
     }
 
     return $blocks;
