@@ -57,7 +57,7 @@ class UserDataCollector extends DataCollector implements DrupalDataCollectorInte
    * {@inheritdoc}
    */
   public function collect(Request $request, Response $response, \Exception $exception = NULL) {
-    $this->data['name'] = $this->currentUser->getUsername();
+    $this->data['name'] = $this->currentUser->getDisplayName();
     $this->data['authenticated'] = $this->currentUser->isAuthenticated();
 
     $this->data['roles'] = [];
