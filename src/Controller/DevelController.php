@@ -147,20 +147,21 @@ class DevelController extends ControllerBase {
       ),
     );
 
+    $can_edit = $this->currentUser()->hasPermission('administer site configuration');
+
     $header = array(
       'name' => $this->t('Name'),
       'value' => $this->t('Value'),
-      'edit' => $this->t('Operations'),
     );
+
+    if ($can_edit) {
+      $header['edit'] = $this->t('Operations');
+    }
 
     $rows = array();
     // State class doesn't have getAll method so we get all states from the
     // KeyValueStorage.
     foreach ($this->keyValue('state')->getAll() as $state_name => $state) {
-      $operations['edit'] = array(
-        'title' => $this->t('Edit'),
-        'url' => Url::fromRoute('devel.system_state_edit', array('state_name' => $state_name)),
-      );
       $rows[$state_name] = array(
         'name' => array(
           'data' => $state_name,
@@ -169,10 +170,17 @@ class DevelController extends ControllerBase {
         'value' => array(
           'data' => kprint_r($state, TRUE),
         ),
-        'edit' => array(
-          'data' => array('#type' => 'operations', '#links' => $operations),
-        ),
       );
+
+      if ($can_edit) {
+        $operations['edit'] = array(
+          'title' => $this->t('Edit'),
+          'url' => Url::fromRoute('devel.system_state_edit', array('state_name' => $state_name)),
+        );
+        $rows[$state_name]['edit'] = array(
+          'data' => array('#type' => 'operations', '#links' => $operations),
+        );
+      }
     }
 
     $output['states'] = array(

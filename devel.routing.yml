@@ -61,7 +61,7 @@ devel.system_state_edit:
   path: '/devel/state/edit/{state_name}'
   defaults:
     _form: '\Drupal\devel\Form\SystemStateEdit'
-    _title: 'Edit state variable: !state_name'
+    _title: 'Edit state variable: @state_name'
   options:
     _admin_route: TRUE
   requirements:
