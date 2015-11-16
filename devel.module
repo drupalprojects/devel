@@ -209,40 +209,6 @@ function devel_set_handler($handlers) {
 }
 
 /**
- * Checks whether Devel may be active.
- *
- * Devel is automatically disabled when:
- *   - The request come from a php cli.
- *   - The request has 'XDEBUG_PROFILE' parameter set.
- *   - The request come from Apache Benchmark.
- *   - The currently executing script is the front controller update.php.
- *   - The returned response isn't a \Drupal\Core\Render\HtmlResponse instance.
- *
- * You can manually disable devel adding the '_devel_silent' requirement
- * to your route definitions:
- *
- * @code
- * mymodule.silent_route:
- *   path: '/my-path'
- *   defaults:
- *     _controller: '\Drupal\mymodule\Controller\MyController::method'
- *   requirements:
- *     _devel_silent: 'TRUE'
- * @endcode
- *
- * @return bool
- *   Return whether Devel may be active.
- */
-function devel_silent() {
-  return
-    (PHP_SAPI === 'cli') ||
-    (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'ApacheBench') !== FALSE) ||
-    !empty($_REQUEST['XDEBUG_PROFILE']) ||
-    strstr($_SERVER['PHP_SELF'], 'update.php') ||
-    (($route = \Drupal::routeMatch()->getRouteObject()) && $route->getRequirement('_devel_silent'));
-}
-
-/**
  * Displays backtrace showing the route of calls to the current error.
  *
  * @param int $error_level
@@ -365,9 +331,7 @@ function devel_page_attachments_alter(&$page) {
       dpm($page, 'page');
     }
 
-    if (!devel_silent()) {
-      $page['#attached']['library'][] = 'devel/krumo_path';
-    }
+    $page['#attached']['library'][] = 'devel/krumo_path';
   }
 }
 
