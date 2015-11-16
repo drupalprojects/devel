@@ -8,7 +8,7 @@
 namespace Drupal\webprofiler\Helper;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Render\FormattableMarkup;
 
 /**
  * Class IdeLinkGenerator.
@@ -34,6 +34,6 @@ class IdeLinkGenerator implements IdeLinkGeneratorInterface {
     $ide_link = $this->config_factory->get('webprofiler.config')
       ->get('ide_link');
 
-    return SafeMarkup::format($ide_link, ['@file' => $file, '@line' => $line]);
+    return new FormattableMarkup($ide_link, ['@file' => $file, '@line' => $line]);
   }
 }

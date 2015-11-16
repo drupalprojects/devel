@@ -2,7 +2,7 @@
 
 namespace Drupal\webprofiler\Helper;
 
-use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Render\FormattableMarkup;
 
 /**
  * Class ClassShortener
@@ -26,7 +26,7 @@ class ClassShortener implements ClassShortenerInterface {
       }
     }
 
-    return SafeMarkup::format("<abbr title=\"@class\">@short</abbr>", [
+    return new FormattableMarkup("<abbr title=\"@class\">@short</abbr>", [
       '@class' => $class,
       '@short' => implode('\\', $result)
     ]);

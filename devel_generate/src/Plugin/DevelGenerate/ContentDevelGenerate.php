@@ -8,7 +8,7 @@
 namespace Drupal\devel_generate\Plugin\DevelGenerate;
 
 use Drupal\comment\CommentManagerInterface;
-use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -168,7 +168,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
             $instance = FieldConfig::loadByName('node', $type->id(), $field_name);
             $default_value = $instance->getDefaultValueLiteral();
             $default_mode = reset($default_value);
-            $fields[] = SafeMarkup::format('@field: @state', array(
+            $fields[] = new FormattableMarkup('@field: @state', array(
               '@field' => $instance->label(),
               '@state' => $map[$default_mode['status']],
             ));
