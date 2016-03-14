@@ -39,10 +39,8 @@ function devel_help($route_name) {
       return '<p>' . t('Here are the contents of your <code>$_SESSION</code> variable.') . '</p>';
 
     case 'devel.state_system_page':
-      return '<p>' . t('This is a list of state variables and their values. For more information read online documentation of <a href=":documentation">State API in Drupal 8</a>.', array(
-        '!documentation' => "https://www.drupal.org/developing/api/8/state",
-      )) . '</p>';
-      break;
+      return '<p>' . t('This is a list of state variables and their values. For more information read online documentation of <a href=":documentation">State API in Drupal 8</a>.', array(':documentation' => "https://www.drupal.org/developing/api/8/state")) . '</p>';
+
   }
 }
 
