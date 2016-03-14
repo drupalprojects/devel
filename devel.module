@@ -503,11 +503,13 @@ function _devel_print_object($obj, $prefix = NULL, $parents = NULL, $object = FA
   return $output;
 }
 
-/**
- * An alias for drupal_debug().
- */
-function dd($data, $label = NULL) {
-  return drupal_debug($data, $label);
+if (!function_exists('dd')) {
+  /**
+   * An alias for drupal_debug().
+   */
+  function dd($data, $label = NULL) {
+    return drupal_debug($data, $label);
+  }
 }
 
 /**
