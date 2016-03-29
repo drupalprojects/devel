@@ -2,26 +2,27 @@
 
 /**
  * @file
- * Contains \Drupal\devel\Tests\DevelCsrfLinksTest.
+ * Contains \Drupal\devel\Tests\DevelMenuLinksTest.
  */
 
 namespace Drupal\devel\Tests;
 
+use Drupal\Core\Url;
 use Drupal\simpletest\WebTestBase;
 
 /**
- * Tests CSFR protected links.
+ * Tests devel menu links.
  *
  * @group devel
  */
-class DevelCsrfLinksTest extends WebTestBase {
+class DevelMenuLinksTest extends WebTestBase {
 
   /**
    * Modules to enable.
    *
    * @var array
    */
-  public static $modules = array('devel', 'block');
+  public static $modules = ['devel', 'block', 'devel_test'];
 
   /**
    * The user for tests.
@@ -35,20 +36,19 @@ class DevelCsrfLinksTest extends WebTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    // CSFR protected links currently appears only in the devel menu.
+    // Devel links currently appears only in the devel menu.
     // Place the devel menu block so we can ensure that these link works
     // properly.
     $this->drupalPlaceBlock('system_menu_block:devel');
 
     $this->develUser = $this->drupalCreateUser(['access devel information', 'administer site configuration']);
+    $this->drupalLogin($this->develUser);
   }
 
   /**
    * Tests CSFR protected links.
    */
-  public function testCsrfProtection() {
-    $this->drupalLogin($this->develUser);
-
+  public function testCsrfProtectedLinks() {
     // Ensure CSRF link are not accessible directly.
     $this->drupalGet('devel/run-cron');
     $this->assertResponse(403);
@@ -76,6 +76,38 @@ class DevelCsrfLinksTest extends WebTestBase {
     $this->assertLink('Run cron');
     $this->clickLink('Run cron');
     $this->assertText('Cron ran successfully.');
+  }
+
+  /**
+   * Tests redirect destination links.
+   */
+  public function testRedirectDestinationLinks() {
+    // By default, in the testing profile, front page is the user canonical URI.
+    // For better testing do not use the default frontpage.
+    $url = Url::fromRoute('devel.simple_page');
+    $destination = Url::fromRoute('devel.simple_page', [], ['absolute' => FALSE]);
+
+    $this->drupalGet($url);
+    $this->assertLink(t('Reinstall Modules'));
+    $this->clickLink(t('Reinstall Modules'));
+    $this->assertUrl('devel/reinstall', ['query' => ['destination' => $destination->toString()]]);
+
+    $this->drupalGet($url);
+    $this->assertLink(t('Rebuild Menu'));
+    $this->clickLink(t('Rebuild Menu'));
+    $this->assertUrl('devel/menu/reset', ['query' => ['destination' => $destination->toString()]]);
+
+    $this->drupalGet($url);
+    $this->assertLink(t('Cache clear'));
+    $this->clickLink(t('Cache clear'));
+    $this->assertText('Cache cleared.');
+    $this->assertUrl($url);
+
+    $this->drupalGet($url);
+    $this->assertLink(t('Run cron'));
+    $this->clickLink(t('Run cron'));
+    $this->assertText(t('Cron ran successfully.'));
+    $this->assertUrl($url);
   }
 
 }
