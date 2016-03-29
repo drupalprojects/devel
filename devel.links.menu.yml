@@ -23,6 +23,11 @@ devel.menu_rebuild:
   route_name: devel.menu_rebuild
   menu_name: devel
   class: \Drupal\devel\Plugin\Menu\DestinationMenuLink
+devel.menu_item:
+  title: 'Menu Item'
+  route_name: devel.menu_item
+  menu_name: devel
+  class: \Drupal\devel\Plugin\Menu\MenuItemMenuLink
 devel.state_system_page:
   title: 'State editor'
   description: 'Edit state system values.'
