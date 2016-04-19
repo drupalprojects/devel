@@ -75,7 +75,7 @@
 
         <% _.each( data.queries, function( item, key ){ %>
         <div class="panel__container<% if (item.time > data.query_highlight_threshold) { %> is--hightlighted <% } %>"
-             data-wp-caller="<%- item.caller.class %>"
+             data-wp-caller="<%- item.caller.class != null ? item.caller.class.toLowerCase() : '' %>"
              data-wp-database="<%- item.database %>"
              data-wp-type="<%- item.type %>"
              data-wp-hightlighted="<%- (item.time > data.query_highlight_threshold) ? '1' : '0' %>">
