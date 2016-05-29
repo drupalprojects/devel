@@ -611,11 +611,12 @@ function devel_form_system_modules_alter(&$form, FormStateInterface $form_state)
  * Makes debugging entity query much easier.
  *
  * Example usage:
- *   $query = \Drupal::entityQuery('node');
- *   $query->condition('status', 1);
- *   $query->addTag('debug');
- *   $query->execute();
- *
+ * @code
+ * $query = \Drupal::entityQuery('node');
+ * $query->condition('status', NODE_PUBLISHED);
+ * $query->addTag('debug');
+ * $query->execute();
+ * @endcode
  */
 function devel_query_debug_alter(AlterableInterface $query) {
   if (!$query->hasTag('debug-semaphore')) {
