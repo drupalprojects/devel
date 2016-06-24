@@ -64,7 +64,7 @@ class ViewsDataCollector extends DataCollector implements DrupalDataCollectorInt
 
         $entity = $storage->load($view->storage->id());
         if ($entity->hasLinkTemplate('edit-display-form')) {
-          $route = $entity->urlInfo('edit-display-form');
+          $route = $entity->toUrl('edit-display-form');
           $route->setRouteParameter('display_id', $view->current_display);
           $data['route'] = $route->toString();
         }

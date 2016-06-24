@@ -133,7 +133,7 @@ class BlocksDataCollector extends DataCollector implements DrupalDataCollectorIn
 
         $route = '';
         if ($entity->hasLinkTemplate('edit-form')) {
-          $route = $entity->urlInfo('edit-form')->toString();
+          $route = $entity->toUrl('edit-form')->toString();
         }
 
         $id = $block->get('id');
