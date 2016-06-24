@@ -134,7 +134,7 @@ class EntityManagerWrapper extends DefaultPluginManager implements EntityTypeMan
    * {@inheritdoc}
    */
   public function useCaches($use_caches = FALSE) {
-    $this->entityManager->useCaches($use_caches = FALSE);
+    $this->entityManager->useCaches($use_caches);
   }
 
   /**
@@ -238,7 +238,7 @@ class EntityManagerWrapper extends DefaultPluginManager implements EntityTypeMan
    * {@inheritdoc}
    */
   public function setContainer(ContainerInterface $container = NULL) {
-    $this->entityManager->setContainer($container = NULL);
+    $this->entityManager->setContainer($container);
   }
 
 }
