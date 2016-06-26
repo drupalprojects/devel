@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\webprofiler\DataCollector\BlocksDataCollector.
- */
-
 namespace Drupal\webprofiler\DataCollector;
 
 use Drupal\block\Entity\Block;

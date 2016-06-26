@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\kint\Twig\KintExtension.
- */
-
 namespace Drupal\kint\Twig;
 
 /**

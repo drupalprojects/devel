@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\webprofiler\DataCollector\ViewsDataCollector.
- */
-
 namespace Drupal\webprofiler\DataCollector;
 
 use Drupal\Core\Entity\EntityManagerInterface;

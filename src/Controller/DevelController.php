@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\devel\Controller\DevelController.
- */
-
 namespace Drupal\devel\Controller;
 
 use Drupal\Core\Controller\ControllerBase;

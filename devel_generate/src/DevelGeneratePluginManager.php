@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\devel_generate\DevelGeneratePluginManager.
- */
 
 namespace Drupal\devel_generate;
 

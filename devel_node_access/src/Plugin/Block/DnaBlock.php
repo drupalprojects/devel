@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Contains \Drupal\devel_node_access\Plugin\Block\DnaBlock.
- */
 
 namespace Drupal\devel_node_access\Plugin\Block;
 
@@ -18,7 +14,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 
 /**
  * Provides the "Devel Node Access" block.

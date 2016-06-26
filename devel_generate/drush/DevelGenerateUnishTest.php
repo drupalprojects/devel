@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Unish\DevelGenerateUnishTest.
- */
-
 namespace Unish;
 
 if (class_exists('Unish\CommandUnishTestCase')) {

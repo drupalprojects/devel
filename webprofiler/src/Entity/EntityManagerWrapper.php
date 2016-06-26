@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\webprofiler\Entity\EntityManagerWrapper.
- */
-
 namespace Drupal\webprofiler\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityStorageInterface;

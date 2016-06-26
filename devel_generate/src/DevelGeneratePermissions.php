@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\devel_generate\DevelGeneratePermissions.
- */
-
 namespace Drupal\devel_generate;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
