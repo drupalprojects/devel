@@ -100,7 +100,7 @@ class DevelController extends ControllerBase {
     ksort($field_instances);
     $output['instances'] = array('#markup' => kprint_r($field_instances, TRUE, $this->t('Instances')));
 
-    $bundles = $this->entityManager()->getAllBundleInfo();
+    $bundles = \Drupal::service('entity_type.bundle.info')->getAllBundleInfo();
     ksort($bundles);
     $output['bundles'] = array('#markup' => kprint_r($bundles, TRUE, $this->t('Bundles')));
 
@@ -126,11 +126,10 @@ class DevelController extends ControllerBase {
    *   Array of page elements to render.
    */
   public function entityInfoPage() {
-    $types = $this->entityManager()->getEntityTypeLabels();
+    $types = $this->entityTypeManager()->getDefinitions();
     ksort($types);
     $result = array();
-    foreach (array_keys($types) as $type) {
-      $definition = $this->entityManager()->getDefinition($type);
+    foreach ($types as $id => $definition) {
       $reflected_definition = new \ReflectionClass($definition);
       $props = array();
       foreach ($reflected_definition->getProperties() as $property) {
@@ -138,7 +137,7 @@ class DevelController extends ControllerBase {
         $value = $property->getValue($definition);
         $props[$property->name] = $value;
       }
-      $result[$type] = $props;
+      $result[$id] = $props;
     }
 
     return array('#markup' => kprint_r($result, TRUE));
@@ -301,8 +300,8 @@ class DevelController extends ControllerBase {
         $build = $view_hook($entity);
       }
       // If entity has view_builder handler
-      elseif ($this->entityManager()->hasHandler($entity_type_id, 'view_builder')) {
-        $build = $this->entityManager()->getViewBuilder($entity_type_id)->view($entity);
+      elseif ($this->entityTypeManager()->hasHandler($entity_type_id, 'view_builder')) {
+        $build = $this->entityTypeManager()->getViewBuilder($entity_type_id)->view($entity);
       }
 
       $output = array('#markup' => kdevel_print_object($build));
