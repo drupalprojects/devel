@@ -128,19 +128,7 @@ class DevelController extends ControllerBase {
   public function entityInfoPage() {
     $types = $this->entityTypeManager()->getDefinitions();
     ksort($types);
-    $result = array();
-    foreach ($types as $id => $definition) {
-      $reflected_definition = new \ReflectionClass($definition);
-      $props = array();
-      foreach ($reflected_definition->getProperties() as $property) {
-        $property->setAccessible(TRUE);
-        $value = $property->getValue($definition);
-        $props[$property->name] = $value;
-      }
-      $result[$id] = $props;
-    }
-
-    return array('#markup' => kprint_r($result, TRUE));
+    return array('#markup' => kprint_r($types, TRUE));
   }
 
   /**
