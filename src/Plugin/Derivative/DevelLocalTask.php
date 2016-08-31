@@ -11,6 +11,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides local task definitions for all entity bundles.
+ *
+ * @see \Drupal\devel\Controller\EntityDebugController
+ * @see \Drupal\devel\Routing\RouteSubscriber
  */
 class DevelLocalTask extends DeriverBase implements ContainerDeriverInterface {
 
