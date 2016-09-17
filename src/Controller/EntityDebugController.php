@@ -42,6 +42,27 @@ class EntityDebugController extends ControllerBase {
   }
 
   /**
+   * Returns the entity type definition of the current entity.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *    A RouteMatch object.
+   *
+   * @return array
+   *    Array of page elements to render.
+   */
+  public function entityTypeDefinition(RouteMatchInterface $route_match) {
+    $output = [];
+
+    $entity = $this->getEntityFromRouteMatch($route_match);
+
+    if ($entity instanceof EntityInterface) {
+      $output = $this->dumper->exportAsRenderable($entity->getEntityType());
+    }
+
+    return $output;
+  }
+
+  /**
    * Returns the loaded structure of the current entity.
    *
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match

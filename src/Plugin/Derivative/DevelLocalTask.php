@@ -53,7 +53,7 @@ class DevelLocalTask extends DeriverBase implements ContainerDeriverInterface {
    * {@inheritdoc}
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
-    $this->derivatives = array();
+    $this->derivatives = [];
 
     foreach ($this->entityTypeManager->getDefinitions() as $entity_type_id => $entity_type) {
 
@@ -62,29 +62,36 @@ class DevelLocalTask extends DeriverBase implements ContainerDeriverInterface {
 
       if ($has_edit_path || $has_canonical_path) {
 
-        $this->derivatives["$entity_type_id.devel_tab"] = array(
+        $this->derivatives["$entity_type_id.devel_tab"] = [
           'route_name' => "entity.$entity_type_id." . ($has_edit_path ? 'devel_load' : 'devel_render'),
           'title' => $this->t('Devel'),
           'base_route' => "entity.$entity_type_id." . ($has_canonical_path ? "canonical" : "edit_form"),
           'weight' => 100,
-        );
+        ];
+
+        $this->derivatives["$entity_type_id.devel_definition_tab"] = [
+          'route_name' => "entity.$entity_type_id.devel_definition",
+          'title' => $this->t('Definition'),
+          'parent_id' => "devel.entities:$entity_type_id.devel_tab",
+          'weight' => 100,
+        ];
 
         if ($has_canonical_path) {
-          $this->derivatives["$entity_type_id.devel_render_tab"] = array(
+          $this->derivatives["$entity_type_id.devel_render_tab"] = [
             'route_name' => "entity.$entity_type_id.devel_render",
             'weight' => 100,
             'title' => $this->t('Render'),
             'parent_id' => "devel.entities:$entity_type_id.devel_tab",
-          );
+          ];
         }
 
         if ($has_edit_path) {
-          $this->derivatives["$entity_type_id.devel_load_tab"] = array(
+          $this->derivatives["$entity_type_id.devel_load_tab"] = [
             'route_name' => "entity.$entity_type_id.devel_load",
             'weight' => 100,
             'title' => $this->t('Load'),
             'parent_id' => "devel.entities:$entity_type_id.devel_tab",
-          );
+          ];
         }
       }
     }
