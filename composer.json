@@ -18,7 +18,9 @@
   },
   "license": "GPL-2.0+",
   "minimum-stability": "dev",
-  "require": { },
+  "require": {
+    "symfony/stopwatch": "2.4.*"
+  },
   "suggest": {
     "symfony/var-dumper": "Pretty print complex values better with var-dumper available"
   }
