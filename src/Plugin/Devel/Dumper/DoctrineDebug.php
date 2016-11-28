@@ -20,10 +20,7 @@ class DoctrineDebug extends DevelDumperBase {
    * {@inheritdoc}
    */
   public function dump($input, $name = NULL) {
-    if ($name) {
-      echo $name . ' => ';
-    }
-    Debug::dump($input);
+    echo (string) $this->export($input, $name);
   }
 
   /**
