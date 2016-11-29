@@ -12,7 +12,13 @@ class ToolbarTest extends WebprofilerTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['webprofiler', 'node'];
+  public static $modules = ['webprofiler', 'node', 'views'];
+
+  public function setUp() {
+    parent::setUp();
+
+    \Drupal::configFactory()->getEditable('system.site')->set('page.front', '/node')->save(TRUE);
+  }
 
   /**
    * Tests if the toolbar appears on front page.
@@ -33,10 +39,10 @@ class ToolbarTest extends WebprofilerTestBase {
   }
 
   /**
-   * Tests if the toolbar report page.
+   * Tests the toolbar report page.
    */
   public function testToolbarReportPage() {
-    $this->loginForToolbar();
+    $this->loginForDashboard();
 
     $this->drupalGet('<front>');
 
