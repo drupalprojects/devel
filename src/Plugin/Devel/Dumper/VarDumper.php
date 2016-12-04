@@ -37,6 +37,10 @@ class VarDumper extends DevelDumperBase {
     $dumper->dump($cloner->cloneVar($input), $output);
     $output = stream_get_contents($output, -1, 0);
 
+    if ($name) {
+      $output = $name . ' => ' . $output;
+    }
+
     return $this->setSafeMarkup($output);
   }
 
