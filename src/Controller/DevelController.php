@@ -82,7 +82,7 @@ class DevelController extends ControllerBase {
 
     ksort($elements_info);
 
-    return array('#markup' => kdevel_print_object($elements_info));
+    return array('#markup' => kpr($elements_info, TRUE));
   }
 
   /**
