@@ -40,7 +40,7 @@ function devel_help($route_name, RouteMatchInterface $route_match) {
       $output .= '</dl>';
       return $output;
 
-    case 'devel.route_info';
+    case 'devel.route_info':
       $output = '';
       $output .= '<p>' . t('Displays registered routes for the site. For a complete overview of the routing system, see the <a href=":url">online documentation</a>.', [':url' => 'https://www.drupal.org/docs/8/api/routing-system']) . '</p>';
       return $output;
