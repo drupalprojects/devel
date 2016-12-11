@@ -67,16 +67,6 @@ devel.system_state_edit:
   requirements:
     _permission: 'administer site configuration'
 
-devel.menu_item:
-  path: '/devel/menu/item'
-  defaults:
-    _controller: '\Drupal\devel\Controller\DevelController::menuItem'
-    _title: 'Menu item'
-  options:
-    _admin_route: TRUE
-  requirements:
-    _permission: 'access devel information'
-
 devel.theme_registry:
   path: '/devel/theme/registry'
   defaults:
@@ -170,3 +160,24 @@ devel.run_cron:
   requirements:
     _permission: 'administer site configuration'
     _csrf_token: 'TRUE'
+
+# Route info
+devel.route_info:
+  path: '/devel/routes'
+  defaults:
+    _controller: '\Drupal\devel\Controller\RouteInfoController::routeList'
+    _title: 'Routes'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'
+
+devel.route_info.item:
+  path: '/devel/routes/item'
+  defaults:
+    _controller: '\Drupal\devel\Controller\RouteInfoController::routeDetail'
+    _title: 'Route detail'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'

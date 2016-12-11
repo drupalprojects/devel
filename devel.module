@@ -20,13 +20,31 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
 use Drupal\Core\Utility\Error;
 
 /**
  * Implements hook_help().
  */
-function devel_help($route_name) {
+function devel_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
+    case 'help.page.devel':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Devel module provides a suite of modules containing fun for module developers and themers. For more information, see the <a href=":url">online documentation for the Devel module</a>.', [':url' => 'https://www.drupal.org/docs/8/modules/devel']) . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Inspecting Routes') . '</dt>';
+      $output .= '<dd>' . t('The module allows you to inspect routes information, gathering all routing data from <em>.routing.yml</em> files and from classes which subscribe to the route build/alter events. You can see those informations on <a href=":url">Routes info</a> page.', [':url' => Url::fromRoute('devel.route_info')->toString()]) . '</dd>';
+      $output .= '</dl>';
+      return $output;
+
+    case 'devel.route_info';
+      $output = '';
+      $output .= '<p>' . t('Displays registered routes for the site. For a complete overview of the routing system, see the <a href=":url">online documentation</a>.', [':url' => 'https://www.drupal.org/docs/8/api/routing-system']) . '</p>';
+      return $output;
+
     case 'devel.reinstall':
       $output = '<p>' . t('<strong>Warning</strong> - will delete your module tables and configuration.') . '</p>';
       $output .= '<p>' . t('Uninstall and then install the selected modules. <code>hook_uninstall()</code> and <code>hook_install()</code> will be executed and the schema version number will be set to the most recent update number.') . '</p>';
