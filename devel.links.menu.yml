@@ -69,6 +69,12 @@ devel.run_cron:
   menu_name: devel
   class: \Drupal\devel\Plugin\Menu\DestinationMenuLink
 
+# Container info
+devel.container_info.service:
+  title: 'Container Info'
+  route_name: devel.container_info.service
+  menu_name: devel
+
 # Routes info
 devel.route_info:
   title: 'Routes Info'

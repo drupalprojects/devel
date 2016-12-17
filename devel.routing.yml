@@ -161,6 +161,47 @@ devel.run_cron:
     _permission: 'administer site configuration'
     _csrf_token: 'TRUE'
 
+# Container info
+devel.container_info.service:
+  path: '/devel/container/service'
+  defaults:
+    _controller: '\Drupal\devel\Controller\ContainerInfoController::serviceList'
+    _title: 'Container services'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'
+
+devel.container_info.service.detail:
+  path: '/devel/container/service/{service_id}'
+  defaults:
+    _controller: '\Drupal\devel\Controller\ContainerInfoController::serviceDetail'
+    _title: 'Service @service_id detail'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'
+
+devel.container_info.parameter:
+  path: '/devel/container/parameter'
+  defaults:
+    _controller: '\Drupal\devel\Controller\ContainerInfoController::parameterList'
+    _title: 'Container parameters'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'
+
+devel.container_info.parameter.detail:
+  path: '/devel/container/parameter/{parameter_name}'
+  defaults:
+    _controller: '\Drupal\devel\Controller\ContainerInfoController::parameterDetail'
+    _title: 'Parameter @parameter_name value'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'
+
 # Route info
 devel.route_info:
   path: '/devel/routes'

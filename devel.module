@@ -35,9 +35,17 @@ function devel_help($route_name, RouteMatchInterface $route_match) {
       $output .= '<p>' . t('The Devel module provides a suite of modules containing fun for module developers and themers. For more information, see the <a href=":url">online documentation for the Devel module</a>.', [':url' => 'https://www.drupal.org/docs/8/modules/devel']) . '</p>';
       $output .= '<h3>' . t('Uses') . '</h3>';
       $output .= '<dl>';
+      $output .= '<dt>' . t('Inspecting Service Container') . '</dt>';
+      $output .= '<dd>' . t('The module allows you to inspect Services and Parameters registered in the Service Container. You can see those informations on <a href=":url">Container info</a> page.', [':url' => Url::fromRoute('devel.container_info.service')->toString()]) . '</dd>';
       $output .= '<dt>' . t('Inspecting Routes') . '</dt>';
       $output .= '<dd>' . t('The module allows you to inspect routes information, gathering all routing data from <em>.routing.yml</em> files and from classes which subscribe to the route build/alter events. You can see those informations on <a href=":url">Routes info</a> page.', [':url' => Url::fromRoute('devel.route_info')->toString()]) . '</dd>';
       $output .= '</dl>';
+      return $output;
+
+    case 'devel.container_info.service':
+    case 'devel.container_info.parameter':
+      $output = '';
+      $output .= '<p>' . t('Displays Services and Parameters registered in the Service Container. For more informations on the Service Container, see the <a href=":url">Symfony online documentation</a>.', [':url' => 'http://symfony.com/doc/current/service_container.html']) . '</p>';
       return $output;
 
     case 'devel.route_info':
