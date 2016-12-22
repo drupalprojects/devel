@@ -85,3 +85,9 @@ devel.route_info.item:
   route_name: devel.route_info.item
   menu_name: devel
   class: \Drupal\devel\Plugin\Menu\RouteDetailMenuLink
+
+# Event info
+devel.event_info:
+  title: 'Events Info'
+  route_name: devel.event_info
+  menu_name: devel

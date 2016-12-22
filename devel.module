@@ -39,6 +39,8 @@ function devel_help($route_name, RouteMatchInterface $route_match) {
       $output .= '<dd>' . t('The module allows you to inspect Services and Parameters registered in the Service Container. You can see those informations on <a href=":url">Container info</a> page.', [':url' => Url::fromRoute('devel.container_info.service')->toString()]) . '</dd>';
       $output .= '<dt>' . t('Inspecting Routes') . '</dt>';
       $output .= '<dd>' . t('The module allows you to inspect routes information, gathering all routing data from <em>.routing.yml</em> files and from classes which subscribe to the route build/alter events. You can see those informations on <a href=":url">Routes info</a> page.', [':url' => Url::fromRoute('devel.route_info')->toString()]) . '</dd>';
+      $output .= '<dt>' . t('Inspecting Events') . '</dt>';
+      $output .= '<dd>' . t('The module allow you to inspect listeners registered in the event dispatcher. You can see those informations on <a href=":url">Events info</a> page.', [':url' => Url::fromRoute('devel.event_info')->toString()]) . '</dd>';
       $output .= '</dl>';
       return $output;
 
@@ -51,6 +53,11 @@ function devel_help($route_name, RouteMatchInterface $route_match) {
     case 'devel.route_info':
       $output = '';
       $output .= '<p>' . t('Displays registered routes for the site. For a complete overview of the routing system, see the <a href=":url">online documentation</a>.', [':url' => 'https://www.drupal.org/docs/8/api/routing-system']) . '</p>';
+      return $output;
+
+    case 'devel.event_info':
+      $output = '';
+      $output .= '<p>' . t('Displays events and listeners registered in the event dispatcher. For a complete overview of the event system, see the <a href=":url">Symfony online documentation</a>.', [':url' => 'http://symfony.com/doc/current/components/event_dispatcher.html']) . '</p>';
       return $output;
 
     case 'devel.reinstall':

@@ -222,3 +222,14 @@ devel.route_info.item:
     _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
+
+# Event info
+devel.event_info:
+  path: '/devel/events'
+  defaults:
+    _controller: '\Drupal\devel\Controller\EventInfoController::eventList'
+    _title: 'Events'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'
