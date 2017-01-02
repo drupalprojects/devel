@@ -241,7 +241,7 @@ function backtrace_error_handler($error_level, $message, $filename, $line, $cont
         drupal_set_message($msg, ($severity_level <= RfcLogLevel::NOTICE ? 'error' : 'warning'), TRUE);
       }
       if (!empty($error_handlers[DEVEL_ERROR_HANDLER_BACKTRACE_KINT])) {
-        print kprint_r(ddebug_backtrace(TRUE, 1), $return = TRUE, $msg);
+        print kpr(ddebug_backtrace(TRUE, 1), TRUE, $msg);
       }
       if (!empty($error_handlers[DEVEL_ERROR_HANDLER_BACKTRACE_DPM])) {
         dpm(ddebug_backtrace(TRUE, 1), $msg, 'warning');
@@ -383,18 +383,6 @@ function kpr($input, $export = FALSE, $name = NULL) {
 }
 
 /**
- * Kint print.
- *
- * @deprecated in Devel 8.x-dev, will be removed before Devel 8.0.
- *   Use kpr() or devel.dumper service instead.
- *
- * @TODO remove in https://www.drupal.org/node/2703343
- */
-function kprint_r($input, $export = FALSE, $name = NULL, $function = 'print_r') {
-  return kpr($input, $export, $name);
-}
-
-/**
  * Wrapper for DevelDumperManager::dumpOrExport().
  *
  * Like dpr(), but uses Variable::export() instead.
@@ -462,7 +450,7 @@ function dpq($query, $return = FALSE, $name = NULL) {
 function devel_render() {
   $args = func_get_args();
   // #pre_render and #post_render pass the rendered $element as last argument.
-  kprint_r(end($args));
+  kpr(end($args));
   // #pre_render and #post_render expect the first argument to be returned.
   return reset($args);
 }
@@ -535,7 +523,7 @@ function ddebug_backtrace($return = FALSE, $pop = 0, $options = DEBUG_BACKTRACE_
       if ($return) {
         return $nicetrace;
       }
-      kprint_r($nicetrace);
+      kpr($nicetrace);
     }
   }
 }
