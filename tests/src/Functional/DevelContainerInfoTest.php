@@ -192,7 +192,7 @@ class DevelContainerInfoTest extends BrowserTestBase {
 
     // Tests the presence of some parameters in the table.
     $expected_parameters = [
-      'authentication_providers',
+      'container.modules',
       'cache_bins',
       'factory.keyvalue',
       'twig.config',

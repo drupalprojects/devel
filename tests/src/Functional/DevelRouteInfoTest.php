@@ -73,9 +73,9 @@ class DevelRouteInfoTest extends BrowserTestBase {
         'methods' => ['GET', 'POST'],
         'dynamic' => FALSE,
       ],
-      'user.login.http' => [
+      'user.login' => [
         'path' => '/user/login',
-        'methods' => ['POST'],
+        'methods' => ['GET', 'POST'],
         'dynamic' => FALSE,
       ],
       'entity.user.canonical' => [
