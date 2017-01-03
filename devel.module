@@ -23,6 +23,7 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Utility\Error;
+use Drupal\devel\EntityTypeInfo;
 
 /**
  * Implements hook_help().
@@ -78,42 +79,18 @@ function devel_help($route_name, RouteMatchInterface $route_match) {
  * Implements hook_entity_type_alter().
  */
 function devel_entity_type_alter(array &$entity_types) {
-  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
-  foreach ($entity_types as $entity_type_id => $entity_type) {
-    if (($entity_type->getFormClass('default') || $entity_type->getFormClass('edit')) && $entity_type->hasLinkTemplate('edit-form')) {
-      $entity_type->setLinkTemplate('devel-load', "/devel/$entity_type_id/{{$entity_type_id}}");
-    }
-    if ($entity_type->hasViewBuilderClass() && $entity_type->hasLinkTemplate('canonical')) {
-      $entity_type->setLinkTemplate('devel-render', "/devel/$entity_type_id/{{$entity_type_id}}/render");
-    }
-    if ($entity_type->hasLinkTemplate('devel-render') || $entity_type->hasLinkTemplate('devel-load')) {
-      $entity_type->setLinkTemplate('devel-definition', "/devel/$entity_type_id/{{$entity_type_id}}/definition");
-    }
-  }
+  return \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EntityTypeInfo::class)
+    ->entityTypeAlter($entity_types);
 }
 
 /**
  * Implements hook_entity_operation().
  */
 function devel_entity_operation(EntityInterface $entity) {
-  $operations = array();
-  if (\Drupal::currentUser()->hasPermission('access devel information')) {
-    if ($entity->hasLinkTemplate('devel-load')) {
-      $operations['devel'] = array(
-        'title' => t('Devel'),
-        'weight' => 100,
-        'url' => $entity->toUrl('devel-load'),
-      );
-    }
-    elseif ($entity->hasLinkTemplate('devel-render')) {
-      $operations['devel'] = array(
-        'title' => t('Devel'),
-        'weight' => 100,
-        'url' => $entity->toUrl('devel-render'),
-      );
-    }
-  }
-  return $operations;
+  return \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(EntityTypeInfo::class)
+    ->entityOperation($entity);
 }
 
 /**
