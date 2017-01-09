@@ -6,6 +6,15 @@ devel.admin_settings:
   requirements:
     _permission: 'administer site configuration'
 
+devel.toolbar.settings_form:
+  path: 'admin/config/development/devel/toolbar'
+  defaults:
+    _form: '\Drupal\devel\Form\ToolbarSettingsForm'
+    _title: 'Devel Toolbar Settings'
+  requirements:
+    _permission: 'administer site configuration'
+    _module_dependencies: 'toolbar'
+
 devel.reinstall:
   path: '/devel/reinstall'
   defaults:
