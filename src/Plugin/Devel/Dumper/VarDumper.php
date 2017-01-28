@@ -22,13 +22,6 @@ class VarDumper extends DevelDumperBase {
   /**
    * {@inheritdoc}
    */
-  public function dump($input, $name = NULL) {
-    echo (string) $this->export($input, $name);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function export($input, $name = NULL) {
     $cloner = new VarCloner();
     $dumper = 'cli' === PHP_SAPI ? new CliDumper() : new HtmlDumper();
