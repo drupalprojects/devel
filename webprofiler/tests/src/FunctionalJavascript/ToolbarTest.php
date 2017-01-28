@@ -5,7 +5,7 @@ namespace Drupal\Tests\webprofiler\FunctionalJavascript;
 /**
  * Tests the JavaScript functionality of webprofiler.
  *
- * @group toolbar
+ * @group webprofiler
  */
 class ToolbarTest extends WebprofilerTestBase {
 

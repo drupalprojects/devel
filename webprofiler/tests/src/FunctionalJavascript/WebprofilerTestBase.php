@@ -7,6 +7,8 @@ use PHPUnit_Framework_AssertionFailedError;
 
 /**
  * Class WebprofilerTestBase.
+ *
+ * @group webprofiler
  */
 abstract class WebprofilerTestBase extends JavascriptTestBase {
 
