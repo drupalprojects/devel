@@ -54,4 +54,23 @@ class ToolbarTest extends WebprofilerTestBase {
     $assert->pageTextContains($token);
   }
 
+  /**
+   * Tests the toolbar not appears on excluded path.
+   */
+  public function testToolbarNotAppearsOnExcludedPath() {
+    $this->loginForDashboard();
+
+    $this->drupalGet('admin/config/development/devel');
+    $token = $this->waitForToolbar();
+    $assert = $this->assertSession();
+    $assert->pageTextContains($token);
+    $assert->pageTextContains('Configure Webprofiler');
+
+    $this->config('webprofiler.config')
+      ->set('exclude', '/admin/config/development/devel')
+      ->save();
+    $this->drupalGet('admin/config/development/devel');
+    $this->assertSession()->pageTextNotContains('sf-toolbar');
+  }
+
 }
