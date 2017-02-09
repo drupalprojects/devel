@@ -30,7 +30,7 @@ class DatabaseStorageTest extends WebprofilerTestBase {
   }
 
   /**
-   * Test the purge on cache clear enabled setting.
+   * Tests the purge on cache clear enabled setting.
    */
   public function testCacheClearEnabledOnDatabaseStorage() {
     $this->enableCacheClear();
@@ -45,7 +45,7 @@ class DatabaseStorageTest extends WebprofilerTestBase {
   }
 
   /**
-   * Test the purge on cache clear disabled setting.
+   * Tests the purge on cache clear disabled setting.
    */
   public function testCacheClearDisabledOnDatabaseStorage() {
     $this->disableCacheClear();

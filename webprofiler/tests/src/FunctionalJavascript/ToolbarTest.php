@@ -12,8 +12,11 @@ class ToolbarTest extends WebprofilerTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['webprofiler', 'node', 'views'];
+  public static $modules = ['webprofiler', 'node'];
 
+  /**
+   * {@inheritdoc}
+   */
   public function setUp() {
     parent::setUp();
 
