@@ -3,25 +3,30 @@
 #Dependencies:
 
 - d3.js: Webprofiler module requires D3 library 3.x (not 4.x) to render data.
-  Download https://github.com/d3/d3 into /libraries/d3/d3.min.js
-  
+
 - highlight.js: Webprofiler module requires highlight 9.7.x library to syntax highlight collected queries.
-  Download http://highlightjs.org into /libraries/highlight
-  
-If you use composer to manage dependencies and composer/installers plugin you could add those lines to composer.json:
+
+##Install using Composer (recommended)
+
+If you use composer to manage dependencies, edit `composer.json` as follows.
+
+First, make sure you have the `composer/installers` plugin in the "require"
+section of your `composer.json`
+
+Add the following to the "require" section:
 
 ```
 "d3/d3": "3.5.*",
 "components/highlightjs": "9.7.*"
 ```
 
-to require section.
+Add the following in "installer-paths":
 
 ```
 "libraries/{$name}": ["type:drupal-library"],
 ```
 
-to installer-paths section.
+Finally, add this in "repositories":
 
 ```
 {
@@ -51,8 +56,23 @@ to installer-paths section.
       }
     }
 ```
+Then run `composer update` - you should find new directories have been created
+under /libraries
 
-to repositories section.
+##Manual install
+
+- d3.js:
+
+  - Create a `/libraries/d3/` directory below your Drupal root directory
+  - Download https://d3js.org/d3.v3.min.js
+  - Rename it to /libraries/d3/d3.min.js
+
+  For further details on how to obtain D3.js, see https://github.com/d3/d3/
+
+ - highlight.js:
+
+  - Create `/libraries/highlightjs/` directory below your Drupal root directory
+  - Download the library and CSS from http://highlightjs.org into it
 
 #IDE link:
 
