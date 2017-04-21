@@ -2,7 +2,8 @@
 
 /**
  * @file
- * Drush integration for the devel module.
+ * This file is only used by Drush8. Drush9 discovers its commands via tagged
+ * service(s) in devel.services.yml. Also see classes in src/Commands.
  */
 
 use Drupal\Component\Uuid\Php;
@@ -160,6 +161,7 @@ function drush_devel_fn_event($event = NULL) {
     drush_log(dt('No implementations.'), 'ok');
   }
 }
+
 /**
  * Command handler.  Show source code of specified function or method.
  */

@@ -1,0 +1,5 @@
+services:
+  devel.command:
+    class: Drupal\devel\Commands\DevelCommands
+    tags:
+      -  { name: drush.command }
