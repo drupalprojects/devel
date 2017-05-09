@@ -8,6 +8,9 @@ use Drush\Exceptions\UserAbortException;
 /**
  * For commands that are parts of modules, Drush expects to find commandfiles in
  * __MODULE__/src/Commands, and the namespace is Drupal/__MODULE__/Commands.
+ *
+ * In addition to a commandfile like this one, you need to add a drush.services.yml
+ * in root of your module like this module does.
  */
 class DevelCommands extends DrushCommands {
 
