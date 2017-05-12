@@ -242,3 +242,15 @@ devel.event_info:
     _admin_route: TRUE
   requirements:
     _permission: 'access devel information'
+
+# Layouts info
+devel.layout_info:
+  path: '/devel/layouts'
+  defaults:
+    _controller: '\Drupal\devel\Controller\LayoutInfoController::layoutInfoPage'
+    _title: 'Layouts'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'
+    _module_dependencies: 'layout_discovery'
