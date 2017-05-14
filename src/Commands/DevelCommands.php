@@ -2,6 +2,7 @@
 namespace Drupal\devel\Commands;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Uuid\Php;
+use Drupal\Core\Utility\Token;
 use Drush\Commands\DrushCommands;
 use Drush\Exceptions\UserAbortException;
 
@@ -13,6 +14,40 @@ use Drush\Exceptions\UserAbortException;
  * in root of your module like this module does.
  */
 class DevelCommands extends DrushCommands {
+
+  protected $token;
+
+  protected $container;
+
+  protected $eventDispatcher;
+
+  public function __construct(Token $token, $container, $eventDispatcher) {
+    parent::__construct();
+    $this->token = $token;
+    $this->container = $container;
+    $this->eventDispatcher = $eventDispatcher;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getEventDispatcher() {
+    return $this->eventDispatcher;
+  }
+
+  /**
+   * @return mixed
+   */
+  public function getContainer() {
+    return $this->container;
+  }
+
+  /**
+   * @return Token
+   */
+  public function getToken() {
+    return $this->token;
+  }
 
   /**
    * Uninstall, and Install a list of modules.
@@ -75,7 +110,7 @@ class DevelCommands extends DrushCommands {
    * @aliases fne,fn-event,event
    */
   function event($event) {
-    $dispatcher = \Drupal::service('event_dispatcher');
+    $dispatcher = $this->getEventDispatcher();
     if (empty($event)) {
       // @todo Expand this list and move to interact().
       $events = array('kernel.controller', 'kernel.exception', 'kernel.request', 'kernel.response', 'kernel.terminate', 'kernel.view');
@@ -115,7 +150,7 @@ class DevelCommands extends DrushCommands {
    * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
    */
   public function token($options = ['format' => 'table']) {
-    $all = \Drupal::token()->getInfo();
+    $all = $this->getToken()->getInfo();
     foreach ($all['tokens'] as $group => $tokens) {
       foreach ($tokens as $key => $token) {
         $rows[] = [
@@ -185,7 +220,7 @@ class DevelCommands extends DrushCommands {
    * @return array
    */
   public function services($prefix = NULL, $options = ['format' => 'yaml']) {
-    $container = \Drupal::getContainer();
+    $container = $this->getContainer();
 
     // Get a list of all available service IDs.
     $services = $container->getServiceIds();
