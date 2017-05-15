@@ -55,7 +55,6 @@ class DevelCommands extends DrushCommands {
    * @command devel-reinstall
    * @param $modules A comma-separated list of module names.
    * @aliases dre
-   * @bootstrap DRUSH_BOOTSTRAP_DRUPAL_FULL
    * @allow-additional-options pm-uninstall,pm-enable
    */
   public function reinstall($projects) {
@@ -77,7 +76,6 @@ class DevelCommands extends DrushCommands {
    * @param $hook The name of the hook to explore.
    * @usage devel-hook cron
    *   List implementations of hook_cron().
-   * @bootstrap DRUSH_BOOTSTRAP_DRUPAL_FULL
    * @aliases fnh,fn-hook,hook
    */
   function hook($hook) {
@@ -106,7 +104,6 @@ class DevelCommands extends DrushCommands {
    *   Pick a Kernel event, then pick an implementation, and then view its source code.
    * @usage devel-event kernel.terminate
    *   Pick a terminate subscribers and view its source code.
-   * @bootstrap DRUSH_BOOTSTRAP_DRUPAL_FULL
    * @aliases fne,fn-event,event
    */
   function event($event) {
@@ -145,7 +142,6 @@ class DevelCommands extends DrushCommands {
    *   token: Token
    *   name: Name
    * @default-fields group,token,name
-   * @bootstrap DRUSH_BOOTSTRAP_DRUPAL_FULL
    *
    * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
    */
@@ -168,7 +164,6 @@ class DevelCommands extends DrushCommands {
    *
    * @command devel-uuid
    * @aliases uuid
-   * @bootstrap DRUSH_BOOTSTRAP_DRUPAL_FULL
    * @usage drush devel-uuid
    *   Outputs a Universally Unique Identifier.
    *
@@ -211,7 +206,6 @@ class DevelCommands extends DrushCommands {
    * @command devel-services
    * @param $prefix A prefix to filter the service list by.
    * @aliases devel-container-services,dcs
-   * @bootstrap DRUSH_BOOTSTRAP_DRUPAL_FULL
    * @usage drush devel-services
    *   Gets a list of all available container services
    * @usage drush dcs plugin.manager

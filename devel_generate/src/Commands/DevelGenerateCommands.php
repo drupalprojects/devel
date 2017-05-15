@@ -93,7 +93,6 @@ class DevelGenerateCommands extends DrushCommands {
    * @option kill Delete all users before generating new ones.
    * @option roles A comma delimited list of role IDs for new users. Don't specify 'authenticated'.
    * @option pass Specify a password to be set for all generated users.
-   * @bootstrap DRUSH_BOOTSTRAP_DRUPAL_FULL
    * @aliases genu
    */
   public function users($num = 50, $options = ['kill' => FALSE, 'roles' => '']) {
@@ -111,7 +110,6 @@ class DevelGenerateCommands extends DrushCommands {
    * @option kill Delete all terms before generating new ones.
    * @option feedback An integer representing interval for insertion rate logging.
    * @validate-entity-load taxonomy_vocabulary machine_name
-   * @bootstrap DRUSH_BOOTSTRAP_DRUPAL_FULL
    * @aliases gent
    */
   public function terms($machine_name, $num = 50, $options = ['feedback' => 1000]) {
@@ -125,7 +123,6 @@ class DevelGenerateCommands extends DrushCommands {
    * @pluginId vocabulary
    * @param $num Number of vocabularies to generate.
    * @option kill Delete all vocabs before generating new ones.
-   * @bootstrap DRUSH_BOOTSTRAP_DRUPAL_FULL
    * @aliases genv
    * @validate-module-enabled taxonomy
    */
@@ -143,7 +140,6 @@ class DevelGenerateCommands extends DrushCommands {
    * @param $max_depth Max link depth.
    * @param $max_width Max width of first level of links.
    * @option kill Delete all content before generating new content.
-   * @bootstrap DRUSH_BOOTSTRAP_DRUPAL_FULL
    * @aliases genm
    */
   public function menus($number_menus = 2, $number_links = 50, $max_depth = 3, $max_width = 8, $options = ['kill' => FALSE]) {
@@ -162,7 +158,6 @@ class DevelGenerateCommands extends DrushCommands {
    * @option feedback An integer representing interval for insertion rate logging.
    * @option skip-fields A comma delimited list of fields to omit when generating random values
    * @option languages A comma-separated list of language codes
-   * @bootstrap DRUSH_BOOTSTRAP_DRUPAL_FULL
    * @aliases genc
    * @validate-module-enabled node
    */
