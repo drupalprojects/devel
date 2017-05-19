@@ -2,9 +2,7 @@
 
 namespace Drupal\Tests\devel\Functional;
 
-use Drupal\Core\Url;
 use Drupal\Tests\BrowserTestBase;
-use Drupal\Core\Layout\LayoutPluginManagerInterface;
 
 /**
  * Tests layout info pages and links.
@@ -29,6 +27,12 @@ class DevelLayoutInfoTest extends BrowserTestBase {
    * {@inheritdoc}
    */
   protected function setUp() {
+    // TODO find a cleaner way to skip layout info tests when running tests on
+    // Drupal branch < 8.3.x.
+    if (version_compare(\Drupal::VERSION, '8.3', '<')) {
+      $this->markTestSkipped('Devel Layout Info Tests only available on version 8.3.x+.');
+    }
+
     parent::setUp();
 
     $this->drupalPlaceBlock('page_title_block');
@@ -54,7 +58,7 @@ class DevelLayoutInfoTest extends BrowserTestBase {
   /**
    * Tests layout info page.
    */
-  public function testEventList() {
+  public function testLayoutList() {
     $this->drupalGet('/devel/layouts');
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains('Layouts');
@@ -96,19 +100,19 @@ class DevelLayoutInfoTest extends BrowserTestBase {
       }
 
       $cell_layout_label = $cells[1];
-      $this->assertEqual($cell_layout_label->getText(), $layout->getLabel());
+      $this->assertEquals($cell_layout_label->getText(), $layout->getLabel());
 
       $cell_layout_description = $cells[2];
-      $this->assertEqual($cell_layout_description->getText(), $layout->getDescription());
+      $this->assertEquals($cell_layout_description->getText(), $layout->getDescription());
 
       $cell_layout_category = $cells[3];
-      $this->assertEqual($cell_layout_category->getText(), $layout->getCategory());
+      $this->assertEquals($cell_layout_category->getText(), $layout->getCategory());
 
       $cell_layout_regions = $cells[4];
-      $this->assertEqual($cell_layout_regions->getText(), implode(', ', $layout->getRegionLabels()));
+      $this->assertEquals($cell_layout_regions->getText(), implode(', ', $layout->getRegionLabels()));
 
       $cell_layout_provider = $cells[5];
-      $this->assertEqual($cell_layout_provider->getText(), $layout->getProvider());
+      $this->assertEquals($cell_layout_provider->getText(), $layout->getProvider());
 
       $index++;
     }
@@ -129,7 +133,7 @@ class DevelLayoutInfoTest extends BrowserTestBase {
 
     // Ensures that the layout info link is not present on the devel menu.
     $this->drupalGet('');
-    $this->assertNoLink('Layouts Info');
+    $this->assertSession()->linkNotExists('Layouts Info');
 
     // Ensures that the layouts info page is not available.
     $this->drupalGet('/devel/layouts');
@@ -143,4 +147,5 @@ class DevelLayoutInfoTest extends BrowserTestBase {
     $this->drupalGet('/devel/container/service');
     $this->assertSession()->statusCodeEquals(200);
   }
+
 }
