@@ -87,7 +87,7 @@ class DevelGenerateCommands extends DrushCommands {
   /**
    * Create users.
    *
-   * @command generate-users
+   * @command devel-generate-users
    * @pluginId user
    * @param $num Number of users to generate.
    * @option kill Delete all users before generating new ones.
@@ -103,7 +103,7 @@ class DevelGenerateCommands extends DrushCommands {
   /**
    * Create terms in specified vocabulary.
    *
-   * @command generate-terms
+   * @command devel-generate-terms
    * @pluginId term
    * @param $machine_name Vocabulary machine name into which new terms will be inserted.
    * @param $num Number of terms to generate.
@@ -119,7 +119,7 @@ class DevelGenerateCommands extends DrushCommands {
   /**
    * Create vocabularies.
    *
-   * @command generate-vocabs
+   * @command devel-generate-vocabs
    * @pluginId vocabulary
    * @param $num Number of vocabularies to generate.
    * @option kill Delete all vocabs before generating new ones.
@@ -133,7 +133,7 @@ class DevelGenerateCommands extends DrushCommands {
   /**
    * Create menus.
    *
-   * @command generate-menus
+   * @command devel-generate-menus
    * @pluginId menu
    * @param $number_menus Number of menus to generate.
    * @param $number_links Number of links to generate.
@@ -149,7 +149,7 @@ class DevelGenerateCommands extends DrushCommands {
   /**
    * Create content.
    *
-   * @command generate-content
+   * @command devel-generate-content
    * @pluginId content
    * @param $num Number of nodes to generate.
    * @param $max_comments Maximum number of comments to generate.
