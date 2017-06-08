@@ -15,42 +15,42 @@ class ShortcutSetStorageDecorator extends ConfigEntityStorageDecorator implement
    * {@inheritdoc}
    */
   public function assignUser(ShortcutSetInterface $shortcut_set, $account) {
-    $this->getOriginalObject()->assignUser($shortcut_set, $account);
+    // TODO: Implement assignUser() method.
   }
 
   /**
    * {@inheritdoc}
    */
   public function unassignUser($account) {
-    return $this->getOriginalObject()->unassignUser($account);
+    // TODO: Implement unassignUser() method.
   }
 
   /**
    * {@inheritdoc}
    */
   public function deleteAssignedShortcutSets(ShortcutSetInterface $entity) {
-    $this->getOriginalObject()->deleteAssignedShortcutSets($entity);
+    // TODO: Implement deleteAssignedShortcutSets() method.
   }
 
   /**
    * {@inheritdoc}
    */
   public function getAssignedToUser($account) {
-    return $this->getOriginalObject()->getAssignedToUser($account);
+    // TODO: Implement getAssignedToUser() method.
   }
 
   /**
    * {@inheritdoc}
    */
   public function countAssignedUsers(ShortcutSetInterface $shortcut_set) {
-    return $this->getOriginalObject()->countAssignedUsers($shortcut_set);
+    // TODO: Implement countAssignedUsers() method.
   }
 
   /**
    * {@inheritdoc}
    */
   public function getDefaultSet(AccountInterface $account) {
-    return $this->getOriginalObject()->getDefaultSet($account);
+    // TODO: Implement getDefaultSet() method.
   }
 
 }
