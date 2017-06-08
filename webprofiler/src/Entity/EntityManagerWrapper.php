@@ -11,6 +11,7 @@ use Drupal\webprofiler\Entity\Decorators\Config\ConfigEntityStorageDecorator;
 use Drupal\webprofiler\Entity\Decorators\Config\RoleStorageDecorator;
 use Drupal\webprofiler\Entity\Decorators\Config\ShortcutSetStorageDecorator;
 use Drupal\webprofiler\Entity\Decorators\Config\VocabularyStorageDecorator;
+use Drupal\webprofiler\Entity\Decorators\Config\WebformStorageDecorator;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -97,6 +98,9 @@ class EntityManagerWrapper extends DefaultPluginManager implements EntityTypeMan
           break;
         case 'shortcut_set':
           return new ShortcutSetStorageDecorator($handler);
+          break;
+        case 'webform':
+          return new WebformStorageDecorator($handler);
           break;
         default:
           return new ConfigEntityStorageDecorator($handler);
