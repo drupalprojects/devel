@@ -2,7 +2,7 @@
 
 /**
  * @file
- *  Generate content, taxonomy, menu, and users via drush framework.
+ *  Integration with Drush8. Drush9 commands are in src/Commands.
  */
 use Drupal\devel_generate\DevelGenerateBaseInterface;
 use Drupal\devel_generate\DevelGeneratePluginManager;

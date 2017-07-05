@@ -492,7 +492,7 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
   }
 
   /**
-   * Retrive 50 uids from the database.
+   * Retrieve 50 uids from the database.
    */
   protected function getUsers() {
     $users = array();
