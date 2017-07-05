@@ -163,7 +163,7 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
 
     // Remove this listener from the $notCalledListeners array.
     if (!$this->notCalledListeners) {
-      $this->notCalledListeners = $this->clone($this->listeners);
+      $this->notCalledListeners = $this->cloneListeners($this->listeners);
     }
 
     foreach ($this->notCalledListeners[$event_name][$priority] as $key => $listener) {
@@ -178,7 +178,7 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
    *
    * @return array
    */
-  private function clone($listeners) {
+  private function cloneListeners($listeners) {
     $clone = [];
 
     foreach ($listeners as $eventName => $events) {
