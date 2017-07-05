@@ -1,16 +1,16 @@
 <?php
 
-namespace Drupal\Tests\webprofiler\Unit\Cache;
+namespace Drupal\Tests\webprofiler\Unit\DataCollector;
 
-use Drupal\Tests\UnitTestCase;
 use Drupal\webprofiler\Cache\CacheBackendWrapper;
 use Drupal\webprofiler\DataCollector\CacheDataCollector;
 
 /**
  * @coversDefaultClass \Drupal\webprofiler\DataCollector\CacheDataCollector
+ *
  * @group webprofiler
  */
-class CacheDataCollectorTest extends UnitTestCase {
+class CacheDataCollectorTest extends DataCollectorBaseTest {
 
   /**
    * @var \Drupal\webprofiler\DataCollector\CacheDataCollector
@@ -50,7 +50,7 @@ class CacheDataCollectorTest extends UnitTestCase {
    * Tests the collection of a cache hit.
    */
   public function testCacheCollectorHit() {
-    $cache = new \StdClass();
+    $cache = new \stdClass();
     $cache->cid = 'cache_id';
     $cache->expire = 1;
     $cache->tags = ['tag1', 'tag2'];
