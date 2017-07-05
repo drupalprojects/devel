@@ -34,6 +34,9 @@ class AssetsDataCollectorTest extends DataCollectorBaseTest {
     $this->assetCollectionRendererInterface = $this->getMock('Drupal\Core\Asset\AssetCollectionRendererInterface');
   }
 
+  /**
+   * Tests the Assets data collector.
+   */
   public function testCSS() {
     $css = [
       'core/assets/vendor/normalize-css/normalize.css' => [

@@ -6,6 +6,8 @@ use Drupal\Tests\UnitTestCase;
 
 /**
  * Class DataCollectorBaseTest.
+ *
+ * @group webprofiler
  */
 abstract class DataCollectorBaseTest extends UnitTestCase {
 
