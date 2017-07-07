@@ -43,9 +43,6 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
       $event = new Event();
     }
 
-    $event->setDispatcher($this);
-    $event->setName($event_name);
-
     $this->preDispatch($event_name, $event);
     $e = $this->stopwatch->start($event_name, 'section');
 
