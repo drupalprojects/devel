@@ -50,7 +50,7 @@ devel.config_edit:
   path: '/devel/config/edit/{config_name}'
   defaults:
     _form: '\Drupal\devel\Form\ConfigEditor'
-    _title: 'Edit configuration object: !config_name'
+    _title: 'Edit configuration object: @config_name'
   options:
     _admin_route: TRUE
   requirements:
