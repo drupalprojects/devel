@@ -7,7 +7,7 @@ devel.admin_settings:
     _permission: 'administer site configuration'
 
 devel.toolbar.settings_form:
-  path: 'admin/config/development/devel/toolbar'
+  path: '/admin/config/development/devel/toolbar'
   defaults:
     _form: '\Drupal\devel\Form\ToolbarSettingsForm'
     _title: 'Devel Toolbar Settings'
