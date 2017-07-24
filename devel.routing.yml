@@ -138,16 +138,6 @@ devel.switch:
     _permission: 'switch users'
     _csrf_token: 'TRUE'
 
-devel.elements_page:
-  path: '/devel/elements'
-  defaults:
-    _controller: '\Drupal\devel\Controller\DevelController::elementsPage'
-    _title: 'Element Info'
-  options:
-    _admin_route: TRUE
-  requirements:
-    _permission: 'access devel information'
-
 devel.cache_clear:
   path: '/devel/cache/clear'
   defaults:
@@ -254,3 +244,24 @@ devel.layout_info:
   requirements:
     _permission: 'access devel information'
     _module_dependencies: 'layout_discovery'
+
+# Element info
+devel.elements_page:
+  path: '/devel/elements'
+  defaults:
+    _controller: '\Drupal\devel\Controller\ElementInfoController::elementList'
+    _title: 'Element Info'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'
+
+devel.elements_page.detail:
+  path: '/devel/elements/{element_name}'
+  defaults:
+    _controller: '\Drupal\devel\Controller\ElementInfoController::elementDetail'
+    _title: 'Element @element_name'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'
