@@ -438,7 +438,6 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
   protected function develGenerateContentPreNode(&$results) {
     // Get user id.
     $users = $this->getUsers();
-    $users = array_merge($users, array('0'));
     $results['users'] = $users;
   }
 
