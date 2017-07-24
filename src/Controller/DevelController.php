@@ -88,18 +88,6 @@ class DevelController extends ControllerBase {
   }
 
   /**
-   * Builds the entity types overview page.
-   *
-   * @return array
-   *   Array of page elements to render.
-   */
-  public function entityInfoPage() {
-    $types = $this->entityTypeManager()->getDefinitions();
-    ksort($types);
-    return $this->dumper->exportAsRenderable($types);
-  }
-
-  /**
    * Builds the state variable overview page.
    *
    * @return array

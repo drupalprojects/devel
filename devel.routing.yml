@@ -86,16 +86,6 @@ devel.theme_registry:
   requirements:
     _permission: 'access devel information'
 
-devel.entity_info_page:
-  path: '/devel/entity/info'
-  defaults:
-    _controller: '\Drupal\devel\Controller\DevelController::entityInfoPage'
-    _title: 'Entity info'
-  options:
-    _admin_route: TRUE
-  requirements:
-    _permission: 'access devel information'
-
 devel.field_info_page:
   path: '/devel/field/info'
   defaults:
@@ -261,6 +251,27 @@ devel.elements_page.detail:
   defaults:
     _controller: '\Drupal\devel\Controller\ElementInfoController::elementDetail'
     _title: 'Element @element_name'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'
+
+# Entity type info
+devel.entity_info_page:
+  path: '/devel/entity/info'
+  defaults:
+    _controller: '\Drupal\devel\Controller\EntityTypeInfoController::entityTypeList'
+    _title: 'Entity info'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access devel information'
+
+devel.entity_info_page.detail:
+  path: '/devel/entity/info/{entity_type_id}'
+  defaults:
+    _controller: '\Drupal\devel\Controller\EntityTypeInfoController::entityTypeDetail'
+    _title: 'Entity type @entity_type_id'
   options:
     _admin_route: TRUE
   requirements:
