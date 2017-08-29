@@ -387,7 +387,8 @@ class ContentDevelGenerate extends DevelGenerateBase implements ContainerFactory
     $values['max_comments'] = array_shift($args);
     $all_types = array_keys(node_type_get_names());
     $default_types = array_intersect(array('page', 'article'), $all_types);
-    $selected_types = StringUtils::csvToArray(drush_get_option('types', $default_types));
+    // Change after Drush8 no longer supported StringUtils::csvToArray(drush_get_option('types', $default_types));
+    $selected_types = _convert_csv_to_array(drush_get_option('types', $default_types));
 
     // Validates the input format for content types option.
     if (drush_get_option('types', $default_types) === TRUE) {
