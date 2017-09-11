@@ -1,16 +1,16 @@
 <?php
 
-namespace Drupal\devel\Tests;
+namespace Drupal\Tests\devel\Functional;
 
 use Drupal\Component\Render\FormattableMarkup;
-use Drupal\simpletest\WebTestBase;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Tests switch user.
  *
  * @group devel
  */
-class DevelSwitchUserTest extends WebTestBase {
+class DevelSwitchUserTest extends BrowserTestBase {
 
   /**
    * Modules to enable.
@@ -276,12 +276,12 @@ class DevelSwitchUserTest extends WebTestBase {
    */
   protected function assertSessionByUid($uid) {
     $query = \Drupal::database()->select('sessions');
-    $query->fields('sessions', array('uid'));
+    $query->fields('sessions', ['uid']);
     $query->condition('uid', $uid);
     $result = $query->execute()->fetchAll();
 
     if (empty($result)) {
-      $this->fail(new FormattableMarkup('No session found for uid @uid', array('@uid' => $uid)));
+      $this->fail(new FormattableMarkup('No session found for uid @uid', ['@uid' => $uid]));
     }
     elseif (count($result) > 1) {
       // If there is more than one session, then that must be unexpected.
@@ -304,7 +304,7 @@ class DevelSwitchUserTest extends WebTestBase {
    */
   protected function assertNoSessionByUid($uid) {
     $query = \Drupal::database()->select('sessions');
-    $query->fields('sessions', array('uid'));
+    $query->fields('sessions', ['uid']);
     $query->condition('uid', $uid);
     $result = $query->execute()->fetchAll();
     $this->assert(empty($result), "No session for uid $uid found.");

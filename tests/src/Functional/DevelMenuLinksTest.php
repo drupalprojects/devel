@@ -1,16 +1,16 @@
 <?php
 
-namespace Drupal\devel\Tests;
+namespace Drupal\Tests\devel\Functional;
 
 use Drupal\Core\Url;
-use Drupal\simpletest\WebTestBase;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Tests devel menu links.
  *
  * @group devel
  */
-class DevelMenuLinksTest extends WebTestBase {
+class DevelMenuLinksTest extends BrowserTestBase {
 
   /**
    * Modules to enable.
