@@ -5,6 +5,9 @@ use Drupal\Component\Uuid\Php;
 use Drupal\Core\Utility\Token;
 use Drush\Commands\DrushCommands;
 use Drush\Exceptions\UserAbortException;
+use Drush\Utils\StringUtils;
+use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Output\Output;
 
 /**
  * For commands that are parts of modules, Drush expects to find commandfiles in
@@ -21,11 +24,21 @@ class DevelCommands extends DrushCommands {
 
   protected $eventDispatcher;
 
-  public function __construct(Token $token, $container, $eventDispatcher) {
+  protected $moduleHandler;
+
+  public function __construct(Token $token, $container, $eventDispatcher, $moduleHandler) {
     parent::__construct();
     $this->token = $token;
     $this->container = $container;
     $this->eventDispatcher = $eventDispatcher;
+    $this->moduleHandler = $moduleHandler;
+  }
+
+  /**
+   * @return \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  public function getModuleHandler() {
+    return $this->moduleHandler;
   }
 
   /**
@@ -50,93 +63,110 @@ class DevelCommands extends DrushCommands {
   }
 
   /**
-   * Uninstall, and Install a list of modules.
+   * Uninstall, and Install modules.
 
-   * @command devel-reinstall
+   * @command devel:reinstall
    * @param $modules A comma-separated list of module names.
-   * @aliases dre
+   * @aliases dre,devel-reinstall
    * @allow-additional-options pm-uninstall,pm-enable
    */
-  public function reinstall($projects) {
-    $projects = _convert_csv_to_array($projects);
+  public function reinstall($modules) {
+    $modules = StringUtils::csvToArray($modules);
 
-    // This is faster than 3 separate bootstraps.
-    $args = array_merge(array('pm-uninstall'), $projects);
-    // @todo. Use $application dispatch instead of drush_invoke().
-    call_user_func_array('drush_invoke', $args);
-
-    $args = array_merge(array('pm-enable'), $projects);
-    call_user_func_array('drush_invoke', $args);
+    $modules_str = implode(',', $modules);
+    drush_invoke_process('@self', 'pm:uninstall', [$modules_str], []);
+    drush_invoke_process('@self', 'pm:enable', [$modules_str], []);
   }
 
   /**
    * List implementations of a given hook and optionally edit one.
    *
-   * @command devel-hook
+   * @command devel:hook
    * @param $hook The name of the hook to explore.
+   * @param $implementation The name of the implementation to edit. Usually omitted.
    * @usage devel-hook cron
    *   List implementations of hook_cron().
-   * @aliases fnh,fn-hook,hook
+   * @aliases fnh,fn-hook,hook,devel-hook
+   * @optionset_get_editor
    */
-  function hook($hook) {
+  function hook($hook, $implementation) {
     // Get implementations in the .install files as well.
     include_once './core/includes/install.inc';
     drupal_load_updates();
+    $info = $this->codeLocate($implementation . "_$hook");
+    $exec = drush_get_editor();
+    drush_shell_exec_interactive($exec, $info['file']);
+  }
 
-    if ($hook_implementations = \Drupal::moduleHandler()->getImplementations($hook)) {
-      if ($choice = drush_choice(array_combine($hook_implementations, $hook_implementations), 'Enter the number of the hook implementation you wish to view.')) {
-        $info= $this->codeLocate($choice . "_$hook");
-        $exec = drush_get_editor();
-        drush_shell_exec_interactive($exec, $info['file']);
+  /**
+   * @hook interact hook
+   */
+  public function hookInteract(Input $input, Output $output) {
+    if (!$input->getArgument('implementation')) {
+      if ($hook_implementations = $this->getModuleHandler()->getImplementations($input->getArgument('hook'))) {
+        if (!$choice = $this->io()->choice('Enter the number of the hook implementation you wish to view.', array_combine($hook_implementations, $hook_implementations))) {
+          throw new UserAbortException();
+        }
+        $input->setArgument('implementation', $choice);
       }
-    }
-    else {
-      $this->logger()->success(dt('No implementations.'));
+      else {
+        throw new \Exception(dt('No implementations'));
+      }
     }
   }
 
   /**
    * List implementations of a given event and optionally edit one.
    *
-   * @command devel-event
+   * @command devel:event
    * @param $event The name of the event to explore. If omitted, a list of events is shown.
+   * @param $implementation The name of the implementation to show. Usually omitted.
    * @usage devel-event
    *   Pick a Kernel event, then pick an implementation, and then view its source code.
    * @usage devel-event kernel.terminate
-   *   Pick a terminate subscribers and view its source code.
+   *   Pick a terminate subscribers implementation and view its source code.
    * @aliases fne,fn-event,event
    */
-  function event($event) {
+  function event($event, $implementation) {
+    $info= $this->codeLocate($implementation);
+    $exec = drush_get_editor();
+    drush_shell_exec_interactive($exec, $info['file']);
+  }
+
+  /**
+   * @hook interact devel:event
+   */
+  public function interactEvent(Input $input, Output $output) {
     $dispatcher = $this->getEventDispatcher();
-    if (empty($event)) {
-      // @todo Expand this list and move to interact().
+    if (!$input->getArgument('event')) {
+      // @todo Expand this list.
       $events = array('kernel.controller', 'kernel.exception', 'kernel.request', 'kernel.response', 'kernel.terminate', 'kernel.view');
       $events = array_combine($events, $events);
-      if (!$event = drush_choice($events, 'Enter the event you wish to explore.')) {
+      if (!$event = $this->io()->choice('Enter the event you wish to explore.', $events)) {
         throw new UserAbortException();
       }
+      $input->setArgument('event', $event);
     }
     if ($implementations = $dispatcher->getListeners($event)) {
       foreach ($implementations as $implementation) {
         $callable = get_class($implementation[0]) . '::' . $implementation[1];
         $choices[$callable] = $callable;
       }
-      if ($choice = drush_choice($choices, 'Enter the number of the implementation you wish to view.')) {
-        $info= $this->codeLocate($choice);
-        $exec = drush_get_editor();
-        drush_shell_exec_interactive($exec, $info['file']);
+      if (!$choice = $this->io()->choice('Enter the number of the implementation you wish to view.', $choices)) {
+        throw new UserAbortException();
       }
+      $input->setArgument('implementation', $choice);
     }
     else {
-      $this->logger()->success(dt('No implementations.'));
+      throw new \Exception(dt('No implementations.'));
     }
   }
 
   /**
    * List available tokens.
    *
-   * @command devel-token
-   * @aliases token
+   * @command devel:token
+   * @aliases token,devel-token
    * @field-labels
    *   group: Group
    *   token: Token
@@ -162,8 +192,8 @@ class DevelCommands extends DrushCommands {
   /**
    * Generate a UUID.
    *
-   * @command devel-uuid
-   * @aliases uuid
+   * @command devel:uuid
+   * @aliases uuid,devel-uuid
    * @usage drush devel-uuid
    *   Outputs a Universally Unique Identifier.
    *
@@ -203,9 +233,9 @@ class DevelCommands extends DrushCommands {
   /**
    * Get a list of available container services.
    *
-   * @command devel-services
+   * @command devel:services
    * @param $prefix A prefix to filter the service list by.
-   * @aliases devel-container-services,dcs
+   * @aliases devel-container-services,dcs,devel-services
    * @usage drush devel-services
    *   Gets a list of all available container services
    * @usage drush dcs plugin.manager
