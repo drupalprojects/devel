@@ -141,6 +141,7 @@ class DevelGenerateCommands extends DrushCommands {
    * @param $max_width Max width of first level of links.
    * @option kill Delete all content before generating new content.
    * @aliases genm
+   * @validate-module-enabled menu_link_content
    */
   public function menus($number_menus = 2, $number_links = 50, $max_depth = 3, $max_width = 8, $options = ['kill' => FALSE]) {
     $this->generate();
@@ -179,7 +180,7 @@ class DevelGenerateCommands extends DrushCommands {
     /** @var DevelGenerateBaseInterface $instance */
     $instance = $manager->createInstance($commandData->annotationData()->get('pluginId'), array());
     $this->setPluginInstance($instance);
-    $parameters = $instance->validateDrushParams($args);
+    $parameters = $instance->validateDrushParams($args, $commandData->input()->getOptions());
     $this->setParameters($parameters);
   }
 
