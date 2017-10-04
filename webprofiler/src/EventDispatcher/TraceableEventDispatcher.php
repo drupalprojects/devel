@@ -4,6 +4,7 @@ namespace Drupal\webprofiler\EventDispatcher;
 
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\webprofiler\Stopwatch;
+use Symfony\Component\DependencyInjection\IntrospectableContainerInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -29,10 +30,19 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
   protected $notCalledListeners;
 
   /**
-   * @param \Drupal\webprofiler\Stopwatch $stopwatch
+   * {@inheritdoc}
    */
-  public function setStopwatch(Stopwatch $stopwatch) {
-    $this->stopwatch = $stopwatch;
+  public function __construct(IntrospectableContainerInterface $container, array $listeners = []) {
+    parent::__construct($container, $listeners);
+    $this->notCalledListeners = $listeners;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function addListener($event_name, $listener, $priority = 0) {
+    parent::addListener($event_name, $listener, $priority);
+    $this->notCalledListeners[$event_name][$priority][] = ['callable' => $listener];
   }
 
   /**
@@ -98,6 +108,13 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
   }
 
   /**
+   * @param \Drupal\webprofiler\Stopwatch $stopwatch
+   */
+  public function setStopwatch(Stopwatch $stopwatch) {
+    $this->stopwatch = $stopwatch;
+  }
+
+  /**
    * Called before dispatching the event.
    *
    * @param string $eventName The event name
@@ -158,38 +175,19 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
       'method' => $definition['callable'][1],
     ];
 
-    // Remove this listener from the $notCalledListeners array.
-    if (!$this->notCalledListeners) {
-      $this->notCalledListeners = $this->cloneListeners($this->listeners);
-    }
-
     foreach ($this->notCalledListeners[$event_name][$priority] as $key => $listener) {
-      if ($listener['service'][0] == $definition['service'][0] && $listener['service'][1] == $definition['service'][1]) {
-        unset($this->notCalledListeners[$event_name][$priority][$key]);
-      }
-    }
-  }
-
-  /**
-   * @param $listeners
-   *
-   * @return array
-   */
-  private function cloneListeners($listeners) {
-    $clone = [];
-
-    foreach ($listeners as $eventName => $events) {
-      foreach ($events as $priorityValue => $priorities) {
-        foreach ($priorities as $key => $listener) {
-          $clone[$eventName][$priorityValue][$key]['service'] = [
-            $listener['service'][0],
-            $listener['service'][1]
-          ];
+      if (isset($listener['service'])) {
+        if ($listener['service'][0] == $definition['service'][0] && $listener['service'][1] == $definition['service'][1]) {
+          unset($this->notCalledListeners[$event_name][$priority][$key]);
         }
       }
-    }
+      else {
+        if (get_class($listener['callable'][0]) == get_class($definition['callable'][0]) && $listener['callable'][1] == $definition['callable'][1]) {
+          unset($this->notCalledListeners[$event_name][$priority][$key]);
+        }
+      }
 
-    return $clone;
+    }
   }
 
 }
