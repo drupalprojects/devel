@@ -4,7 +4,7 @@ namespace Drupal\webprofiler\EventDispatcher;
 
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\webprofiler\Stopwatch;
-use Symfony\Component\DependencyInjection\IntrospectableContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -32,7 +32,7 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
   /**
    * {@inheritdoc}
    */
-  public function __construct(IntrospectableContainerInterface $container, array $listeners = []) {
+  public function __construct(ContainerInterface $container, array $listeners = []) {
     parent::__construct($container, $listeners);
     $this->notCalledListeners = $listeners;
   }
