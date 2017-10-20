@@ -478,29 +478,11 @@ function devel_generate_word($length){
   return substr($word, 0, $length);
 }
 
-function devel_create_content($type = NULL) {
-  $nparas = mt_rand(1,12);
-  $type = empty($type) ? mt_rand(0,3) : $type;
-
-  $output = "";
-  switch($type % 3) {
-    // MW: This appears undesireable. Was giving <p> in text fields
-    // case 1: // html
-    //       for ($i = 1; $i <= $nparas; $i++) {
-    //         $output .= devel_create_para(mt_rand(10,60),1);
-    //       }
-    //       break;
-    //
-    //     case 2: // brs only
-    //       for ($i = 1; $i <= $nparas; $i++) {
-    //         $output .= devel_create_para(mt_rand(10,60),2);
-    //       }
-    //       break;
-
-    default: // plain text
-      for ($i = 1; $i <= $nparas; $i++) {
-        $output .= devel_create_para(mt_rand(10,60)) ."\n\n";
-      }
+function devel_create_content() {
+  $nparas = mt_rand(1, 12);
+  $output = '';
+  for ($i = 1; $i <= $nparas; $i++) {
+    $output .= devel_create_para(mt_rand(10,60)) . "\n\n";
   }
 
   return $output;

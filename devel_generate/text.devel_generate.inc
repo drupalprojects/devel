@@ -21,9 +21,9 @@ function _text_devel_generate($object, $field, $instance, $bundle) {
 
   if (empty($field['settings']['max_length'])) {
     // Textarea handling
-    $object_field['value'] = devel_create_content($format);
+    $object_field['value'] = devel_create_content();
     if ($instance['widget']['type'] == 'text_textarea_with_summary' && !empty($instance['display_summary'])) {
-      $object_field['summary'] = devel_create_content($format);
+      $object_field['summary'] = devel_create_content();
     }
   }
   else {
