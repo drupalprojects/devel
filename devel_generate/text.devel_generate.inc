@@ -28,7 +28,8 @@ function _text_devel_generate($object, $field, $instance, $bundle) {
   }
   else {
     // Textfield handling.
-    $object_field['value'] = substr(devel_create_greeking(mt_rand(1, $field['settings']['max_length'] / 6), FALSE), 0, $field['settings']['max_length']);
+    $max = ceil($field['settings']['max_length'] / 6);
+    $object_field['value'] = substr(devel_create_greeking(mt_rand(1, $max), FALSE), 0, $field['settings']['max_length']);
   }
   $object_field['format'] = $format;
   return $object_field;
