@@ -63,7 +63,7 @@ function devel_node_access_menu() {
     // we have to create the 'Devel settings' menu item ourselves
     $items['admin/config/development/devel'] = array(
       'title'            => 'Devel settings',
-      'description'      => 'Helper pages and blocks to assist Drupal developers and admins with node_access. The devel blocks can be managed via the <a href="' . url('admin/structure/block') . '">block administration</a> page.',
+      'description'      => 'Helper pages and blocks to assist Drupal developers and admins with node_access. The devel blocks can be managed via the <a href="/admin/structure/block">block administration</a> page.',
       'page callback'    => 'drupal_get_form',
       'page arguments'   => array('devel_node_access_admin_settings'),
       'access arguments' => array('administer site configuration'),
