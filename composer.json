@@ -41,5 +41,12 @@
   "require": {},
   "suggest": {
     "symfony/var-dumper": "Pretty print complex values better with var-dumper available"
+  },
+  "extra": {
+    "drush": {
+      "services": {
+        "drush.services.yml": "^9"
+      }
+    }
   }
 }
