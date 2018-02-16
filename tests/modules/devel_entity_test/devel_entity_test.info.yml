@@ -5,6 +5,6 @@ package: Testing
 version: VERSION
 core: 8.x
 dependencies:
-  - field
-  - text
-  - entity_test
+  - drupal:field
+  - drupal:text
+  - drupal:entity_test
