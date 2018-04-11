@@ -32,7 +32,7 @@ function devel_enable() {
  */
 function devel_uninstall() {
   variable_del('devel_execution');
-  variable_del('dev_timer');
+  variable_del('devel_timer');
   variable_del('devel_query_display');
   variable_del('devel_redirect_page');
   variable_del('devel_api_url');
@@ -138,4 +138,15 @@ function devel_update_7007() {
   variable_del('devel_xhprof_directory');
   variable_del('devel_xhprof_enabled');
   variable_del('devel_xhprof_url');
+}
+
+/**
+ * Change variable "dev_timer" to "devel_timer".
+ */
+function devel_update_7008() {
+  if (variable_get('dev_timer') !== NULL) {
+    variable_set('devel_timer', variable_get('dev_timer'));
+  }
+
+  variable_del('dev_timer');
 }

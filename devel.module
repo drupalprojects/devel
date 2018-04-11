@@ -1150,7 +1150,7 @@ function devel_shutdown_summary($queries) {
     $output .= t_safe(' Queries exceeding @threshold ms are <span class="marker">highlighted</span>.', array('@threshold' => variable_get('devel_execution', 5)));
   }
 
-  if (variable_get('dev_timer', 0)) {
+  if (variable_get('devel_timer', 0)) {
     $output .= devel_timer();
   }
 

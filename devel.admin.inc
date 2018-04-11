@@ -46,9 +46,9 @@ function devel_admin_settings() {
     '#title' => t('API Site'),
     '#default_value' => variable_get('devel_api_url', 'api.drupal.org'),
     '#description' => t('The base URL for your developer documentation links. You might change this if you run <a href="!url">api.module</a> locally.', array('!url' => url('http://drupal.org/project/api'))));
-  $form['dev_timer'] = array('#type' => 'checkbox',
+  $form['devel_timer'] = array('#type' => 'checkbox',
     '#title' => t('Display page timer'),
-    '#default_value' => variable_get('dev_timer', 0),
+    '#default_value' => variable_get('devel_timer', 0),
     '#description' => t('Display page execution time in the query log box.'),
   );
 
