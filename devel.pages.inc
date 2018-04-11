@@ -226,6 +226,7 @@ function devel_variable_form() {
     '#type' => 'submit',
     '#value' => t('Delete'),
   );
+  $form['#after_build'][] = 'devel_variable_form_after_build';
 
     // krumo($form);
   return $form;
@@ -237,6 +238,18 @@ function devel_variable_form_submit($form, &$form_state) {
   if (count($deletes)) {
     drupal_set_message(format_plural(count($deletes), 'One variable deleted.', '@count variables deleted.'));
   }
+}
+
+/**
+ * After build callback for devel_variable_form().
+ *
+ * Wrap each variable name in a <label> element.
+ */
+function devel_variable_form_after_build($form, &$form_state) {
+  foreach ($form['variables']['#options'] as $variable => $element) {
+    $form['variables']['#options'][$variable]['name'] = '<label for="' . $form['variables'][$variable]['#id'] . '">' . $element['name'] . '</label>';
+  }
+  return $form;
 }
 
 function devel_variable_edit($form, &$form_state, $name) {
