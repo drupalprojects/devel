@@ -32,7 +32,11 @@ class ExecutePHP extends FormBase {
       '#default_value' => (isset($_SESSION['devel_execute_code']) ? $_SESSION['devel_execute_code'] : ''),
       '#rows' => 20,
     );
-    $form['execute']['op'] = array('#type' => 'submit', '#value' => t('Execute'));
+    $form['execute']['actions'] = ['#type' => 'actions'];
+    $form['execute']['actions']['op'] = [
+      '#type' => 'submit',
+      '#value' => t('Execute'),
+    ];
     $form['#redirect'] = FALSE;
     if (isset($_SESSION['devel_execute_code'])) {
       unset($_SESSION['devel_execute_code']);
