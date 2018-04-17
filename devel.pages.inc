@@ -140,7 +140,8 @@ function devel_reinstall($form, &$form_state) {
     '#options' => $options,
     '#description' => t('Uninstall and then install the selected modules. <code>hook_uninstall()</code> and <code>hook_install()</code> will be executed and the schema version number will be set to the most recent update number. You may have to manually clear out any existing tables first if the module doesn\'t implement <code>hook_uninstall()</code>.'),
   );
-  $form['submit'] = array(
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
     '#value' => t('Reinstall'),
     '#type' => 'submit',
   );
@@ -262,7 +263,8 @@ function devel_variable_form() {
     '#options' => $options,
     '#empty' => t('No variables.'),
   );
-  $form['submit'] = array(
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Delete'),
   );
@@ -319,7 +321,8 @@ function devel_variable_edit($form, &$form_state, $name) {
       '#title' => t('New value'),
       '#default_value' => $value
     );
-    $form['submit'] = array(
+    $form['actions'] = array('#type' => 'actions');
+    $form['actions']['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Submit'),
     );

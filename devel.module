@@ -979,7 +979,8 @@ function devel_switch_user_form() {
     '#maxlength' => USERNAME_MAX_LENGTH,
     '#size' => 16,
   );
-  $form['submit'] = array(
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Switch'),
   );
@@ -999,7 +1000,8 @@ function devel_doc_function_form() {
     '#maxlength' => 255,
   );
   $form['version'] = array('#type' => 'value', '#value' => $version);
-  $form['submit_button'] = array(
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit'),
   );
@@ -1407,7 +1409,11 @@ function devel_execute_form() {
     '#default_value' => (isset($_SESSION['devel_execute_code']) ? $_SESSION['devel_execute_code'] : ''),
     '#rows' => 20,
   );
-  $form['execute']['op'] = array('#type' => 'submit', '#value' => t('Execute'));
+  $form['execute']['actions'] = array('#type' => 'actions');
+  $form['execute']['actions']['op'] = array(
+    '#type' => 'submit',
+    '#value' => t('Execute'),
+  );
   $form['#redirect'] = FALSE;
   if (isset($_SESSION['devel_execute_code'])) {
     unset($_SESSION['devel_execute_code']);
