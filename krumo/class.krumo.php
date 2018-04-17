@@ -656,6 +656,15 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
   // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
   /**
+  * Allows CSS and Javascript to be included without performing a krumo::dump().
+  */
+  Public Static Function addCssJs() {
+    return krumo::_css();
+  }
+
+  // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+  /**
   * Print the skin (CSS)
   *
   * @return boolean
@@ -705,25 +714,8 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 
       // the CSS
       //
-      ?>
-<!-- Using Krumo Skin: <?php echo preg_replace('~^' . preg_quote(realpath(KRUMO_DIR) . DIRECTORY_SEPARATOR) . '~Uis', '', realpath($_));?> -->
-<style type="text/css">
-<!--/**/
-<?php echo $css?>
-
-/**/-->
-</style>
-<?php
-      // the JS
-      //
-      ?>
-<script type="text/javascript">
-<!--//
-<?php echo join(file(KRUMO_DIR . "krumo.js"));?>
-
-//-->
-</script>
-<?php
+      drupal_add_css($css, 'inline');
+      drupal_add_js(join(file(KRUMO_DIR . "krumo.js")), 'inline');
       }
 
     return $_css;
@@ -1068,10 +1060,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 ?>
 <li class="krumo-child">
 
-  <div class="krumo-element<?php echo count($data) > 0 ? ' krumo-expand' : '';?>"
-    <?php if (count($data) > 0) {?> onClick="krumo.toggle(this);"<?php } ?>
-    onMouseOver="krumo.over(this);"
-    onMouseOut="krumo.out(this);">
+  <div class="krumo-element<?php echo count($data) > 0 ? ' krumo-expand' : '';?>">
 
       <?php /* DEVEL: added htmlSpecialChars */ ?>
       <a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
@@ -1120,10 +1109,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 ?>
 <li class="krumo-child">
 
-  <div class="krumo-element<?php echo count($data) > 0 ? ' krumo-expand' : '';?>"
-    <?php if (count($data) > 0) {?> onClick="krumo.toggle(this);"<?php } ?>
-    onMouseOver="krumo.over(this);"
-    onMouseOut="krumo.out(this);">
+  <div class="krumo-element<?php echo count($data) > 0 ? ' krumo-expand' : '';?>">
 
       <?php /* DEVEL: added htmlSpecialChars */ ?>
       <a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
@@ -1273,10 +1259,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 ?>
 <li class="krumo-child">
 
-  <div class="krumo-element<?php echo $_extra ? ' krumo-expand' : '';?>"
-    <?php if ($_extra) {?> onClick="krumo.toggle(this);"<?php } ?>
-    onMouseOver="krumo.over(this);"
-    onMouseOut="krumo.out(this);">
+  <div class="krumo-element<?php echo $_extra ? ' krumo-expand' : '';?>">
 
       <?php /* DEVEL: added htmlSpecialChars */ ?>
       <a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>

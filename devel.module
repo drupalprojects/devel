@@ -471,7 +471,12 @@ function devel_set_message($msg, $type = NULL) {
 function has_krumo() {
   @include_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'devel') . '/krumo/class.krumo.php';
   if (function_exists('krumo') && !drupal_is_cli()) {
-    drupal_add_js(drupal_get_path('module', 'devel') . '/devel_krumo_path.js');
+    drupal_add_js(drupal_get_path('module', 'devel') . '/devel_krumo.js');
+    drupal_add_css(drupal_get_path('module', 'devel') . '/devel_krumo.css');
+    // If dpm() is called after status messages have been rendered they will
+    // instead appear on the next page load, so ensure the krumo CSS and
+    // Javascript files are included.
+    krumo::addCssJs();
     return TRUE;
   }
   return FALSE;

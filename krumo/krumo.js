@@ -54,7 +54,7 @@ krumo.toggle = function(el) {
   var ul = el.parentNode.getElementsByTagName('ul');
   for (var i=0; i<ul.length; i++) {
     if (ul[i].parentNode.parentNode == el.parentNode) {
-      ul[i].parentNode.style.display = (ul[i].parentNode.style.display == 'none')
+      ul[i].parentNode.style.display = (window.getComputedStyle(ul[i].parentNode).display == 'none')
         ? 'block'
         : 'none';
       }
