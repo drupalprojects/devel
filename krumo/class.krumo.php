@@ -1060,7 +1060,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 ?>
 <li class="krumo-child">
 
-  <div class="krumo-element<?php echo count($data) > 0 ? ' krumo-expand' : '';?>">
+  <div class="krumo-element<?php echo !empty($data) ? ' krumo-expand' : '';?>">
 
       <?php /* DEVEL: added htmlSpecialChars */ ?>
       <a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
@@ -1109,7 +1109,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
 ?>
 <li class="krumo-child">
 
-  <div class="krumo-element<?php echo count($data) > 0 ? ' krumo-expand' : '';?>">
+  <div class="krumo-element<?php echo ' krumo-expand';?>">
 
       <?php /* DEVEL: added htmlSpecialChars */ ?>
       <a class="krumo-name"><?php echo htmlSpecialChars($name);?></a>
@@ -1117,7 +1117,7 @@ This is a list of all the values from the <code><b><?php echo realpath($ini_file
       <strong class="krumo-class"><?php echo get_class($data);?></strong>
   </div>
 
-  <?php if (count($data)) {
+  <?php {
     krumo::_vars($data);
     } ?>
 </li>
