@@ -11,6 +11,8 @@
  * @ingroup forms
  */
 function devel_admin_settings() {
+  _devel_display_block_help_message();
+
   $form['queries'] = array('#type' => 'fieldset', '#title' => t('Query log'));
 
   $description = t('Display a log of the database queries needed to generate the current page, and the execution time for each. Also, queries which are repeated during a single page view are summed in the # column, and printed in red since they are candidates for caching.');
@@ -131,6 +133,36 @@ function devel_admin_settings() {
   );
 
   return system_settings_form($form);
+}
+
+/**
+ * Displays a helpful message if Menu module is not installed.
+ */
+function _devel_display_block_help_message() {
+  if (!module_exists('menu')) {
+    $devel_block_alert = t('Devel block alert: The Devel block requires the Core Menu module. The Devel block will become available once you <a href="!url">enable Menu</a>.',
+      array('!url' => url('admin/modules'))
+    );
+    $variables = array(
+      '!admin_menu_url' => url('https://drupal.org/project/admin_menu', array('external' => TRUE)),
+      '!admin_menu_name' => 'Administration Menu',
+      '!admin_menu_config_url' => url('admin/config/administration/admin_menu'),
+      '!icon_menu' => t('Icon menu'),
+    );
+    if (!module_exists('admin_menu')) {
+      $devel_block_alert .= '<br />' . t('Alternatively, you can install <a href="!admin_menu_url">!admin_menu_name</a> which supports displaying the Devel menu items in its !icon_menu.', $variables);
+    }
+    else {
+      $admin_menu_components = variable_get('admin_menu_components', array());
+      if (empty($admin_menu_components['admin_menu.icon']) || !user_access('access administration menu')) {
+        $devel_block_alert .= '<br />' . t("Alternatively, if you <a href='!admin_menu_config_url'>enable !admin_menu_name's !icon_menu</a> you will find the Devel menu items there.", $variables);
+      } else {
+        // Don't bother with a message in the 'normal' case.
+        return;
+      }
+    }
+    drupal_set_message($devel_block_alert, 'warning');
+  }
 }
 
 /**
