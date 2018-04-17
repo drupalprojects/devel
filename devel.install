@@ -59,7 +59,9 @@ function devel_uninstall() {
 }
 
 /**
- * Remove feature for storing queries. Cleanup deprecated tables and variables.
+ * Remove feature for storing queries.
+ *
+ * Cleanup deprecated tables and variables.
  */
 function devel_update_7000() {
   db_drop_table('devel_queries');
@@ -78,7 +80,7 @@ function devel_update_7001() {
 }
 
 /**
- * Remove deprecated variables - dev_query, devel_code_coverage
+ * Remove deprecated variables: dev_query, devel_code_coverage.
  */
 function devel_update_7002() {
   variable_del('dev_query'); // Sad trombone. http://drupalcode.org/viewvc/drupal/drupal/includes/database.mysql.inc?revision=1.2&view=markup
@@ -114,7 +116,9 @@ function devel_update_7004() {
 }
 
 /**
- * Delete variable 'devel_form_weights' from database as it was removed from code.
+ * Delete variable 'devel_form_weights'.
+ *
+ * 'devel_form_weights' was removed from code.
  */
 function devel_update_7005() {
   variable_del('devel_form_weights');
