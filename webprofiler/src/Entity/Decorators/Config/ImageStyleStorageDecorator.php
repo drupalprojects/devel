@@ -2,10 +2,7 @@
 
 namespace Drupal\webprofiler\Entity\Decorators\Config;
 
-use Drupal\Core\Session\AccountInterface;
 use Drupal\image\ImageStyleStorageInterface;
-use Drupal\shortcut\ShortcutSetInterface;
-use Drupal\shortcut\ShortcutSetStorageInterface;
 
 /**
  * Class ImageStyleStorageDecorator
