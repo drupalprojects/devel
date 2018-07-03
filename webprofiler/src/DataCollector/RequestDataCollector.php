@@ -52,12 +52,27 @@ class RequestDataCollector extends BaseRequestDataCollector implements DrupalDat
    * @param $service_id
    * @param $callable
    * @param $request
+   *
+   * @throws \ReflectionException
    */
   public function addAccessCheck($service_id, $callable, Request $request) {
     $this->accessCheck[$request->getPathInfo()][] = [
       'service_id' => $service_id,
       'callable' => $this->getMethodData($callable[0], $callable[1]),
     ];
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * In Symfony 3 the data for the RequestDataCollector are converted to string
+   * with \Symfony\Component\HttpKernel\DataCollector/DataCollector::cloneVar()
+   * in
+   * \Symfony\Component\HttpKernel\DataCollector\RequestDataCollector::lateCollect(),
+   * but for some reasons they aren't unserialized back to array later. At the
+   * moment we simply override that method to avoid conversion.
+   */
+  public function lateCollect() {
   }
 
   /**
@@ -71,7 +86,7 @@ class RequestDataCollector extends BaseRequestDataCollector implements DrupalDat
    * {@inheritdoc}
    */
   public function getPanelSummary() {
-    return $this->data['status_code'].' '.$this->data['status_text'];
+    return $this->data['status_code'] . ' ' . $this->data['status_text'];
   }
 
   /**

@@ -10,6 +10,13 @@ trait DrupalDataCollectorTrait {
   /**
    * {@inheritdoc}
    */
+  public function reset() {
+    $this->data = array();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPanelSummary() {
     return NULL;
   }
