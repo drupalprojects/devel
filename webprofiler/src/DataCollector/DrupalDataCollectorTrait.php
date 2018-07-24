@@ -54,8 +54,6 @@ trait DrupalDataCollectorTrait {
    * @param $method
    *
    * @return array
-   *
-   * @throws \ReflectionException
    */
   public function getMethodData($class, $method) {
     $class = is_object($class) ? get_class($class) : $class;
